@@ -1,0 +1,254 @@
+2)
+git config --global user.name "Lksih"
+git config --global user.email "ilya.vorobev09@gmail.com"
+git config --global init.defaultBranch main
+
+3)
+sudo apt update
+[sudo] password for lksih:
+Get:1 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Hit:2 http://archive.ubuntu.com/ubuntu noble InRelease
+Get:3 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Hit:4 https://ppa.launchpadcontent.net/gns3/ppa/ubuntu noble InRelease
+Get:5 http://security.ubuntu.com/ubuntu noble-security/main amd64 Components [21.6 kB]
+Get:6 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Components [74.2 kB]
+Get:7 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:8 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Components [212 B]
+Get:9 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Components [212 B]
+Get:10 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [177 kB]
+Get:11 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [386 kB]
+Get:12 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Components [212 B]
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+Get:14 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [7368 B]
+Get:15 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [13.2 kB]
+Get:16 http://archive.ubuntu.com/ubuntu noble-backports/restricted amd64 Components [216 B]
+Get:17 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Components [212 B]
+Fetched 1060 kB in 2s (634 kB/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+156 packages can be upgraded. Run 'apt list --upgradable' to see them.
+
+sudo apt install git gh
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+git is already the newest version (1:2.43.0-1ubuntu7.3).
+git set to manually installed.
+The following NEW packages will be installed:
+  gh
+0 upgraded, 1 newly installed, 0 to remove and 156 not upgraded.
+Need to get 8836 kB of archives.
+After this operation, 45.4 MB of additional disk space will be used.
+Do you want to continue? [Y/n] y
+Get:1 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 gh amd64 2.45.0-1ubuntu0.3 [8836 kB]
+Fetched 8836 kB in 4s (2151 kB/s)
+Selecting previously unselected package gh.
+(Reading database ... 106330 files and directories currently installed.)
+Preparing to unpack .../gh_2.45.0-1ubuntu0.3_amd64.deb ...
+Unpacking gh (2.45.0-1ubuntu0.3) ...
+Setting up gh (2.45.0-1ubuntu0.3) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+
+4)
+ssh-keygen -t ed25519 -f ~/.ssh/Lksih
+Generating public/private ed25519 key pair.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/lksih/.ssh/Lksih
+Your public key has been saved in /home/lksih/.ssh/Lksih.pub
+The key fingerprint is:
+SHA256:sm4Ay9ZmRWzjRHWk6KpimwreLnVe7e/wF/beg5mIXGY lksih@lksih-win
+The key's randomart image is:
++--[ED25519 256]--+
+|     o....o      |
+|      *. o       |
+|     =...        |
+|  .  .o          |
+| . + .o S        |
+|  +.=o + . E o   |
+|...o+.o o.= o *  |
+|+oo. o.  +o. = o.|
+|+==o ..   o+. ..o|
++----[SHA256]-----+
+
+5)
+gh auth login
+? What account do you want to log into? GitHub.com
+? What is your preferred protocol for Git operations on this host? SSH
+? Upload your SSH public key to your GitHub account? /home/lksih/.ssh/Lksih.pub
+? Title for your SSH key: eltex-practice2-pg1-v11
+? How would you like to authenticate GitHub CLI? Login with a web browser
+
+! First copy your one-time code: 282E-5398
+Press Enter to open github.com in your browser...
+✓ Authentication complete.
+- gh config set -h github.com git_protocol ssh
+✓ Configured git protocol
+! Authentication credentials saved in plain text
+✓ Uploaded the SSH key to your GitHub account: /home/lksih/.ssh/Lksih.pub
+✓ Logged in as Lksih
+
+6)
+gh auth setup-git --hostname github.com
+
+7)
+ gh auth status
+github.com
+  ✓ Logged in to github.com account Lksih (/home/lksih/.config/gh/hosts.yml)
+  - Active account: true
+  - Git operations protocol: ssh
+  - Token: gho_************************************
+  - Token scopes: 'admin:public_key', 'gist', 'read:org', 'repo'
+
+8)
+gh repo create --public eltex-pg1-v11-practice2
+✓ Created repository Lksih/eltex-pg1-v11-practice2 on GitHub
+  https://github.com/Lksih/eltex-pg1-v11-practice2
+
+9)
+mkdir eltex-pg1-v11-practice2 && cd eltex-pg1-v11-practice2
+echo "# Репозиторий для курса Eltex по системному программированию в Linux" >> README.md
+
+git init
+Initialized empty Git repository in /home/lksih/eltex-pg1-v11-practice2/.git/
+
+git add README.md
+
+git commit -m "first commit"
+[main (root-commit) 0fa45ad] first commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+
+git branch -M main
+git remote add origin https://github.com/Lksih/eltex-pg1-v11-practice2
+
+git status
+On branch main
+nothing to commit, working tree clean
+
+git push -u origin main
+Enumerating objects: 3, done.
+Counting objects: 100% (3/3), done.
+Delta compression using up to 16 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (3/3), 317 bytes | 317.00 KiB/s, done.
+Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/Lksih/eltex-pg1-v11-practice2
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+
+mkdir -p module1/task1
+mkdir module1/task2
+mkdir module1/task3
+
+git add .
+
+git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        new file:   module1/task1/eltex-pg1-v11_part1.pdf
+        new file:   module1/task1/eltex-pg1-v11_part2.log
+        new file:   module1/task1/eltex-pg1-v11_part3.log
+        new file:   module1/task1/eltex-pg1-v11_part3_gt50M.log
+        new file:   module1/task2/practice2_eltex-pg1-v11_part1.log
+        new file:   module1/task2/practice2_eltex-pg1-v11_part2.log
+
+git commit -m "Первая и вторая практики"
+[main be0094c] Первая и вторая практики
+ 6 files changed, 1286 insertions(+)
+ create mode 100644 module1/task1/eltex-pg1-v11_part1.pdf
+ create mode 100644 module1/task1/eltex-pg1-v11_part2.log
+ create mode 100644 module1/task1/eltex-pg1-v11_part3.log
+ create mode 100644 module1/task1/eltex-pg1-v11_part3_gt50M.log
+ create mode 100644 module1/task2/practice2_eltex-pg1-v11_part1.log
+ create mode 100644 module1/task2/practice2_eltex-pg1-v11_part2.log
+
+git push
+Enumerating objects: 12, done.
+Counting objects: 100% (12/12), done.
+Delta compression using up to 16 threads
+Compressing objects: 100% (11/11), done.
+Writing objects: 100% (11/11), 181.98 KiB | 16.54 MiB/s, done.
+Total 11 (delta 0), reused 0 (delta 0), pack-reused 0
+To https://github.com/Lksih/eltex-pg1-v11-practice2
+   0fa45ad..be0094c  main -> main
+
+10)
+mkdir ~/eltex-pg1-v11-practice2_clone && cd ~/eltex-pg1-v11-practice2_clone
+
+git clone https://github.com/Lksih/eltex-pg1-v11-practice2 .
+Cloning into '.'...
+remote: Enumerating objects: 14, done.
+remote: Counting objects: 100% (14/14), done.
+remote: Compressing objects: 100% (13/13), done.
+remote: Total 14 (delta 0), reused 14 (delta 0), pack-reused 0 (from 0)
+Receiving objects: 100% (14/14), 182.26 KiB | 602.00 KiB/s, done.
+
+11)
+cd ../eltex-pg1-v11-practice2
+echo "Изменение" >> README.md
+git add README.md
+
+git commit -m "Изменение README.md"
+[main f30cb09] Изменение README.md
+ 1 file changed, 1 insertion(+)
+
+git push
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 16 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 351 bytes | 351.00 KiB/s, done.
+Total 3 (delta 1), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To https://github.com/Lksih/eltex-pg1-v11-practice2
+   be0094c..f30cb09  main -> main
+
+cd ../eltex-pg1-v11-practice2_clone/
+
+git fetch
+remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 3 (delta 1), reused 3 (delta 1), pack-reused 0 (from 0)
+Unpacking objects: 100% (3/3), 331 bytes | 82.00 KiB/s, done.
+From https://github.com/Lksih/eltex-pg1-v11-practice2
+   be0094c..f30cb09  main       -> origin/main
+
+git log origin/main
+commit f30cb099a49b8136cbff61d30c9c186fe72d95cc (origin/main, origin/HEAD)
+Author: Lksih <ilya.vorobev09@gmail.com>
+Date:   Mon Mar 16 00:42:34 2026 +0700
+
+    Изменение README.md
+
+commit be0094c6e5dcc42ca68e9149f0b74a48ea976d04 (HEAD -> main)
+Author: Lksih <ilya.vorobev09@gmail.com>
+Date:   Mon Mar 16 00:37:31 2026 +0700
+
+    Первая и вторая практики
+
+commit 0fa45ad88ca0bc54cccd4c12f0b726f72195d3dc
+Author: Lksih <ilya.vorobev09@gmail.com>
+Date:   Mon Mar 16 00:26:30 2026 +0700
+
+    first commit
+
+git diff main origin/main
+diff --git a/README.md b/README.md
+index 80e479f..d955408 100644
+--- a/README.md
++++ b/README.md
+@@ -1 +1,2 @@
+ # Репозиторий для курса Eltex по системному программированию в Linux
++Изменение
+
+git merge
+Updating be0094c..f30cb09
+Fast-forward
+ README.md | 1 +
+ 1 file changed, 1 insertion(+)
