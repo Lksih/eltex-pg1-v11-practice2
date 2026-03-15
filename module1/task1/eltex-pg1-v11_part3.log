@@ -1,0 +1,142 @@
+1)
+touch $(whoami)_part3.log
+
+2)
+mkdir -p D1/D2/D3
+2026-01
+2026-02
+2026-03
+2026-04
+2026-05
+2026-06
+2026-07
+2026-08
+2026-09
+2026-10
+2026-11
+2026-12
+D1
+eltex-pg1-v11_part3.log
+report_part1.txt
+
+ls D1
+D2
+
+ls D1/D2
+D3
+
+3)
+cd D1/D2
+touch file.txt
+
+4)
+echo 123 > file.txt
+
+5)
+cd D3
+ln -s ../file.txt softlink
+ln ../file.txt hardlink
+
+6)
+cat hardlink
+123
+
+cat softlink
+123
+
+ls -li
+total 4
+131212 -rw-r--r-- 2 eltex-pg1-v11 eltex-pg1-v11  4 Mar 12 16:56 hardlink
+131213 lrwxrwxrwx 1 eltex-pg1-v11 eltex-pg1-v11 11 Mar 12 16:59 softlink -> ../file.txt
+
+ls -li ..
+total 8
+131211 drwxr-xr-x 2 eltex-pg1-v11 eltex-pg1-v11 4096 Mar 12 16:59 D3
+131212 -rw-r--r-- 2 eltex-pg1-v11 eltex-pg1-v11    4 Mar 12 16:56 file.txt
+
+7)
+mv ../file.txt ../../file.txt
+
+ls ..
+D3
+
+ls ../..
+D2  file.txt
+
+8)
+cat hardlink
+123
+
+cat softlink
+cat: softlink: No such file or directory
+
+Жёсткая ссылка хранит inode, который не изменился, символическая хранит путь к файлу, который изменился
+
+9)
+cd ../..
+rm -rf D2
+ls
+file.txt
+
+10)
+find / -type f -size +20M 2> /dev/null
+/usr/bin/x86_64-linux-gnu-lto-dump-12
+/usr/lib/gcc/x86_64-linux-gnu/12/lto1
+/usr/lib/gcc/x86_64-linux-gnu/12/cc1
+/usr/lib/x86_64-linux-gnu/libicudata.so.72.1
+/proc/kcore
+/home/eltex-pg2-v10/eltex-pg2-v10_part.log
+/boot/initrd.img-6.1.0-43-amd64
+/boot/initrd.img-6.1.0-40-amd64
+/var/log/journal/8247b53b6ae84ae0ad9bb1c96113fd29/system@4f44ef78d53d4cd0a5555898b8d0015b-0000000000021f7c-00064c3f482d4944.journal
+/var/cache/apt/srcpkgcache.bin
+/var/cache/apt/pkgcache.bin
+/var/lib/apt/lists/deb.debian.org_debian_dists_bookworm_main_binary-amd64_Packages
+/var/lib/apt/lists/deb.debian.org_debian_dists_bookworm_main_source_Sources
+/var/lib/apt/lists/deb.debian.org_debian_dists_bookworm_main_i18n_Translation-en
+
+find / -type f -size +20M 2> /dev/null | xargs du -h
+31M     /usr/bin/x86_64-linux-gnu-lto-dump-12
+31M     /usr/lib/gcc/x86_64-linux-gnu/12/lto1
+32M     /usr/lib/gcc/x86_64-linux-gnu/12/cc1
+30M     /usr/lib/x86_64-linux-gnu/libicudata.so.72.1
+0       /proc/kcore
+205M    /home/eltex-pg2-v10/eltex-pg2-v10_part.log
+33M     /boot/initrd.img-6.1.0-43-amd64
+33M     /boot/initrd.img-6.1.0-40-amd64
+43M     /var/log/journal/8247b53b6ae84ae0ad9bb1c96113fd29/system@4f44ef78d53d4cd0a5555898b8d0015b-0000000000021f7c-00064c3f482d4944.journal
+39M     /var/cache/apt/srcpkgcache.bin
+39M     /var/cache/apt/pkgcache.bin
+48M     /var/lib/apt/lists/deb.debian.org_debian_dists_bookworm_main_binary-amd64_Packages
+49M     /var/lib/apt/lists/deb.debian.org_debian_dists_bookworm_main_source_Sources
+32M     /var/lib/apt/lists/deb.debian.org_debian_dists_bookworm_main_i18n_Translation-en
+
+cd ..
+eltex-pg1-v11@eltex-2026-spring-17:27> find / -type f -size +20M 2> /dev/null > "${USER}_part3_gt50M.log"
+ls
+2026-01  2026-03  2026-05  2026-07  2026-09  2026-11  D1                             eltex-pg1-v11_part3.log
+2026-02  2026-04  2026-06  2026-08  2026-10  2026-12  eltex-pg1-v11_part3_gt50M.log  report_part1.txt
+
+
+11)
+find ~ -type f -mtime -1
+/home/eltex-pg1-v11/eltex-pg1-v11_part3.log
+/home/eltex-pg1-v11/.lesshst
+/home/eltex-pg1-v11/.log
+/home/eltex-pg1-v11/D1/file.txt
+/home/eltex-pg1-v11/.bash_history
+/home/eltex-pg1-v11/eltex-pg1-v11_part3_gt50M.log
+/home/eltex-pg1-v11/.bashrc
+
+13)
+type find
+find is /usr/bin/find
+
+14)
+file /usr/bin/find
+/usr/bin/find: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=5545a6c7162d325fbe5ffabcbfe4e5521b66ce70, for GNU/Linux 3.2.0, stripped
+
+15)
+file /boot/initrd.img*
+/boot/initrd.img-6.1.0-40-amd64: ASCII cpio archive (SVR4 with no CRC)
+/boot/initrd.img-6.1.0-43-amd64: ASCII cpio archive (SVR4 with no CRC)
