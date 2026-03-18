@@ -193,7 +193,7 @@ nano ~user2/dmesg_script.sh
 #!/bin/bash
 
 if [ "$(whoami)" != "user2" ]; then
-    echo "Этот скрипт может выполнять только user2"
+    echo "Ошибка: этот скрипт может выполнять только user2"
     exit 1
 fi
 
@@ -201,6 +201,1186 @@ fi
 
 chmod +x ~user2/dmesg_script.sh
 chmod u+s ~user2/dmesg_script.sh
+
+./dmesg_script.sh
+dmesg: read kernel buffer failed: Operation not permitted
+
+Возможно включена опция nosuid. Скомпилированные программы обычно работают в таком случае
+
+#include <stdio.h>
+#include <unistd.h>
+#include <pwd.h>
+#include <string.h>
+
+int main() {
+    uid_t uid = getuid();
+    struct passwd *pw = getpwuid(uid);
+
+    if (pw == NULL) {
+        fprintf(stderr, "Ошибка: не удалось определить пользователя\n");
+        return 1;
+    }
+
+    if (strcmp(pw->pw_name, "user2") != 0) {
+        fprintf(stderr, "Ошибка: эту программу может выполнять только user2\n");
+        return 1;
+    }
+
+    if (setuid(0) != 0) {
+        fprintf(stderr, "Ошибка: не удалось установить права root\n");
+        return 1;
+    }
+
+    execl("/bin/dmesg", "dmesg", NULL);
+
+    perror("Ошибка: dmesg не выполнился");
+    return 1;
+}
+
+./dmesg_prog
+[    0.000000] Linux version 6.8.0-55-generic (buildd@lcy02-amd64-095) (x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #57-Ubuntu SMP PREEMPT_DYNAMIC Wed Feb 12 23:42:21 UTC 2025 (Ubuntu 6.8.0-55.57-generic 6.8.12)
+[    0.000000] Command line: BOOT_IMAGE=/vmlinuz-6.8.0-55-generic root=/dev/mapper/ubuntu--vg-ubuntu--lv ro
+[    0.000000] KERNEL supported cpus:
+[    0.000000]   Intel GenuineIntel
+[    0.000000]   AMD AuthenticAMD
+[    0.000000]   Hygon HygonGenuine
+[    0.000000]   Centaur CentaurHauls
+[    0.000000]   zhaoxin   Shanghai
+[    0.000000] BIOS-provided physical RAM map:
+[    0.000000] BIOS-e820: [mem 0x0000000000000000-0x000000000009fbff] usable
+[    0.000000] BIOS-e820: [mem 0x000000000009fc00-0x000000000009ffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000000f0000-0x00000000000fffff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000000100000-0x00000000bffd9fff] usable
+[    0.000000] BIOS-e820: [mem 0x00000000bffda000-0x00000000bfffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000feffc000-0x00000000feffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x00000000fffc0000-0x00000000ffffffff] reserved
+[    0.000000] BIOS-e820: [mem 0x0000000100000000-0x000000013fffffff] usable
+[    0.000000] BIOS-e820: [mem 0x000000fd00000000-0x000000ffffffffff] reserved
+[    0.000000] NX (Execute Disable) protection: active
+[    0.000000] APIC: Static calls initialized
+[    0.000000] SMBIOS 2.8 present.
+[    0.000000] DMI: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.17.0-0-gb52ca86e094d-prebuilt.qemu.org 04/01/2014
+[    0.000000] Hypervisor detected: KVM
+[    0.000000] kvm-clock: Using msrs 4b564d01 and 4b564d00
+[    0.000002] kvm-clock: using sched offset of 1148420513536 cycles
+[    0.000008] clocksource: kvm-clock: mask: 0xffffffffffffffff max_cycles: 0x1cd42e4dffb, max_idle_ns: 881590591483 ns
+[    0.000016] tsc: Detected 3400.000 MHz processor
+[    0.001265] e820: update [mem 0x00000000-0x00000fff] usable ==> reserved
+[    0.001271] e820: remove [mem 0x000a0000-0x000fffff] usable
+[    0.091743] AGP: No AGP bridge found
+[    0.092544] last_pfn = 0x140000 max_arch_pfn = 0x400000000
+[    0.092607] MTRR map: 4 entries (3 fixed + 1 variable; max 19), built from 8 variable MTRRs
+[    0.092617] x86/PAT: Configuration [0-7]: WB  WC  UC- UC  WB  WP  UC- WT
+[    0.092698] last_pfn = 0xbffda max_arch_pfn = 0x400000000
+[    0.094894] found SMP MP-table at [mem 0x000f5490-0x000f549f]
+[    0.095262] RAMDISK: [mem 0x2fccd000-0x33e5dfff]
+[    0.096158] ACPI: Early table checksum verification disabled
+[    0.096174] ACPI: RSDP 0x00000000000F5290 000014 (v00 BOCHS )
+[    0.096186] ACPI: RSDT 0x00000000BFFE3B5F 000034 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.096200] ACPI: FACP 0x00000000BFFE3979 000074 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.096213] ACPI: DSDT 0x00000000BFFDF040 004939 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.096221] ACPI: FACS 0x00000000BFFDF000 000040
+[    0.096228] ACPI: APIC 0x00000000BFFE39ED 000080 (v03 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.096235] ACPI: SSDT 0x00000000BFFE3A6D 0000CA (v01 BOCHS  VMGENID  00000001 BXPC 00000001)
+[    0.096243] ACPI: WAET 0x00000000BFFE3B37 000028 (v01 BOCHS  BXPC     00000001 BXPC 00000001)
+[    0.096248] ACPI: Reserving FACP table memory at [mem 0xbffe3979-0xbffe39ec]
+[    0.096251] ACPI: Reserving DSDT table memory at [mem 0xbffdf040-0xbffe3978]
+[    0.096252] ACPI: Reserving FACS table memory at [mem 0xbffdf000-0xbffdf03f]
+[    0.096257] ACPI: Reserving APIC table memory at [mem 0xbffe39ed-0xbffe3a6c]
+[    0.096258] ACPI: Reserving SSDT table memory at [mem 0xbffe3a6d-0xbffe3b36]
+[    0.096261] ACPI: Reserving WAET table memory at [mem 0xbffe3b37-0xbffe3b5e]
+[    0.096855] No NUMA configuration found
+[    0.096859] Faking a node at [mem 0x0000000000000000-0x000000013fffffff]
+[    0.096871] NODE_DATA(0) allocated [mem 0x13ffd2000-0x13fffcfff]
+[    0.097416] Zone ranges:
+[    0.097419]   DMA      [mem 0x0000000000001000-0x0000000000ffffff]
+[    0.097423]   DMA32    [mem 0x0000000001000000-0x00000000ffffffff]
+[    0.097427]   Normal   [mem 0x0000000100000000-0x000000013fffffff]
+[    0.097429]   Device   empty
+[    0.097432] Movable zone start for each node
+[    0.097434] Early memory node ranges
+[    0.097435]   node   0: [mem 0x0000000000001000-0x000000000009efff]
+[    0.097439]   node   0: [mem 0x0000000000100000-0x00000000bffd9fff]
+[    0.097441]   node   0: [mem 0x0000000100000000-0x000000013fffffff]
+[    0.097445] Initmem setup node 0 [mem 0x0000000000001000-0x000000013fffffff]
+[    0.097467] On node 0, zone DMA: 1 pages in unavailable ranges
+[    0.097550] On node 0, zone DMA: 97 pages in unavailable ranges
+[    0.134935] On node 0, zone Normal: 38 pages in unavailable ranges
+[    0.136926] ACPI: PM-Timer IO Port: 0x608
+[    0.136964] ACPI: LAPIC_NMI (acpi_id[0xff] dfl dfl lint[0x1])
+[    0.137023] IOAPIC[0]: apic_id 0, version 17, address 0xfec00000, GSI 0-23
+[    0.137030] ACPI: INT_SRC_OVR (bus 0 bus_irq 0 global_irq 2 dfl dfl)
+[    0.137037] ACPI: INT_SRC_OVR (bus 0 bus_irq 5 global_irq 5 high level)
+[    0.137040] ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
+[    0.137044] ACPI: INT_SRC_OVR (bus 0 bus_irq 10 global_irq 10 high level)
+[    0.137047] ACPI: INT_SRC_OVR (bus 0 bus_irq 11 global_irq 11 high level)
+[    0.137054] ACPI: Using ACPI (MADT) for SMP configuration information
+[    0.137060] smpboot: Allowing 2 CPUs, 0 hotplug CPUs
+[    0.137130] kvm-guest: APIC: eoi() replaced with kvm_guest_apic_eoi_write()
+[    0.137177] PM: hibernation: Registered nosave memory: [mem 0x00000000-0x00000fff]
+[    0.137182] PM: hibernation: Registered nosave memory: [mem 0x0009f000-0x0009ffff]
+[    0.137184] PM: hibernation: Registered nosave memory: [mem 0x000a0000-0x000effff]
+[    0.137186] PM: hibernation: Registered nosave memory: [mem 0x000f0000-0x000fffff]
+[    0.137190] PM: hibernation: Registered nosave memory: [mem 0xbffda000-0xbfffffff]
+[    0.137192] PM: hibernation: Registered nosave memory: [mem 0xc0000000-0xfeffbfff]
+[    0.137193] PM: hibernation: Registered nosave memory: [mem 0xfeffc000-0xfeffffff]
+[    0.137196] PM: hibernation: Registered nosave memory: [mem 0xff000000-0xfffbffff]
+[    0.137197] PM: hibernation: Registered nosave memory: [mem 0xfffc0000-0xffffffff]
+[    0.137202] [mem 0xc0000000-0xfeffbfff] available for PCI devices
+[    0.137206] Booting paravirtualized kernel on KVM
+[    0.137214] clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1910969940391419 ns
+[    0.137249] setup_percpu: NR_CPUS:8192 nr_cpumask_bits:2 nr_cpu_ids:2 nr_node_ids:1
+[    0.141340] percpu: Embedded 86 pages/cpu s229376 r8192 d114688 u1048576
+[    0.141358] pcpu-alloc: s229376 r8192 d114688 u1048576 alloc=1*2097152
+[    0.141365] pcpu-alloc: [0] 0 1
+[    0.141436] kvm-guest: PV spinlocks enabled
+[    0.141444] PV qspinlock hash table entries: 256 (order: 0, 4096 bytes, linear)
+[    0.141450] Kernel command line: BOOT_IMAGE=/vmlinuz-6.8.0-55-generic root=/dev/mapper/ubuntu--vg-ubuntu--lv ro
+[    0.141573] Unknown kernel command line parameters "BOOT_IMAGE=/vmlinuz-6.8.0-55-generic", will be passed to user space.
+[    0.144496] Dentry cache hash table entries: 524288 (order: 10, 4194304 bytes, linear)
+[    0.146061] Inode-cache hash table entries: 262144 (order: 9, 2097152 bytes, linear)
+[    0.146175] Fallback order for Node 0: 0
+[    0.146187] Built 1 zonelists, mobility grouping on.  Total pages: 1031898
+[    0.146190] Policy zone: Normal
+[    0.146206] mem auto-init: stack:all(zero), heap alloc:on, heap free:off
+[    0.146213] AGP: Checking aperture...
+[    0.305879] AGP: No AGP bridge found
+[    0.306692] software IO TLB: area num 2.
+[    0.389372] Memory: 3933488K/4193760K available (22528K kernel code, 4443K rwdata, 14344K rodata, 4988K init, 4716K bss, 260012K reserved, 0K cma-reserved)
+[    0.415599] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=2, Nodes=1
+[    0.415750] ftrace: allocating 58006 entries in 227 pages
+[    0.428972] ftrace: allocated 227 pages with 5 groups
+[    0.429926] Dynamic Preempt: voluntary
+[    0.430076] rcu: Preemptible hierarchical RCU implementation.
+[    0.430077] rcu:     RCU restricting CPUs from NR_CPUS=8192 to nr_cpu_ids=2.
+[    0.430079]  Trampoline variant of Tasks RCU enabled.
+[    0.430080]  Rude variant of Tasks RCU enabled.
+[    0.430080]  Tracing variant of Tasks RCU enabled.
+[    0.430081] rcu: RCU calculated value of scheduler-enlistment delay is 100 jiffies.
+[    0.430082] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=2
+[    0.433057] NR_IRQS: 524544, nr_irqs: 440, preallocated irqs: 16
+[    0.433264] rcu: srcu_init: Setting srcu_struct sizes based on contention.
+[    0.433327] Console: colour dummy device 80x25
+[    0.433329] printk: legacy console [tty0] enabled
+[    0.433655] ACPI: Core revision 20230628
+[    0.433874] APIC: Switch to symmetric I/O mode setup
+[    0.434059] x2apic enabled
+[    0.434328] APIC: Switched APIC routing to: physical x2apic
+[    0.435326] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=-1 pin2=-1
+[    0.435352] tsc: Marking TSC unstable due to TSCs unsynchronized
+[    0.435360] Calibrating delay loop (skipped) preset value.. 6800.00 BogoMIPS (lpj=3400000)
+[    0.435521] process: using AMD E400 aware idle routine
+[    0.435529] Last level iTLB entries: 4KB 512, 2MB 255, 4MB 127
+[    0.435531] Last level dTLB entries: 4KB 512, 2MB 255, 4MB 127, 1GB 0
+[    0.435537] Spectre V1 : Mitigation: usercopy/swapgs barriers and __user pointer sanitization
+[    0.435542] Spectre V2 : Mitigation: Retpolines
+[    0.435544] Spectre V2 : Spectre v2 / SpectreRSB mitigation: Filling RSB on context switch
+[    0.435546] Spectre V2 : Spectre v2 / SpectreRSB : Filling RSB on VMEXIT
+[    0.435555] x86/fpu: x87 FPU will use FXSAVE
+[    0.465378] Freeing SMP alternatives memory: 48K
+[    0.465392] pid_max: default: 32768 minimum: 301
+[    0.465875] LSM: initializing lsm=lockdown,capability,landlock,yama,apparmor,integrity
+[    0.466036] landlock: Up and running.
+[    0.466038] Yama: becoming mindful.
+[    0.466091] AppArmor: AppArmor initialized
+[    0.466277] Mount-cache hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.466286] Mountpoint-cache hash table entries: 8192 (order: 4, 65536 bytes, linear)
+[    0.568922] smpboot: CPU0: AMD QEMU Virtual CPU version 2.5+ (family: 0xf, model: 0x6b, stepping: 0x1)
+[    0.569112] RCU Tasks: Setting shift to 1 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=2.
+[    0.569129] RCU Tasks Rude: Setting shift to 1 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=2.
+[    0.569140] RCU Tasks Trace: Setting shift to 1 and lim to 1 rcu_task_cb_adjust=1 rcu_task_cpu_ids=2.
+[    0.569156] Performance Events: AMD PMU driver.
+[    0.569168] ... version:                0
+[    0.569169] ... bit width:              48
+[    0.569171] ... generic registers:      4
+[    0.569172] ... value mask:             0000ffffffffffff
+[    0.569173] ... max period:             00007fffffffffff
+[    0.569175] ... fixed-purpose events:   0
+[    0.569176] ... event mask:             000000000000000f
+[    0.569245] signal: max sigframe size: 1440
+[    0.569295] rcu: Hierarchical SRCU implementation.
+[    0.569298] rcu:     Max phase no-delay instances is 400.
+[    0.569356] smp: Bringing up secondary CPUs ...
+[    0.569356] smpboot: x86: Booting SMP configuration:
+[    0.569356] .... node  #0, CPUs:      #1
+[    0.570382] smp: Brought up 1 node, 2 CPUs
+[    0.570384] smpboot: Max logical packages: 1
+[    0.570387] smpboot: Total of 2 processors activated (13600.00 BogoMIPS)
+[    0.570718] devtmpfs: initialized
+[    0.570718] x86/mm: Memory block size: 128MB
+[    0.571552] clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 1911260446275000 ns
+[    0.571552] futex hash table entries: 512 (order: 3, 32768 bytes, linear)
+[    0.571696] pinctrl core: initialized pinctrl subsystem
+[    0.571854] PM: RTC time: 08:27:12, date: 2026-03-12
+[    0.572687] NET: Registered PF_NETLINK/PF_ROUTE protocol family
+[    0.572781] DMA: preallocated 512 KiB GFP_KERNEL pool for atomic allocations
+[    0.572820] DMA: preallocated 512 KiB GFP_KERNEL|GFP_DMA pool for atomic allocations
+[    0.572855] DMA: preallocated 512 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+[    0.572863] audit: initializing netlink subsys (disabled)
+[    0.572889] audit: type=2000 audit(1773304032.840:1): state=initialized audit_enabled=0 res=1
+[    0.572889] thermal_sys: Registered thermal governor 'fair_share'
+[    0.572889] thermal_sys: Registered thermal governor 'bang_bang'
+[    0.572889] thermal_sys: Registered thermal governor 'step_wise'
+[    0.572889] thermal_sys: Registered thermal governor 'user_space'
+[    0.572889] thermal_sys: Registered thermal governor 'power_allocator'
+[    0.572889] EISA bus registered
+[    0.572889] cpuidle: using governor ladder
+[    0.572889] cpuidle: using governor menu
+[    0.572889] acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+[    0.572889] PCI: Using configuration type 1 for base access
+[    0.573454] kprobes: kprobe jump-optimization is enabled. All kprobes are optimized if possible.
+[    0.580016] HugeTLB: registered 2.00 MiB page size, pre-allocated 0 pages
+[    0.580027] HugeTLB: 28 KiB vmemmap can be freed for a 2.00 MiB page
+[    0.580735] fbcon: Taking over console
+[    0.581105] ACPI: Added _OSI(Module Device)
+[    0.581108] ACPI: Added _OSI(Processor Device)
+[    0.581110] ACPI: Added _OSI(3.0 _SCP Extensions)
+[    0.581113] ACPI: Added _OSI(Processor Aggregator Device)
+[    0.583567] ACPI: 2 ACPI AML tables successfully acquired and loaded
+[    0.597970] ACPI: _OSC evaluation for CPUs failed, trying _PDC
+[    0.598372] ACPI: Interpreter enabled
+[    0.598388] ACPI: PM: (supports S0 S5)
+[    0.598391] ACPI: Using IOAPIC for interrupt routing
+[    0.598729] PCI: Using host bridge windows from ACPI; if necessary, use "pci=nocrs" and report a bug
+[    0.598734] PCI: Using E820 reservations for host bridge windows
+[    0.598946] ACPI: Enabled 3 GPEs in block 00 to 0F
+[    0.604934] ACPI: PCI Root Bridge [PCI0] (domain 0000 [bus 00-ff])
+[    0.604951] acpi PNP0A03:00: _OSC: OS supports [ASPM ClockPM Segments MSI EDR HPX-Type3]
+[    0.604955] acpi PNP0A03:00: _OSC: not requesting OS control; OS requires [ExtendedConfig ASPM ClockPM MSI]
+[    0.604969] acpi PNP0A03:00: fail to add MMCONFIG information, can't access extended configuration space under this bridge
+[    0.605605] acpiphp: Slot [3] registered
+[    0.605657] acpiphp: Slot [8] registered
+[    0.605694] acpiphp: Slot [18] registered
+[    0.605757] acpiphp: Slot [4] registered
+[    0.605781] acpiphp: Slot [6] registered
+[    0.605806] acpiphp: Slot [7] registered
+[    0.605831] acpiphp: Slot [9] registered
+[    0.605855] acpiphp: Slot [10] registered
+[    0.605884] acpiphp: Slot [11] registered
+[    0.605910] acpiphp: Slot [12] registered
+[    0.605938] acpiphp: Slot [13] registered
+[    0.605965] acpiphp: Slot [14] registered
+[    0.605991] acpiphp: Slot [15] registered
+[    0.606020] acpiphp: Slot [16] registered
+[    0.606047] acpiphp: Slot [17] registered
+[    0.606075] acpiphp: Slot [19] registered
+[    0.606100] acpiphp: Slot [20] registered
+[    0.606127] acpiphp: Slot [21] registered
+[    0.606153] acpiphp: Slot [22] registered
+[    0.606179] acpiphp: Slot [23] registered
+[    0.606204] acpiphp: Slot [24] registered
+[    0.606230] acpiphp: Slot [25] registered
+[    0.606259] acpiphp: Slot [26] registered
+[    0.606284] acpiphp: Slot [27] registered
+[    0.606309] acpiphp: Slot [28] registered
+[    0.606334] acpiphp: Slot [29] registered
+[    0.606362] PCI host bridge to bus 0000:00
+[    0.606366] pci_bus 0000:00: root bus resource [io  0x0000-0x0cf7 window]
+[    0.606370] pci_bus 0000:00: root bus resource [io  0x0d00-0xffff window]
+[    0.606373] pci_bus 0000:00: root bus resource [mem 0x000a0000-0x000bffff window]
+[    0.606377] pci_bus 0000:00: root bus resource [mem 0xc0000000-0xfebfffff window]
+[    0.606380] pci_bus 0000:00: root bus resource [mem 0xc000000000-0xc0a000bfff window]
+[    0.606383] pci_bus 0000:00: root bus resource [bus 00-ff]
+[    0.606467] pci 0000:00:00.0: [8086:1237] type 00 class 0x060000 conventional PCI endpoint
+[    0.607202] pci 0000:00:01.0: [8086:7000] type 00 class 0x060100 conventional PCI endpoint
+[    0.608167] pci 0000:00:01.1: [8086:7010] type 00 class 0x010180 conventional PCI endpoint
+[    0.613177] pci 0000:00:01.1: BAR 4 [io  0xf0e0-0xf0ef]
+[    0.614877] pci 0000:00:01.1: BAR 0 [io  0x01f0-0x01f7]: legacy IDE quirk
+[    0.614884] pci 0000:00:01.1: BAR 1 [io  0x03f6]: legacy IDE quirk
+[    0.614887] pci 0000:00:01.1: BAR 2 [io  0x0170-0x0177]: legacy IDE quirk
+[    0.614890] pci 0000:00:01.1: BAR 3 [io  0x0376]: legacy IDE quirk
+[    0.615492] pci 0000:00:01.2: [8086:7020] type 00 class 0x0c0300 conventional PCI endpoint
+[    0.620365] pci 0000:00:01.2: BAR 4 [io  0xf0c0-0xf0df]
+[    0.623301] pci 0000:00:01.3: [8086:7113] type 00 class 0x068000 conventional PCI endpoint
+[    0.624033] pci 0000:00:01.3: quirk: [io  0x0600-0x063f] claimed by PIIX4 ACPI
+[    0.624053] pci 0000:00:01.3: quirk: [io  0x0700-0x070f] claimed by PIIX4 SMB
+[    0.624401] pci 0000:00:02.0: [1234:1111] type 00 class 0x030000 conventional PCI endpoint
+[    0.626367] pci 0000:00:02.0: BAR 0 [mem 0xfd000000-0xfdffffff pref]
+[    0.632395] pci 0000:00:02.0: BAR 2 [mem 0xfea50000-0xfea50fff]
+[    0.640040] pci 0000:00:02.0: ROM [mem 0xfea40000-0xfea4ffff pref]
+[    0.640177] pci 0000:00:02.0: Video device with shadowed ROM at [mem 0x000c0000-0x000dffff]
+[    0.640737] pci 0000:00:03.0: [1af4:1002] type 00 class 0x00ff00 conventional PCI endpoint
+[    0.643362] pci 0000:00:03.0: BAR 0 [io  0xf000-0xf03f]
+[    0.644360] pci 0000:00:03.0: BAR 1 [mem 0xfea51000-0xfea51fff]
+[    0.649369] pci 0000:00:03.0: BAR 4 [mem 0xc0a0000000-0xc0a0003fff 64bit pref]
+[    0.656299] pci 0000:00:05.0: [1b36:0001] type 01 class 0x060400 conventional PCI bridge
+[    0.659365] pci 0000:00:05.0: BAR 0 [mem 0xc000000000-0xc0000000ff 64bit]
+[    0.661378] pci 0000:00:05.0: PCI bridge to [bus 01]
+[    0.661431] pci 0000:00:05.0:   bridge window [io  0xe000-0xefff]
+[    0.661464] pci 0000:00:05.0:   bridge window [mem 0xfe800000-0xfe9fffff]
+[    0.663419] pci 0000:00:05.0:   bridge window [mem 0xc080000000-0xc09fffffff 64bit pref]
+[    0.667826] pci 0000:00:08.0: [1af4:1003] type 00 class 0x078000 conventional PCI endpoint
+[    0.670362] pci 0000:00:08.0: BAR 0 [io  0xf040-0xf07f]
+[    0.672362] pci 0000:00:08.0: BAR 1 [mem 0xfea52000-0xfea52fff]
+[    0.681368] pci 0000:00:08.0: BAR 4 [mem 0xc0a0004000-0xc0a0007fff 64bit pref]
+[    0.691292] pci 0000:00:12.0: [1af4:1000] type 00 class 0x020000 conventional PCI endpoint
+[    0.693363] pci 0000:00:12.0: BAR 0 [io  0xf080-0xf0bf]
+[    0.695361] pci 0000:00:12.0: BAR 1 [mem 0xfea53000-0xfea53fff]
+[    0.702370] pci 0000:00:12.0: BAR 4 [mem 0xc0a0008000-0xc0a000bfff 64bit pref]
+[    0.704363] pci 0000:00:12.0: ROM [mem 0xfea00000-0xfea3ffff pref]
+[    0.709277] pci 0000:00:1e.0: [1b36:0001] type 01 class 0x060400 conventional PCI bridge
+[    0.711364] pci 0000:00:1e.0: BAR 0 [mem 0xc000001000-0xc0000010ff 64bit]
+[    0.712376] pci 0000:00:1e.0: PCI bridge to [bus 02]
+[    0.712420] pci 0000:00:1e.0:   bridge window [io  0xd000-0xdfff]
+[    0.712445] pci 0000:00:1e.0:   bridge window [mem 0xfe600000-0xfe7fffff]
+[    0.713666] pci 0000:00:1e.0:   bridge window [mem 0xc060000000-0xc07fffffff 64bit pref]
+[    0.714614] pci 0000:00:1f.0: [1b36:0001] type 01 class 0x060400 conventional PCI bridge
+[    0.716000] pci 0000:00:1f.0: BAR 0 [mem 0xc000002000-0xc0000020ff 64bit]
+[    0.717218] pci 0000:00:1f.0: PCI bridge to [bus 03]
+[    0.717254] pci 0000:00:1f.0:   bridge window [io  0xc000-0xcfff]
+[    0.717278] pci 0000:00:1f.0:   bridge window [mem 0xfe400000-0xfe5fffff]
+[    0.717730] pci 0000:00:1f.0:   bridge window [mem 0xc040000000-0xc05fffffff 64bit pref]
+[    0.719294] pci_bus 0000:01: extended config space not accessible
+[    0.719633] acpiphp: Slot [1-2] registered
+[    0.719666] acpiphp: Slot [0] registered
+[    0.719701] acpiphp: Slot [2] registered
+[    0.719733] acpiphp: Slot [3-2] registered
+[    0.719758] acpiphp: Slot [4-2] registered
+[    0.719779] acpiphp: Slot [5] registered
+[    0.719803] acpiphp: Slot [6-2] registered
+[    0.719832] acpiphp: Slot [7-2] registered
+[    0.719859] acpiphp: Slot [8-2] registered
+[    0.719883] acpiphp: Slot [9-2] registered
+[    0.719907] acpiphp: Slot [10-2] registered
+[    0.719932] acpiphp: Slot [11-2] registered
+[    0.719955] acpiphp: Slot [12-2] registered
+[    0.719985] acpiphp: Slot [13-2] registered
+[    0.720014] acpiphp: Slot [14-2] registered
+[    0.720040] acpiphp: Slot [15-2] registered
+[    0.720066] acpiphp: Slot [16-2] registered
+[    0.720095] acpiphp: Slot [17-2] registered
+[    0.720120] acpiphp: Slot [18-2] registered
+[    0.720146] acpiphp: Slot [19-2] registered
+[    0.720176] acpiphp: Slot [20-2] registered
+[    0.720209] acpiphp: Slot [21-2] registered
+[    0.720235] acpiphp: Slot [22-2] registered
+[    0.720260] acpiphp: Slot [23-2] registered
+[    0.720288] acpiphp: Slot [24-2] registered
+[    0.720316] acpiphp: Slot [25-2] registered
+[    0.720343] acpiphp: Slot [26-2] registered
+[    0.720371] acpiphp: Slot [27-2] registered
+[    0.720401] acpiphp: Slot [28-2] registered
+[    0.720430] acpiphp: Slot [29-2] registered
+[    0.720453] acpiphp: Slot [30] registered
+[    0.720487] acpiphp: Slot [31] registered
+[    0.721363] pci 0000:01:01.0: [1af4:1004] type 00 class 0x010000 conventional PCI endpoint
+[    0.723177] pci 0000:01:01.0: BAR 0 [io  0xe000-0xe03f]
+[    0.724361] pci 0000:01:01.0: BAR 1 [mem 0xfe800000-0xfe800fff]
+[    0.730369] pci 0000:01:01.0: BAR 4 [mem 0xc080000000-0xc080003fff 64bit pref]
+[    0.741967] pci 0000:00:05.0: PCI bridge to [bus 01]
+[    0.743694] pci_bus 0000:02: extended config space not accessible
+[    0.744692] acpiphp: Slot [0-2] registered
+[    0.744729] acpiphp: Slot [1-3] registered
+[    0.744753] acpiphp: Slot [2-2] registered
+[    0.744778] acpiphp: Slot [3-3] registered
+[    0.744801] acpiphp: Slot [4-3] registered
+[    0.744825] acpiphp: Slot [5-2] registered
+[    0.744855] acpiphp: Slot [6-3] registered
+[    0.744883] acpiphp: Slot [7-3] registered
+[    0.744917] acpiphp: Slot [8-3] registered
+[    0.744956] acpiphp: Slot [9-3] registered
+[    0.745012] acpiphp: Slot [10-3] registered
+[    0.745045] acpiphp: Slot [11-3] registered
+[    0.745071] acpiphp: Slot [12-3] registered
+[    0.745096] acpiphp: Slot [13-3] registered
+[    0.745126] acpiphp: Slot [14-3] registered
+[    0.745166] acpiphp: Slot [15-3] registered
+[    0.745369] acpiphp: Slot [16-3] registered
+[    0.745398] acpiphp: Slot [17-3] registered
+[    0.745425] acpiphp: Slot [18-3] registered
+[    0.745454] acpiphp: Slot [19-3] registered
+[    0.745495] acpiphp: Slot [20-3] registered
+[    0.745527] acpiphp: Slot [21-3] registered
+[    0.745562] acpiphp: Slot [22-3] registered
+[    0.745594] acpiphp: Slot [23-3] registered
+[    0.745628] acpiphp: Slot [24-3] registered
+[    0.745662] acpiphp: Slot [25-3] registered
+[    0.745743] acpiphp: Slot [26-3] registered
+[    0.745786] acpiphp: Slot [27-3] registered
+[    0.745816] acpiphp: Slot [28-3] registered
+[    0.745855] acpiphp: Slot [29-3] registered
+[    0.745888] acpiphp: Slot [30-2] registered
+[    0.745923] acpiphp: Slot [31-2] registered
+[    0.757121] pci 0000:00:1e.0: PCI bridge to [bus 02]
+[    0.758382] pci_bus 0000:03: extended config space not accessible
+[    0.758817] acpiphp: Slot [0-3] registered
+[    0.758859] acpiphp: Slot [1-4] registered
+[    0.758896] acpiphp: Slot [2-3] registered
+[    0.758931] acpiphp: Slot [3-4] registered
+[    0.758964] acpiphp: Slot [4-4] registered
+[    0.758995] acpiphp: Slot [5-3] registered
+[    0.759027] acpiphp: Slot [6-4] registered
+[    0.759060] acpiphp: Slot [7-4] registered
+[    0.759091] acpiphp: Slot [8-4] registered
+[    0.759128] acpiphp: Slot [9-4] registered
+[    0.759163] acpiphp: Slot [10-4] registered
+[    0.759198] acpiphp: Slot [11-4] registered
+[    0.759234] acpiphp: Slot [12-4] registered
+[    0.759281] acpiphp: Slot [13-4] registered
+[    0.759322] acpiphp: Slot [14-4] registered
+[    0.759371] acpiphp: Slot [15-4] registered
+[    0.759412] acpiphp: Slot [16-4] registered
+[    0.759490] acpiphp: Slot [17-4] registered
+[    0.759525] acpiphp: Slot [18-4] registered
+[    0.759558] acpiphp: Slot [19-4] registered
+[    0.759595] acpiphp: Slot [20-4] registered
+[    0.759628] acpiphp: Slot [21-4] registered
+[    0.759661] acpiphp: Slot [22-4] registered
+[    0.759709] acpiphp: Slot [23-4] registered
+[    0.759748] acpiphp: Slot [24-4] registered
+[    0.759781] acpiphp: Slot [25-4] registered
+[    0.759814] acpiphp: Slot [26-4] registered
+[    0.759849] acpiphp: Slot [27-4] registered
+[    0.759882] acpiphp: Slot [28-4] registered
+[    0.759915] acpiphp: Slot [29-4] registered
+[    0.759957] acpiphp: Slot [30-3] registered
+[    0.759991] acpiphp: Slot [31-3] registered
+[    0.771837] pci 0000:00:1f.0: PCI bridge to [bus 03]
+[    0.775247] ACPI: PCI: Interrupt link LNKA configured for IRQ 10
+[    0.775441] ACPI: PCI: Interrupt link LNKB configured for IRQ 10
+[    0.775585] ACPI: PCI: Interrupt link LNKC configured for IRQ 11
+[    0.775751] ACPI: PCI: Interrupt link LNKD configured for IRQ 11
+[    0.775829] ACPI: PCI: Interrupt link LNKS configured for IRQ 9
+[    0.776664] iommu: Default domain type: Translated
+[    0.776664] iommu: DMA domain TLB invalidation policy: lazy mode
+[    0.776910] SCSI subsystem initialized
+[    0.776992] libata version 3.00 loaded.
+[    0.777025] ACPI: bus type USB registered
+[    0.777042] usbcore: registered new interface driver usbfs
+[    0.777054] usbcore: registered new interface driver hub
+[    0.777063] usbcore: registered new device driver usb
+[    0.777063] pps_core: LinuxPPS API ver. 1 registered
+[    0.777063] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.777063] PTP clock support registered
+[    0.777063] EDAC MC: Ver: 3.0.0
+[    0.777114] NetLabel: Initializing
+[    0.777114] NetLabel:  domain hash size = 128
+[    0.777114] NetLabel:  protocols = UNLABELED CIPSOv4 CALIPSO
+[    0.777114] NetLabel:  unlabeled traffic allowed by default
+[    0.777114] mctp: management component transport protocol core
+[    0.777114] NET: Registered PF_MCTP protocol family
+[    0.777114] PCI: Using ACPI for IRQ routing
+[    0.777114] PCI: pci_cache_line_size set to 64 bytes
+[    0.777114] e820: reserve RAM buffer [mem 0x0009fc00-0x0009ffff]
+[    0.777114] e820: reserve RAM buffer [mem 0xbffda000-0xbfffffff]
+[    0.777114] pci 0000:00:02.0: vgaarb: setting as boot VGA device
+[    0.777114] pci 0000:00:02.0: vgaarb: bridge control possible
+[    0.777114] pci 0000:00:02.0: vgaarb: VGA device added: decodes=io+mem,owns=io+mem,locks=none
+[    0.777118] vgaarb: loaded
+[    0.777522] clocksource: Switched to clocksource kvm-clock
+[    0.784644] VFS: Disk quotas dquot_6.6.0
+[    0.784703] VFS: Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    0.784991] AppArmor: AppArmor Filesystem Enabled
+[    0.785059] pnp: PnP ACPI init
+[    0.785375] pnp 00:02: [dma 2]
+[    0.786016] pnp: PnP ACPI: found 4 devices
+[    0.807971] clocksource: acpi_pm: mask: 0xffffff max_cycles: 0xffffff, max_idle_ns: 2085701024 ns
+[    0.808327] NET: Registered PF_INET protocol family
+[    0.808527] IP idents hash table entries: 65536 (order: 7, 524288 bytes, linear)
+[    0.828831] tcp_listen_portaddr_hash hash table entries: 2048 (order: 3, 32768 bytes, linear)
+[    0.829282] Table-perturb hash table entries: 65536 (order: 6, 262144 bytes, linear)
+[    0.829395] TCP established hash table entries: 32768 (order: 6, 262144 bytes, linear)
+[    0.830245] TCP bind hash table entries: 32768 (order: 8, 1048576 bytes, linear)
+[    0.830343] TCP: Hash tables configured (established 32768 bind 32768)
+[    0.830649] MPTCP token hash table entries: 4096 (order: 4, 98304 bytes, linear)
+[    0.830727] UDP hash table entries: 2048 (order: 4, 65536 bytes, linear)
+[    0.830762] UDP-Lite hash table entries: 2048 (order: 4, 65536 bytes, linear)
+[    0.830862] NET: Registered PF_UNIX/PF_LOCAL protocol family
+[    0.830880] NET: Registered PF_XDP protocol family
+[    0.830917] pci 0000:00:05.0: PCI bridge to [bus 01]
+[    0.830968] pci 0000:00:05.0:   bridge window [io  0xe000-0xefff]
+[    0.833202] pci 0000:00:05.0:   bridge window [mem 0xfe800000-0xfe9fffff]
+[    0.834682] pci 0000:00:05.0:   bridge window [mem 0xc080000000-0xc09fffffff 64bit pref]
+[    0.837344] pci 0000:00:1e.0: PCI bridge to [bus 02]
+[    0.837375] pci 0000:00:1e.0:   bridge window [io  0xd000-0xdfff]
+[    0.839622] pci 0000:00:1e.0:   bridge window [mem 0xfe600000-0xfe7fffff]
+[    0.840837] pci 0000:00:1e.0:   bridge window [mem 0xc060000000-0xc07fffffff 64bit pref]
+[    0.856269] pci 0000:00:1f.0: PCI bridge to [bus 03]
+[    0.858164] pci 0000:00:1f.0:   bridge window [io  0xc000-0xcfff]
+[    0.862087] pci 0000:00:1f.0:   bridge window [mem 0xfe400000-0xfe5fffff]
+[    0.864559] pci 0000:00:1f.0:   bridge window [mem 0xc040000000-0xc05fffffff 64bit pref]
+[    0.873045] pci_bus 0000:00: resource 4 [io  0x0000-0x0cf7 window]
+[    0.873095] pci_bus 0000:00: resource 5 [io  0x0d00-0xffff window]
+[    0.873152] pci_bus 0000:00: resource 6 [mem 0x000a0000-0x000bffff window]
+[    0.873165] pci_bus 0000:00: resource 7 [mem 0xc0000000-0xfebfffff window]
+[    0.873174] pci_bus 0000:00: resource 8 [mem 0xc000000000-0xc0a000bfff window]
+[    0.873186] pci_bus 0000:01: resource 0 [io  0xe000-0xefff]
+[    0.873188] pci_bus 0000:01: resource 1 [mem 0xfe800000-0xfe9fffff]
+[    0.873191] pci_bus 0000:01: resource 2 [mem 0xc080000000-0xc09fffffff 64bit pref]
+[    0.873195] pci_bus 0000:02: resource 0 [io  0xd000-0xdfff]
+[    0.873198] pci_bus 0000:02: resource 1 [mem 0xfe600000-0xfe7fffff]
+[    0.873201] pci_bus 0000:02: resource 2 [mem 0xc060000000-0xc07fffffff 64bit pref]
+[    0.873205] pci_bus 0000:03: resource 0 [io  0xc000-0xcfff]
+[    0.873207] pci_bus 0000:03: resource 1 [mem 0xfe400000-0xfe5fffff]
+[    0.873209] pci_bus 0000:03: resource 2 [mem 0xc040000000-0xc05fffffff 64bit pref]
+[    0.875543] pci 0000:00:01.0: PIIX3: Enabling Passive Release
+[    0.875584] pci 0000:00:00.0: Limiting direct PCI/PCI transfers
+[    0.876881] ACPI: \_SB_.LNKD: Enabled at IRQ 11
+[    0.879707] PCI: CLS 0 bytes, default 64
+[    0.879857] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+[    0.879862] software IO TLB: mapped [mem 0x00000000bbfda000-0x00000000bffda000] (64MB)
+[    0.880755] Trying to unpack rootfs image as initramfs...
+[    0.882808] Initialise system trusted keyrings
+[    0.882839] Key type blacklist registered
+[    0.883023] workingset: timestamp_bits=36 max_order=20 bucket_order=0
+[    0.883058] zbud: loaded
+[    0.888838] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.889516] fuse: init (API version 7.39)
+[    0.906985] integrity: Platform Keyring initialized
+[    0.907026] integrity: Machine keyring initialized
+[    0.928680] Key type asymmetric registered
+[    0.928720] Asymmetric key parser 'x509' registered
+[    0.928872] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 243)
+[    0.929131] io scheduler mq-deadline registered
+[    0.941082] shpchp 0000:00:05.0: Requesting control of SHPC hotplug via OSHP (\_SB_.PCI0.S28_)
+[    0.941150] shpchp 0000:00:05.0: Requesting control of SHPC hotplug via OSHP (\_SB_.PCI0)
+[    0.941176] shpchp 0000:00:05.0: Cannot get control of SHPC hotplug
+[    0.941271] shpchp 0000:00:1e.0: Requesting control of SHPC hotplug via OSHP (\_SB_.PCI0.SF0_)
+[    0.941296] shpchp 0000:00:1e.0: Requesting control of SHPC hotplug via OSHP (\_SB_.PCI0)
+[    0.941338] shpchp 0000:00:1e.0: Cannot get control of SHPC hotplug
+[    0.941424] shpchp 0000:00:1f.0: Requesting control of SHPC hotplug via OSHP (\_SB_.PCI0.SF8_)
+[    0.941442] shpchp 0000:00:1f.0: Requesting control of SHPC hotplug via OSHP (\_SB_.PCI0)
+[    0.941451] shpchp 0000:00:1f.0: Cannot get control of SHPC hotplug
+[    0.941467] shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
+[    0.943013] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+[    0.943732] ACPI: button: Power Button [PWRF]
+[    0.951790] ACPI: \_SB_.LNKC: Enabled at IRQ 10
+[    0.969233] ACPI: \_SB_.LNKB: Enabled at IRQ 10
+[    0.977082] ACPI: \_SB_.LNKA: Enabled at IRQ 11
+[    1.001747] Free page reporting enabled
+[    1.003299] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
+[    1.051858] Linux agpgart interface v0.103
+[    1.057140] loop: module loaded
+[    1.058658] virtio_scsi virtio3: 2/0/0 default/read/poll queues
+[    1.062222] scsi host0: Virtio SCSI HBA
+[    1.065841] scsi 0:0:0:0: Direct-Access     QEMU     QEMU HARDDISK    2.5+ PQ: 0 ANSI: 5
+[    1.069407] ata_piix 0000:00:01.1: version 2.13
+[    1.075404] scsi host1: ata_piix
+[    1.079355] scsi host2: ata_piix
+[    1.079412] ata1: PATA max MWDMA2 cmd 0x1f0 ctl 0x3f6 bmdma 0xf0e0 irq 14 lpm-pol 0
+[    1.079416] ata2: PATA max MWDMA2 cmd 0x170 ctl 0x376 bmdma 0xf0e8 irq 15 lpm-pol 0
+[    1.079643] ACPI: bus type drm_connector registered
+[    1.080470] tun: Universal TUN/TAP device driver, 1.6
+[    1.105786] PPP generic driver version 2.4.2
+[    1.112325] uhci_hcd 0000:00:01.2: UHCI Host Controller
+[    1.112361] uhci_hcd 0000:00:01.2: new USB bus registered, assigned bus number 1
+[    1.112395] uhci_hcd 0000:00:01.2: detected 2 ports
+[    1.113510] uhci_hcd 0000:00:01.2: irq 11, io port 0x0000f0c0
+[    1.116500] usb usb1: New USB device found, idVendor=1d6b, idProduct=0001, bcdDevice= 6.08
+[    1.116522] usb usb1: New USB device strings: Mfr=3, Product=2, SerialNumber=1
+[    1.116527] usb usb1: Product: UHCI Host Controller
+[    1.116532] usb usb1: Manufacturer: Linux 6.8.0-55-generic uhci_hcd
+[    1.116536] usb usb1: SerialNumber: 0000:00:01.2
+[    1.116813] hub 1-0:1.0: USB hub found
+[    1.116843] hub 1-0:1.0: 2 ports detected
+[    1.117288] i8042: PNP: PS/2 Controller [PNP0303:KBD,PNP0f13:MOU] at 0x60,0x64 irq 1,12
+[    1.118440] serio: i8042 KBD port at 0x60,0x64 irq 1
+[    1.118452] serio: i8042 AUX port at 0x60,0x64 irq 12
+[    1.118661] mousedev: PS/2 mouse device common for all mice
+[    1.118831] rtc_cmos 00:03: RTC can wake from S4
+[    1.129922] rtc_cmos 00:03: registered as rtc0
+[    1.130084] rtc_cmos 00:03: setting system clock to 2026-03-12T08:27:13 UTC (1773304033)
+[    1.130261] rtc_cmos 00:03: alarms up to one day, y3k, 242 bytes nvram
+[    1.130300] i2c_dev: i2c /dev entries driver
+[    1.130402] device-mapper: core: CONFIG_IMA_DISABLE_HTABLE is disabled. Duplicate IMA measurements will not be recorded in the IMA log.
+[    1.130483] device-mapper: uevent: version 1.0.3
+[    1.130610] device-mapper: ioctl: 4.48.0-ioctl (2023-03-01) initialised: dm-devel@redhat.com
+[    1.130700] platform eisa.0: Probing EISA bus 0
+[    1.130706] platform eisa.0: EISA: Cannot allocate resource for mainboard
+[    1.130710] platform eisa.0: Cannot allocate resource for EISA slot 1
+[    1.130715] platform eisa.0: Cannot allocate resource for EISA slot 2
+[    1.130718] platform eisa.0: Cannot allocate resource for EISA slot 3
+[    1.130721] platform eisa.0: Cannot allocate resource for EISA slot 4
+[    1.130724] platform eisa.0: Cannot allocate resource for EISA slot 5
+[    1.130727] platform eisa.0: Cannot allocate resource for EISA slot 6
+[    1.130729] platform eisa.0: Cannot allocate resource for EISA slot 7
+[    1.130732] platform eisa.0: Cannot allocate resource for EISA slot 8
+[    1.130734] platform eisa.0: EISA: Detected 0 cards
+[    1.130739] amd_pstate: the _CPC object is not present in SBIOS or ACPI disabled
+[    1.138531] ledtrig-cpu: registered to indicate activity on CPUs
+[    1.140329] [drm] Initialized simpledrm 1.0.0 20200625 for simple-framebuffer.0 on minor 0
+[    1.145086] sd 0:0:0:0: Power-on or device reset occurred
+[    1.145234] sd 0:0:0:0: [sda] 67108864 512-byte logical blocks: (34.4 GB/32.0 GiB)
+[    1.145281] sd 0:0:0:0: [sda] Write Protect is off
+[    1.145287] sd 0:0:0:0: [sda] Mode Sense: 63 00 10 08
+[    1.145373] sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled, supports DPO and FUA
+[    1.146855] sd 0:0:0:0: Attached scsi generic sg0 type 0
+[    1.150701] input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input/input1
+[    1.154190] Console: switching to colour frame buffer device 100x37
+[    1.160637]  sda: sda1 sda2 sda3
+[    1.161247] sd 0:0:0:0: [sda] Attached SCSI disk
+[    1.161556] simple-framebuffer simple-framebuffer.0: [drm] fb0: simpledrmdrmfb frame buffer device
+[    1.163804] drop_monitor: Initializing network drop monitor service
+[    1.164288] NET: Registered PF_INET6 protocol family
+[    1.243420] ata2: found unknown device (class 0)
+[    1.248057] ata2.00: ATAPI: QEMU DVD-ROM, 2.5+, max UDMA/100
+[    1.253216] scsi 2:0:0:0: CD-ROM            QEMU     QEMU DVD-ROM     2.5+ PQ: 0 ANSI: 5
+[    1.277525] Freeing initrd memory: 67140K
+[    1.291006] Segment Routing with IPv6
+[    1.291151] sr 2:0:0:0: [sr0] scsi3-mmc drive: 4x/4x cd/rw xa/form2 tray
+[    1.293002] cdrom: Uniform CD-ROM driver Revision: 3.20
+[    1.294451] In-situ OAM (IOAM) with IPv6
+[    1.296313] NET: Registered PF_PACKET protocol family
+[    1.297171] Key type dns_resolver registered
+[    1.300804] IPI shorthand broadcast: enabled
+[    1.306118] sr 2:0:0:0: Attached scsi CD-ROM sr0
+[    1.306650] sr 2:0:0:0: Attached scsi generic sg1 type 5
+[    1.310082] sched_clock: Marking stable (1308424660, 1086510)->(1354918219, -45407049)
+[    1.313390] registered taskstats version 1
+[    1.316252] Loading compiled-in X.509 certificates
+[    1.319852] Loaded X.509 cert 'Build time autogenerated kernel key: e0bedf6fa049a1e09bd65ebab3904f14cdd5bc68'
+[    1.323083] Loaded X.509 cert 'Canonical Ltd. Live Patch Signing: 14df34d1a87cf37625abec039ef2bf521249b969'
+[    1.326329] Loaded X.509 cert 'Canonical Ltd. Kernel Module Signing: 88f752e560a1e0737e31163a466ad7b70a850c19'
+[    1.328844] blacklist: Loading compiled-in revocation X.509 certificates
+[    1.330223] Loaded X.509 cert 'Canonical Ltd. Secure Boot Signing: 61482aa2830d0ab2ad5af10b7250da9033ddcef0'
+[    1.333287] Loaded X.509 cert 'Canonical Ltd. Secure Boot Signing (2017): 242ade75ac4a15e50d50c84b0d45ff3eae707a03'
+[    1.335817] Loaded X.509 cert 'Canonical Ltd. Secure Boot Signing (ESM 2018): 365188c1d374d6b07c3c8f240f8ef722433d6a8b'
+[    1.338214] Loaded X.509 cert 'Canonical Ltd. Secure Boot Signing (2019): c0746fd6c5da3ae827864651ad66ae47fe24b3e8'
+[    1.340665] Loaded X.509 cert 'Canonical Ltd. Secure Boot Signing (2021 v1): a8d54bbb3825cfb94fa13c9f8a594a195c107b8d'
+[    1.344228] Loaded X.509 cert 'Canonical Ltd. Secure Boot Signing (2021 v2): 4cf046892d6fd3c9a5b03f98d845f90851dc6a8c'
+[    1.346172] usb 1-1: new full-speed USB device number 2 using uhci_hcd
+[    1.347170] Loaded X.509 cert 'Canonical Ltd. Secure Boot Signing (2021 v3): 100437bb6de6e469b581e61cd66bce3ef4ed53af'
+[    1.350362] Loaded X.509 cert 'Canonical Ltd. Secure Boot Signing (Ubuntu Core 2019): c1d57b8f6b743f23ee41f4f7ee292f06eecadfb9'
+[    1.359036] Key type .fscrypt registered
+[    1.361453] Key type fscrypt-provisioning registered
+[    1.373739] cryptd: max_cpu_qlen set to 1000
+[    1.392029] SSE version of gcm_enc/dec engaged.
+[    1.418582] Key type encrypted registered
+[    1.420369] AppArmor: AppArmor sha256 policy hashing enabled
+[    1.422237] ima: No TPM chip found, activating TPM-bypass!
+[    1.423596] Loading compiled-in module X.509 certificates
+[    1.425201] Loaded X.509 cert 'Build time autogenerated kernel key: e0bedf6fa049a1e09bd65ebab3904f14cdd5bc68'
+[    1.429693] ima: Allocated hash algorithm: sha256
+[    1.430882] ima: No architecture policies found
+[    1.434714] evm: Initialising EVM extended attributes:
+[    1.435857] evm: security.selinux
+[    1.437022] evm: security.SMACK64
+[    1.438078] evm: security.SMACK64EXEC
+[    1.439226] evm: security.SMACK64TRANSMUTE
+[    1.440220] evm: security.SMACK64MMAP
+[    1.441194] evm: security.apparmor
+[    1.442239] evm: security.ima
+[    1.443280] evm: security.capability
+[    1.444398] evm: HMAC attrs: 0x1
+[    1.445865] PM:   Magic number: 2:655:472
+[    1.447401] acpi LNXSYSTM:00: hash matches
+[    1.449614] powernow_k8: Power state transitions not supported
+[    1.450553] powernow_k8: Power state transitions not supported
+[    1.460426] RAS: Correctable Errors collector initialized.
+[    1.462008] clk: Disabling unused clocks
+[    1.466495] Freeing unused decrypted memory: 2028K
+[    1.471775] Freeing unused kernel image (initmem) memory: 4988K
+[    1.476259] Write protecting the kernel read-only data: 38912k
+[    1.513468] Freeing unused kernel image (rodata/data gap) memory: 2040K
+[    1.602956] x86/mm: Checked W+X mappings: passed, no W+X pages found.
+[    1.604756] Run /init as init process
+[    1.606335]   with arguments:
+[    1.606338]     /init
+[    1.606340]   with environment:
+[    1.606341]     HOME=/
+[    1.606342]     TERM=linux
+[    1.606342]     BOOT_IMAGE=/vmlinuz-6.8.0-55-generic
+[    1.629338] usb 1-1: New USB device found, idVendor=0627, idProduct=0001, bcdDevice= 0.00
+[    1.630146] usb 1-1: New USB device strings: Mfr=1, Product=3, SerialNumber=10
+[    1.631934] usb 1-1: Product: QEMU USB Tablet
+[    1.633323] usb 1-1: Manufacturer: QEMU
+[    1.635211] usb 1-1: SerialNumber: 28754-0000:00:01.2-1
+[    1.670800] hid: raw HID events driver (C) Jiri Kosina
+[    1.720702] usbcore: registered new interface driver usbhid
+[    1.721339] usbhid: USB HID core driver
+[    1.731333] input: QEMU QEMU USB Tablet as /devices/pci0000:00/0000:00:01.2/usb1/1-1/1-1:1.0/0003:0627:0001.0001/input/input3
+[    1.733840] hid-generic 0003:0627:0001.0001: input,hidraw0: USB HID v0.01 Mouse [QEMU QEMU USB Tablet] on usb-0000:00:01.2-1/input0
+[    1.806804] virtio_net virtio2 ens18: renamed from eth0
+[    1.811472] Console: switching to colour dummy device 80x25
+[    1.817178] input: VirtualPS/2 VMware VMMouse as /devices/platform/i8042/serio1/input/input5
+[    1.818568] input: VirtualPS/2 VMware VMMouse as /devices/platform/i8042/serio1/input/input4
+[    1.818961] bochs-drm 0000:00:02.0: vgaarb: deactivate vga console
+[    1.819254] [drm] Found bochs VGA, ID 0xb0c5.
+[    1.819259] [drm] Framebuffer size 16384 kB @ 0xfd000000, mmio @ 0xfea50000.
+[    1.826715] [drm] Found EDID data blob.
+[    1.827254] FDC 0 is a S82078B
+[    1.827647] [drm] Initialized bochs-drm 1.0.0 20130925 for 0000:00:02.0 on minor 0
+[    1.830664] fbcon: bochs-drmdrmfb (fb0) is primary device
+[    1.962449] Console: switching to colour frame buffer device 160x50
+[    1.966327] bochs-drm 0000:00:02.0: [drm] fb0: bochs-drmdrmfb frame buffer device
+[    2.299110] random: crng init done
+[    2.683099] raid6: sse2x4   gen() 12773 MB/s
+[    2.700100] raid6: sse2x2   gen()  4417 MB/s
+[    2.717102] raid6: sse2x1   gen()   930 MB/s
+[    2.717126] raid6: using algorithm sse2x4 gen() 12773 MB/s
+[    2.734097] raid6: .... xor() 3417 MB/s, rmw enabled
+[    2.734115] raid6: using ssse3x2 recovery algorithm
+[    2.735321] xor: measuring software checksum speed
+[    2.735547]    prefetch64-sse  : 15367 MB/sec
+[    2.735793]    generic_sse     : 18166 MB/sec
+[    2.735802] xor: using function: generic_sse (18166 MB/sec)
+[    2.736665] async_tx: api initialized (async)
+[    2.884294] Btrfs loaded, zoned=yes, fsverity=yes
+[    3.467877] EXT4-fs (dm-0): mounted filesystem 78dfc1ab-05ce-40b9-a2f8-2f3e03168145 ro with ordered data mode. Quota mode: none.
+[    3.479095] workqueue: drm_fb_helper_damage_work hogged CPU for >10000us 4 times, consider switching to WQ_UNBOUND
+[    8.934051] systemd[1]: Inserted module 'autofs4'
+[   10.361764] systemd[1]: systemd 255.4-1ubuntu8.5 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBFDISK +PCRE2 -PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD -BPF_FRAMEWORK -XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified)
+[   10.368772] systemd[1]: Detected virtualization kvm.
+[   10.371043] systemd[1]: Detected architecture x86-64.
+[   10.377369] workqueue: drm_fb_helper_damage_work hogged CPU for >10000us 8 times, consider switching to WQ_UNBOUND
+[   10.430012] systemd[1]: No hostname configured, using default hostname.
+[   10.430841] systemd[1]: Hostname set to <localhost>.
+[   19.733384] systemd[1]: Queued start job for default target graphical.target.
+[   19.956350] systemd[1]: Created slice system-modprobe.slice - Slice /system/modprobe.
+[   19.961764] systemd[1]: Created slice system-systemd\x2dfsck.slice - Slice /system/systemd-fsck.
+[   19.967157] systemd[1]: Created slice user.slice - User and Session Slice.
+[   19.969923] systemd[1]: Started systemd-ask-password-wall.path - Forward Password Requests to Wall Directory Watch.
+[   19.975864] systemd[1]: Set up automount proc-sys-fs-binfmt_misc.automount - Arbitrary Executable File Formats File System Automount Point.
+[   19.978831] systemd[1]: Expecting device dev-disk-by\x2duuid-c3f8f018\x2df5f7\x2d4a5d\x2d92a1\x2d12ee87108672.device - /dev/disk/by-uuid/c3f8f018-f5f7-4a5d-92a1-12ee87108672...
+[   19.998199] systemd[1]: Reached target integritysetup.target - Local Integrity Protected Volumes.
+[   19.999882] systemd[1]: Reached target slices.target - Slice Units.
+[   20.001015] systemd[1]: Reached target snapd.mounts-pre.target - Mounting snaps.
+[   20.002122] systemd[1]: Reached target snapd.mounts.target - Mounted snaps.
+[   20.003277] systemd[1]: Reached target veritysetup.target - Local Verity Protected Volumes.
+[   20.007881] systemd[1]: Listening on dm-event.socket - Device-mapper event daemon FIFOs.
+[   20.009437] systemd[1]: Listening on lvm2-lvmpolld.socket - LVM2 poll daemon socket.
+[   20.021434] systemd[1]: Listening on multipathd.socket - multipathd control socket.
+[   20.028175] systemd[1]: Listening on syslog.socket - Syslog Socket.
+[   20.029793] systemd[1]: Listening on systemd-fsckd.socket - fsck to fsckd communication Socket.
+[   20.045614] systemd[1]: Listening on systemd-initctl.socket - initctl Compatibility Named Pipe.
+[   20.049464] systemd[1]: Listening on systemd-journald-dev-log.socket - Journal Socket (/dev/log).
+[   20.055293] systemd[1]: Listening on systemd-journald.socket - Journal Socket.
+[   20.067236] systemd[1]: Listening on systemd-networkd.socket - Network Service Netlink Socket.
+[   20.068751] systemd[1]: systemd-pcrextend.socket - TPM2 PCR Extension (Varlink) was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
+[   20.080906] systemd[1]: Listening on systemd-udevd-control.socket - udev Control Socket.
+[   20.094569] systemd[1]: Listening on systemd-udevd-kernel.socket - udev Kernel Socket.
+[   20.126188] systemd[1]: Mounting dev-hugepages.mount - Huge Pages File System...
+[   20.146650] systemd[1]: Mounting dev-mqueue.mount - POSIX Message Queue File System...
+[   20.182691] systemd[1]: Mounting sys-kernel-debug.mount - Kernel Debug File System...
+[   20.256667] systemd[1]: Mounting sys-kernel-tracing.mount - Kernel Trace File System...
+[   20.577403] systemd[1]: Starting systemd-journald.service - Journal Service...
+[   20.769901] systemd[1]: Starting keyboard-setup.service - Set the console keyboard layout...
+[   20.774068] systemd[1]: Starting kmod-static-nodes.service - Create List of Static Device Nodes...
+[   20.779644] systemd[1]: Starting lvm2-monitor.service - Monitoring of LVM2 mirrors, snapshots etc. using dmeventd or progress polling...
+[   20.789376] systemd[1]: Starting modprobe@configfs.service - Load Kernel Module configfs...
+[   20.794100] systemd[1]: Starting modprobe@dm_mod.service - Load Kernel Module dm_mod...
+[   20.807830] systemd[1]: Starting modprobe@drm.service - Load Kernel Module drm...
+[   20.817196] systemd[1]: Starting modprobe@efi_pstore.service - Load Kernel Module efi_pstore...
+[   20.821446] systemd[1]: Starting modprobe@fuse.service - Load Kernel Module fuse...
+[   20.829243] systemd[1]: Starting modprobe@loop.service - Load Kernel Module loop...
+[   20.833158] systemd[1]: netplan-ovs-cleanup.service - OpenVSwitch configuration for cleanup was skipped because of an unmet condition check (ConditionFileIsExecutable=/usr/bin/ovs-vsctl).
+[   20.836410] systemd[1]: systemd-fsck-root.service - File System Check on Root Device was skipped because of an unmet condition check (ConditionPathExists=!/run/initramfs/fsck-root).
+[   20.884817] systemd-journald[307]: Collecting audit messages is disabled.
+[   21.021331] systemd[1]: Starting systemd-modules-load.service - Load Kernel Modules...
+[   21.029666] systemd[1]: systemd-pcrmachine.service - TPM2 PCR Machine ID Measurement was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
+[   21.056931] systemd[1]: Starting systemd-remount-fs.service - Remount Root and Kernel File Systems...
+[   21.078989] systemd[1]: systemd-tpm2-setup-early.service - TPM2 SRK Setup (Early) was skipped because of an unmet condition check (ConditionSecurity=measured-uki).
+[   21.124963] systemd[1]: Starting systemd-udev-trigger.service - Coldplug All udev Devices...
+[   21.151828] systemd[1]: Started systemd-journald.service - Journal Service.
+[   21.589660] EXT4-fs (dm-0): re-mounted 78dfc1ab-05ce-40b9-a2f8-2f3e03168145 r/w. Quota mode: none.
+[   22.047759] workqueue: drm_fb_helper_damage_work hogged CPU for >10000us 16 times, consider switching to WQ_UNBOUND
+[   22.156981] systemd-journald[307]: Received client request to flush runtime journal.
+[   22.198632] Adding 3261436k swap on /swap.img.  Priority:-2 extents:7 across:5735424k
+[   25.179374] systemd-journald[307]: /var/log/journal/560b026a44d3424ea490d29e1a7e2775/system.journal: Journal file uses a different sequence number ID, rotating.
+[   25.179384] systemd-journald[307]: Rotating system journal.
+[   28.063722] piix4_smbus 0000:00:01.3: SMBus Host Controller at 0x700, revision 0
+[   29.005120] workqueue: drm_fb_helper_damage_work hogged CPU for >10000us 32 times, consider switching to WQ_UNBOUND
+[   31.619255] EXT4-fs (sda2): mounted filesystem c3f8f018-f5f7-4a5d-92a1-12ee87108672 r/w with ordered data mode. Quota mode: none.
+[   32.736288] audit: type=1400 audit(1773304065.106:2): apparmor="STATUS" operation="profile_load" profile="unconfined" name="1password" pid=540 comm="apparmor_parser"
+[   32.737100] audit: type=1400 audit(1773304065.106:3): apparmor="STATUS" operation="profile_load" profile="unconfined" name="Discord" pid=541 comm="apparmor_parser"
+[   33.001573] audit: type=1400 audit(1773304065.369:4): apparmor="STATUS" operation="profile_load" profile="unconfined" name=4D6F6E676F444220436F6D70617373 pid=543 comm="apparmor_parser"
+[   33.001614] audit: type=1400 audit(1773304065.371:5): apparmor="STATUS" operation="profile_load" profile="unconfined" name="QtWebEngineProcess" pid=544 comm="apparmor_parser"
+[   33.061453] audit: type=1400 audit(1773304065.430:6): apparmor="STATUS" operation="profile_load" profile="unconfined" name="brave" pid=546 comm="apparmor_parser"
+[   33.067316] audit: type=1400 audit(1773304065.432:7): apparmor="STATUS" operation="profile_load" profile="unconfined" name="balena-etcher" pid=545 comm="apparmor_parser"
+[   33.088624] audit: type=1400 audit(1773304065.457:8): apparmor="STATUS" operation="profile_load" profile="unconfined" name="buildah" pid=547 comm="apparmor_parser"
+[   33.090938] audit: type=1400 audit(1773304065.460:9): apparmor="STATUS" operation="profile_load" profile="unconfined" name="cam" pid=549 comm="apparmor_parser"
+[   33.091999] audit: type=1400 audit(1773304065.461:10): apparmor="STATUS" operation="profile_load" profile="unconfined" name="busybox" pid=548 comm="apparmor_parser"
+[   33.093707] audit: type=1400 audit(1773304065.463:11): apparmor="STATUS" operation="profile_load" profile="unconfined" name="ch-run" pid=551 comm="apparmor_parser"
+[   34.407373] cfg80211: Loading compiled-in X.509 certificates for regulatory database
+[   34.407577] Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[   34.407692] Loaded X.509 cert 'wens: 61c038651aabdcf94bd0ac7ff06c7248db18c600'
+[   39.372289] workqueue: drm_fb_helper_damage_work hogged CPU for >10000us 64 times, consider switching to WQ_UNBOUND
+[   41.955895] NET: Registered PF_QIPCRTR protocol family
+[   46.431980] loop0: detected capacity change from 0 to 8
+[   46.753714] kauditd_printk_skb: 110 callbacks suppressed
+[   46.753719] audit: type=1400 audit(1773304079.122:122): apparmor="STATUS" operation="profile_replace" profile="unconfined" name="/usr/lib/snapd/snap-confine" pid=839 comm="apparmor_parser"
+[   46.851202] audit: type=1400 audit(1773304079.221:123): apparmor="STATUS" operation="profile_replace" profile="unconfined" name="/usr/lib/snapd/snap-confine//mount-namespace-capture-helper" pid=839 comm="apparmor_parser"
+[11306.132010] audit: type=1400 audit(1773315338.650:124): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/__init__.cpython-312.pyc.136073785527728" pid=1160 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[11306.132014] audit: type=1400 audit(1773315338.650:125): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/__init__.cpython-312.pyc.128072883025712" pid=1159 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[11306.134712] audit: type=1400 audit(1773315338.651:126): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/log.cpython-312.pyc.136073787095312" pid=1160 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[11306.136588] audit: type=1400 audit(1773315338.654:127): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/apt.cpython-312.pyc.128072883199360" pid=1159 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[11306.171326] audit: type=1400 audit(1773315338.689:128): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/defaults.cpython-312.pyc.136073784416176" pid=1160 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[11306.172498] audit: type=1400 audit(1773315338.690:129): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/event_logger.cpython-312.pyc.128072881362992" pid=1159 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[11306.230170] audit: type=1400 audit(1773315338.748:130): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/secret_manager.cpython-312.pyc.136073784416176" pid=1160 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[11306.230295] audit: type=1400 audit(1773315338.748:131): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/yaml.cpython-312.pyc.128072870725808" pid=1159 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[11306.232814] audit: type=1400 audit(1773315338.751:132): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/util.cpython-312.pyc.128072870725808" pid=1159 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[11306.235646] audit: type=1400 audit(1773315338.752:133): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/system.cpython-312.pyc.136073784418224" pid=1160 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[81953.475631] systemd[1]: systemd 255.4-1ubuntu8.5 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBFDISK +PCRE2 -PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD -BPF_FRAMEWORK -XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified)
+[81953.475829] systemd[1]: Detected virtualization kvm.
+[81953.475835] systemd[1]: Detected architecture x86-64.
+[82150.348197] systemd[1]: Stopping systemd-journald.service - Journal Service...
+[82150.348313] systemd-journald[307]: Received SIGTERM from PID 1 (systemd).
+[82150.348460] systemd[1]: Stopping rsyslog.service - System Logging Service...
+[82150.349317] systemd[1]: Stopping ssh.service - OpenBSD Secure Shell server...
+[82150.349567] systemd[1]: ssh.service: Deactivated successfully.
+[82150.349657] systemd[1]: Stopped ssh.service - OpenBSD Secure Shell server.
+[82150.351911] systemd[1]: netplan-ovs-cleanup.service - OpenVSwitch configuration for cleanup was skipped because of an unmet condition check (ConditionFileIsExecutable=/usr/bin/ovs-vsctl).
+[82150.357024] systemd[1]: Starting ssh.service - OpenBSD Secure Shell server...
+[82150.357037] systemd[1]: systemd-networkd-wait-online.service: Deactivated successfully.
+[82150.357202] systemd[1]: Stopped systemd-networkd-wait-online.service - Wait for Network to be Configured.
+[82150.357254] systemd[1]: Stopping systemd-networkd-wait-online.service - Wait for Network to be Configured...
+[82150.357454] systemd[1]: Stopping systemd-networkd.service - Network Configuration...
+[82150.357703] systemd[1]: Stopping systemd-resolved.service - Network Name Resolution...
+[82150.358165] systemd[1]: Stopping systemd-timesyncd.service - Network Time Synchronization...
+[82150.358359] systemd[1]: Stopping udisks2.service - Disk Manager...
+[82150.359945] systemd[1]: ModemManager.service: Deactivated successfully.
+[82150.360045] systemd[1]: Stopped ModemManager.service - Modem Manager.
+[82150.361346] systemd[1]: fwupd.service: Deactivated successfully.
+[82150.361460] systemd[1]: Stopped fwupd.service - Firmware update daemon.
+[82150.370019] systemd[1]: Starting fwupd.service - Firmware update daemon...
+[82150.370178] systemd[1]: Stopping polkit.service - Authorization Manager...
+[82150.370310] systemd[1]: Stopping upower.service - Daemon for power management...
+[82150.370700] systemd[1]: multipathd.service: Deactivated successfully.
+[82150.370841] systemd[1]: Stopped multipathd.service - Device-Mapper Multipath Device Controller.
+[82150.370867] systemd[1]: multipathd.service: Consumed 4.807s CPU time, 22.1M memory peak, 0B memory swap peak.
+[82150.371114] systemd[1]: systemd-timesyncd.service: Deactivated successfully.
+[82150.371203] systemd[1]: Stopped systemd-timesyncd.service - Network Time Synchronization.
+[82150.375424] systemd[1]: systemd-networkd.service: Deactivated successfully.
+[82150.375651] systemd[1]: Stopped systemd-networkd.service - Network Configuration.
+[82150.376199] systemd[1]: systemd-resolved.service: Deactivated successfully.
+[82150.376286] systemd[1]: Stopped systemd-resolved.service - Network Name Resolution.
+[82150.377629] systemd[1]: polkit.service: Deactivated successfully.
+[82150.377935] systemd[1]: Stopped polkit.service - Authorization Manager.
+[82150.377977] systemd[1]: polkit.service: Consumed 1.309s CPU time, 5.0M memory peak, 0B memory swap peak.
+[82150.379964] systemd[1]: qemu-guest-agent.service: Deactivated successfully.
+[82150.380048] systemd[1]: Stopped qemu-guest-agent.service - QEMU Guest Agent.
+[82150.380068] systemd[1]: qemu-guest-agent.service: Consumed 34.879s CPU time, 1.9M memory peak, 0B memory swap peak.
+[82150.380306] systemd[1]: upower.service: Deactivated successfully.
+[82150.380380] systemd[1]: Stopped upower.service - Daemon for power management.
+[82150.381284] systemd[1]: udisks2.service: Deactivated successfully.
+[82150.381368] systemd[1]: Stopped udisks2.service - Disk Manager.
+[82150.390019] systemd[1]: Starting multipathd.service - Device-Mapper Multipath Device Controller...
+[82150.391121] systemd[1]: Starting polkit.service - Authorization Manager...
+[82150.396967] systemd[1]: Started qemu-guest-agent.service - QEMU Guest Agent.
+[82150.401725] systemd[1]: Starting systemd-resolved.service - Network Name Resolution...
+[82150.404019] systemd[1]: Starting systemd-timesyncd.service - Network Time Synchronization...
+[82150.404304] systemd[1]: Stopping systemd-udevd.service - Rule-based Manager for Device Events and Files...
+[82150.407006] systemd[1]: Starting udisks2.service - Disk Manager...
+[82150.412614] systemd[1]: Starting upower.service - Daemon for power management...
+[82150.414462] systemd[1]: Started ssh.service - OpenBSD Secure Shell server.
+[82150.416509] systemd[1]: systemd-udevd.service: Deactivated successfully.
+[82150.416631] systemd[1]: Stopped systemd-udevd.service - Rule-based Manager for Device Events and Files.
+[82150.416650] systemd[1]: systemd-udevd.service: Consumed 1.552s CPU time, 29.3M memory peak, 0B memory swap peak.
+[82150.427088] systemd[1]: Starting systemd-udevd.service - Rule-based Manager for Device Events and Files...
+[82150.445386] systemd[1]: Started multipathd.service - Device-Mapper Multipath Device Controller.
+[82150.469840] systemd[1]: Started upower.service - Daemon for power management.
+[82150.480325] systemd[1]: Started systemd-udevd.service - Rule-based Manager for Device Events and Files.
+[82150.486000] systemd[1]: Starting systemd-networkd.service - Network Configuration...
+[82150.502165] systemd[1]: Started systemd-timesyncd.service - Network Time Synchronization.
+[82150.508329] systemd[1]: Started systemd-networkd.service - Network Configuration.
+[82150.514259] systemd[1]: Starting systemd-networkd-wait-online.service - Wait for Network to be Configured...
+[82150.515906] systemd[1]: Started polkit.service - Authorization Manager.
+[82150.529004] systemd[1]: Starting ModemManager.service - Modem Manager...
+[82150.544144] systemd[1]: Starting systemd-hostnamed.service - Hostname Service...
+[82150.545007] systemd[1]: Started systemd-resolved.service - Network Name Resolution.
+[82150.551923] systemd[1]: Started ModemManager.service - Modem Manager.
+[82150.565997] systemd[1]: Finished systemd-networkd-wait-online.service - Wait for Network to be Configured.
+[82150.576290] systemd[1]: Started systemd-hostnamed.service - Hostname Service.
+[82150.579618] systemd[1]: Started udisks2.service - Disk Manager.
+[82151.350575] systemd[1]: rsyslog.service: Deactivated successfully.
+[82151.350691] systemd[1]: Stopped rsyslog.service - System Logging Service.
+[82151.355975] systemd[1]: Starting rsyslog.service - System Logging Service...
+[82151.778110] kauditd_printk_skb: 89 callbacks suppressed
+[82151.778116] audit: type=1400 audit(1773386185.566:223): apparmor="STATUS" operation="profile_replace" info="same as current profile, skipping" profile="unconfined" name="rsyslogd" pid=5326 comm="apparmor_parser"
+[82151.807984] systemd[1]: Started rsyslog.service - System Logging Service.
+[82154.011618] systemd[1]: systemd-journald.service: Deactivated successfully.
+[82154.011806] systemd[1]: Stopped systemd-journald.service - Journal Service.
+[82154.016118] systemd[1]: Starting systemd-journald.service - Journal Service...
+[82154.022354] systemd-journald[5331]: Collecting audit messages is disabled.
+[82155.824562] systemd[1]: Started systemd-journald.service - Journal Service.
+[83717.508670] audit: type=1400 audit(1773387751.330:224): apparmor="STATUS" operation="profile_replace" info="same as current profile, skipping" profile="unconfined" name="rsyslogd" pid=6808 comm="apparmor_parser"
+[85724.220033] systemd[1]: systemd 255.4-1ubuntu8.5 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBFDISK +PCRE2 -PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD -BPF_FRAMEWORK -XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified)
+[85724.220091] systemd[1]: Detected virtualization kvm.
+[85724.220098] systemd[1]: Detected architecture x86-64.
+[85724.393185] systemd-journald[5331]: Received SIGTERM from PID 1 (systemd).
+[85724.393488] systemd[1]: Stopping systemd-journald.service - Journal Service...
+[85724.393500] systemd[1]: netplan-ovs-cleanup.service - OpenVSwitch configuration for cleanup was skipped because of an unmet condition check (ConditionFileIsExecutable=/usr/bin/ovs-vsctl).
+[85724.393709] systemd[1]: systemd-networkd-wait-online.service: Deactivated successfully.
+[85724.393895] systemd[1]: Stopped systemd-networkd-wait-online.service - Wait for Network to be Configured.
+[85724.393928] systemd[1]: Stopping systemd-networkd-wait-online.service - Wait for Network to be Configured...
+[85724.394063] systemd[1]: Stopping systemd-networkd.service - Network Configuration...
+[85724.394177] systemd[1]: Stopping systemd-resolved.service - Network Name Resolution...
+[85724.394288] systemd[1]: Stopping systemd-timesyncd.service - Network Time Synchronization...
+[85724.403805] systemd[1]: systemd-timesyncd.service: Deactivated successfully.
+[85724.403921] systemd[1]: Stopped systemd-timesyncd.service - Network Time Synchronization.
+[85724.406845] systemd[1]: Starting systemd-timesyncd.service - Network Time Synchronization...
+[85724.407949] systemd[1]: systemd-resolved.service: Deactivated successfully.
+[85724.408069] systemd[1]: Stopped systemd-resolved.service - Network Name Resolution.
+[85724.408712] systemd[1]: systemd-networkd.service: Deactivated successfully.
+[85724.408823] systemd[1]: Stopped systemd-networkd.service - Network Configuration.
+[85724.409056] systemd[1]: Started ssh.service - OpenBSD Secure Shell server.
+[85724.411663] systemd[1]: Starting systemd-networkd.service - Network Configuration...
+[85724.412659] systemd[1]: Starting systemd-resolved.service - Network Name Resolution...
+[85724.428820] systemd[1]: Started systemd-networkd.service - Network Configuration.
+[85724.438822] systemd[1]: Starting systemd-networkd-wait-online.service - Wait for Network to be Configured...
+[85724.438988] systemd[1]: Started systemd-timesyncd.service - Network Time Synchronization.
+[85724.452855] systemd[1]: Starting systemd-hostnamed.service - Hostname Service...
+[85724.459388] systemd[1]: Finished systemd-networkd-wait-online.service - Wait for Network to be Configured.
+[85724.473608] systemd[1]: Started systemd-resolved.service - Network Name Resolution.
+[85724.476506] systemd[1]: Started systemd-hostnamed.service - Hostname Service.
+[85729.139046] systemd[1]: systemd-journald.service: Deactivated successfully.
+[85729.139164] systemd[1]: Stopped systemd-journald.service - Journal Service.
+[85729.144585] systemd[1]: Starting systemd-journald.service - Journal Service...
+[85729.151131] systemd-journald[13736]: Collecting audit messages is disabled.
+[85733.258355] systemd[1]: Started systemd-journald.service - Journal Service.
+[86965.721144] systemd[1]: systemd 255.4-1ubuntu8.5 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBFDISK +PCRE2 -PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD -BPF_FRAMEWORK -XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified)
+[86965.721193] systemd[1]: Detected virtualization kvm.
+[86965.721198] systemd[1]: Detected architecture x86-64.
+[86965.899806] systemd-journald[13736]: Received SIGTERM from PID 1 (systemd).
+[86965.900320] systemd[1]: Stopping systemd-journald.service - Journal Service...
+[86965.905112] systemd[1]: Starting fwupd.service - Firmware update daemon...
+[86965.905126] systemd[1]: netplan-ovs-cleanup.service - OpenVSwitch configuration for cleanup was skipped because of an unmet condition check (ConditionFileIsExecutable=/usr/bin/ovs-vsctl).
+[86965.906315] systemd[1]: Stopping polkit.service - Authorization Manager...
+[86965.906440] systemd[1]: Stopping rsyslog.service - System Logging Service...
+[86965.906448] systemd[1]: systemd-networkd-wait-online.service: Deactivated successfully.
+[86965.906544] systemd[1]: Stopped systemd-networkd-wait-online.service - Wait for Network to be Configured.
+[86965.906577] systemd[1]: Stopping systemd-networkd-wait-online.service - Wait for Network to be Configured...
+[86965.906729] systemd[1]: Stopping systemd-networkd.service - Network Configuration...
+[86965.906866] systemd[1]: Stopping systemd-resolved.service - Network Name Resolution...
+[86965.906980] systemd[1]: Stopping systemd-timesyncd.service - Network Time Synchronization...
+[86965.907100] systemd[1]: Stopping udisks2.service - Disk Manager...
+[86965.912076] systemd[1]: rsyslog.service: Deactivated successfully.
+[86965.912158] systemd[1]: Stopped rsyslog.service - System Logging Service.
+[86965.912426] systemd[1]: multipathd.service: Deactivated successfully.
+[86965.912507] systemd[1]: Stopped multipathd.service - Device-Mapper Multipath Device Controller.
+[86965.913541] systemd[1]: polkit.service: Deactivated successfully.
+[86965.914015] systemd[1]: Stopped polkit.service - Authorization Manager.
+[86965.919112] systemd[1]: systemd-timesyncd.service: Deactivated successfully.
+[86965.919295] systemd[1]: Stopped systemd-timesyncd.service - Network Time Synchronization.
+[86965.920383] systemd[1]: systemd-networkd.service: Deactivated successfully.
+[86965.920486] systemd[1]: Stopped systemd-networkd.service - Network Configuration.
+[86965.921243] systemd[1]: systemd-resolved.service: Deactivated successfully.
+[86965.921330] systemd[1]: Stopped systemd-resolved.service - Network Name Resolution.
+[86965.922348] systemd[1]: udisks2.service: Deactivated successfully.
+[86965.922447] systemd[1]: Stopped udisks2.service - Disk Manager.
+[86965.924643] systemd[1]: Started packagekit.service - PackageKit Daemon.
+[86965.933376] systemd[1]: Starting multipathd.service - Device-Mapper Multipath Device Controller...
+[86965.937085] systemd[1]: Starting polkit.service - Authorization Manager...
+[86965.938402] systemd[1]: Starting rsyslog.service - System Logging Service...
+[86965.948948] systemd[1]: Starting systemd-resolved.service - Network Name Resolution...
+[86965.953941] systemd[1]: Starting systemd-timesyncd.service - Network Time Synchronization...
+[86965.954059] systemd[1]: Stopping systemd-udevd.service - Rule-based Manager for Device Events and Files...
+[86965.955934] systemd[1]: Starting udisks2.service - Disk Manager...
+[86965.971296] systemd[1]: systemd-udevd.service: Deactivated successfully.
+[86965.972854] systemd[1]: Stopped systemd-udevd.service - Rule-based Manager for Device Events and Files.
+[86965.984241] systemd[1]: Starting systemd-udevd.service - Rule-based Manager for Device Events and Files...
+[86965.998143] systemd[1]: Started multipathd.service - Device-Mapper Multipath Device Controller.
+[86966.023072] systemd[1]: Started systemd-timesyncd.service - Network Time Synchronization.
+[86966.028289] systemd[1]: Started polkit.service - Authorization Manager.
+[86966.040941] systemd[1]: Starting ModemManager.service - Modem Manager...
+[86966.050458] systemd[1]: Started systemd-udevd.service - Rule-based Manager for Device Events and Files.
+[86966.056965] systemd[1]: Starting systemd-networkd.service - Network Configuration...
+[86966.065460] systemd[1]: Started systemd-resolved.service - Network Name Resolution.
+[86966.069691] systemd[1]: Started udisks2.service - Disk Manager.
+[86966.075821] systemd[1]: Started ModemManager.service - Modem Manager.
+[86966.080153] audit: type=1400 audit(1773390999.976:225): apparmor="STATUS" operation="profile_replace" info="same as current profile, skipping" profile="unconfined" name="rsyslogd" pid=15289 comm="apparmor_parser"
+[86966.085391] systemd[1]: Started systemd-networkd.service - Network Configuration.
+[86966.093664] systemd[1]: Starting systemd-networkd-wait-online.service - Wait for Network to be Configured...
+[86966.111934] systemd[1]: Starting systemd-hostnamed.service - Hostname Service...
+[86966.116827] systemd[1]: Finished systemd-networkd-wait-online.service - Wait for Network to be Configured.
+[86966.133091] systemd[1]: Started systemd-hostnamed.service - Hostname Service.
+[86967.541905] systemd[1]: Started rsyslog.service - System Logging Service.
+[86970.351323] systemd[1]: systemd-journald.service: Deactivated successfully.
+[86970.351463] systemd[1]: Stopped systemd-journald.service - Journal Service.
+[86970.357686] systemd[1]: Starting systemd-journald.service - Journal Service...
+[86970.364640] systemd-journald[15319]: Collecting audit messages is disabled.
+[86972.813424] systemd[1]: Started systemd-journald.service - Journal Service.
+[88774.806167] systemd[1]: systemd 255.4-1ubuntu8.8 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBFDISK +PCRE2 -PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD -BPF_FRAMEWORK -XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified)
+[88774.806227] systemd[1]: Detected virtualization kvm.
+[88774.806231] systemd[1]: Detected architecture x86-64.
+[88774.987826] systemd[1]: Stopping systemd-journald.service - Journal Service...
+[88774.987843] systemd-journald[15319]: Received SIGTERM from PID 1 (systemd).
+[88775.008408] systemd[1]: Starting systemd-hostnamed.service - Hostname Service...
+[88775.008831] systemd[1]: Finished systemd-networkd-wait-online.service - Wait for Network to be Configured.
+[88775.030639] systemd[1]: Started systemd-hostnamed.service - Hostname Service.
+[88778.591748] systemd[1]: systemd-journald.service: Deactivated successfully.
+[88778.591859] systemd[1]: Stopped systemd-journald.service - Journal Service.
+[88778.597147] systemd[1]: Starting systemd-journald.service - Journal Service...
+[88778.603456] systemd-journald[26045]: Collecting audit messages is disabled.
+[88781.783700] systemd[1]: Started systemd-journald.service - Journal Service.
+[88946.835115] audit: type=1400 audit(1773392980.759:226): apparmor="STATUS" operation="profile_replace" info="same as current profile, skipping" profile="unconfined" name="rsyslogd" pid=30788 comm="apparmor_parser"
+[89488.599131] systemd[1]: systemd 255.4-1ubuntu8.8 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBFDISK +PCRE2 -PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD -BPF_FRAMEWORK -XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified)
+[89488.599177] systemd[1]: Detected virtualization kvm.
+[89488.599187] systemd[1]: Detected architecture x86-64.
+[89488.764916] systemd-journald[26045]: Received SIGTERM from PID 1 (systemd).
+[89488.765196] systemd[1]: Stopping systemd-journald.service - Journal Service...
+[89488.765208] systemd[1]: netplan-ovs-cleanup.service - OpenVSwitch configuration for cleanup was skipped because of an unmet condition check (ConditionFileIsExecutable=/usr/bin/ovs-vsctl).
+[89488.765315] systemd[1]: systemd-networkd-wait-online.service: Deactivated successfully.
+[89488.765455] systemd[1]: Stopped systemd-networkd-wait-online.service - Wait for Network to be Configured.
+[89488.765518] systemd[1]: Stopping systemd-networkd-wait-online.service - Wait for Network to be Configured...
+[89488.765805] systemd[1]: Stopping systemd-networkd.service - Network Configuration...
+[89488.766392] systemd[1]: Stopping systemd-resolved.service - Network Name Resolution...
+[89488.766605] systemd[1]: Stopping systemd-timesyncd.service - Network Time Synchronization...
+[89488.767157] systemd[1]: packagekit.service: Deactivated successfully.
+[89488.767258] systemd[1]: Stopped packagekit.service - PackageKit Daemon.
+[89488.770443] systemd[1]: systemd-timesyncd.service: Deactivated successfully.
+[89488.770545] systemd[1]: Stopped systemd-timesyncd.service - Network Time Synchronization.
+[89488.775920] systemd[1]: Starting packagekit.service - PackageKit Daemon...
+[89488.777817] systemd[1]: Starting systemd-timesyncd.service - Network Time Synchronization...
+[89488.778343] systemd[1]: Stopping udisks2.service - Disk Manager...
+[89488.779107] systemd[1]: Stopping upower.service - Daemon for power management...
+[89488.781110] systemd[1]: systemd-networkd.service: Deactivated successfully.
+[89488.782082] systemd[1]: Stopped systemd-networkd.service - Network Configuration.
+[89488.782413] systemd[1]: systemd-resolved.service: Deactivated successfully.
+[89488.782502] systemd[1]: Stopped systemd-resolved.service - Network Name Resolution.
+[89488.784514] systemd[1]: fwupd.service: Deactivated successfully.
+[89488.784666] systemd[1]: Stopped fwupd.service - Firmware update daemon.
+[89488.785876] systemd[1]: upower.service: Deactivated successfully.
+[89488.786004] systemd[1]: Stopped upower.service - Daemon for power management.
+[89488.795743] systemd[1]: Starting fwupd.service - Firmware update daemon...
+[89488.800749] systemd[1]: Starting systemd-resolved.service - Network Name Resolution...
+[89488.800898] systemd[1]: Stopping systemd-udevd.service - Rule-based Manager for Device Events and Files...
+[89488.802286] systemd[1]: Starting upower.service - Daemon for power management...
+[89488.805197] systemd[1]: udisks2.service: Deactivated successfully.
+[89488.805607] systemd[1]: Stopped udisks2.service - Disk Manager.
+[89488.807224] systemd[1]: Started packagekit.service - PackageKit Daemon.
+[89488.815609] systemd[1]: Starting udisks2.service - Disk Manager...
+[89488.815885] systemd[1]: systemd-udevd.service: Deactivated successfully.
+[89488.817600] systemd[1]: Stopped systemd-udevd.service - Rule-based Manager for Device Events and Files.
+[89488.823959] systemd[1]: Starting systemd-udevd.service - Rule-based Manager for Device Events and Files...
+[89488.832282] systemd[1]: Started systemd-timesyncd.service - Network Time Synchronization.
+[89488.872643] systemd[1]: Started upower.service - Daemon for power management.
+[89488.885916] systemd[1]: Started udisks2.service - Disk Manager.
+[89488.887851] systemd[1]: Started systemd-resolved.service - Network Name Resolution.
+[89488.894782] systemd[1]: Started systemd-udevd.service - Rule-based Manager for Device Events and Files.
+[89488.900794] systemd[1]: Starting systemd-networkd.service - Network Configuration...
+[89488.916939] systemd[1]: Started systemd-networkd.service - Network Configuration.
+[89488.924764] systemd[1]: Starting systemd-networkd-wait-online.service - Wait for Network to be Configured...
+[89488.944183] systemd[1]: Starting systemd-hostnamed.service - Hostname Service...
+[89488.944784] systemd[1]: Finished systemd-networkd-wait-online.service - Wait for Network to be Configured.
+[89488.969176] systemd[1]: Started systemd-hostnamed.service - Hostname Service.
+[89493.668003] systemd[1]: systemd-journald.service: Deactivated successfully.
+[89493.668159] systemd[1]: Stopped systemd-journald.service - Journal Service.
+[89493.672427] systemd[1]: Starting systemd-journald.service - Journal Service...
+[89493.679022] systemd-journald[36495]: Collecting audit messages is disabled.
+[89498.476314] systemd[1]: Started systemd-journald.service - Journal Service.
+[144795.012200] audit: type=1400 audit(1773448829.923:227): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/__init__.cpython-312.pyc.127811269621552" pid=44982 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[144795.018480] audit: type=1400 audit(1773448829.930:228): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/apt.cpython-312.pyc.127811269795312" pid=44982 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[144795.027323] audit: type=1400 audit(1773448829.938:229): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/__init__.cpython-312.pyc.126638474284464" pid=44983 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[144795.027327] audit: type=1400 audit(1773448829.938:230): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/log.cpython-312.pyc.126638475835776" pid=44983 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[144795.033008] audit: type=1400 audit(1773448829.944:231): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/defaults.cpython-312.pyc.126638473173040" pid=44983 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[144795.033306] audit: type=1400 audit(1773448829.944:232): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/secret_manager.cpython-312.pyc.126638473173040" pid=44983 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[144795.040872] audit: type=1400 audit(1773448829.952:233): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/system.cpython-312.pyc.126638473175088" pid=44983 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[144795.049814] audit: type=1400 audit(1773448829.961:234): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/exceptions.cpython-312.pyc.126638473604656" pid=44983 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[144795.052642] audit: type=1400 audit(1773448829.964:235): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/event_logger.cpython-312.pyc.127811264829488" pid=44982 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[144795.053966] audit: type=1400 audit(1773448829.965:236): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/yaml.cpython-312.pyc.127811253782704" pid=44982 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[166192.574401] systemd[1]: systemd 255.4-1ubuntu8.8 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +IPTC +KMOD +LIBCRYPTSETUP +LIBFDISK +PCRE2 -PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD -BPF_FRAMEWORK -XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified)
+[166192.574447] systemd[1]: Detected virtualization kvm.
+[166192.574451] systemd[1]: Detected architecture x86-64.
+[166192.736677] systemd[1]: Stopping systemd-journald.service - Journal Service...
+[166192.736937] systemd-journald[36495]: Received SIGTERM from PID 1 (systemd).
+[166192.737024] systemd[1]: rsyslog.service: Deactivated successfully.
+[166192.737100] systemd[1]: Stopped rsyslog.service - System Logging Service.
+[166192.737912] systemd[1]: netplan-ovs-cleanup.service - OpenVSwitch configuration for cleanup was skipped because of an unmet condition check (ConditionFileIsExecutable=/usr/bin/ovs-vsctl).
+[166192.741306] systemd[1]: Starting rsyslog.service - System Logging Service...
+[166192.741314] systemd[1]: systemd-networkd-wait-online.service: Deactivated successfully.
+[166192.741425] systemd[1]: Stopped systemd-networkd-wait-online.service - Wait for Network to be Configured.
+[166192.741456] systemd[1]: Stopping systemd-networkd-wait-online.service - Wait for Network to be Configured...
+[166192.741600] systemd[1]: Stopping systemd-networkd.service - Network Configuration...
+[166192.744024] systemd[1]: ModemManager.service: Deactivated successfully.
+[166192.744124] systemd[1]: Stopped ModemManager.service - Modem Manager.
+[166192.745255] systemd[1]: fwupd.service: Deactivated successfully.
+[166192.745345] systemd[1]: Stopped fwupd.service - Firmware update daemon.
+[166192.745363] systemd[1]: fwupd.service: Consumed 2.320s CPU time, 6.5M memory peak, 0B memory swap peak.
+[166192.754346] systemd[1]: Starting fwupd.service - Firmware update daemon...
+[166192.754893] systemd[1]: Stopping polkit.service - Authorization Manager...
+[166192.755041] systemd[1]: Stopping systemd-resolved.service - Network Name Resolution...
+[166192.755667] systemd[1]: Stopping systemd-timesyncd.service - Network Time Synchronization...
+[166192.759498] systemd[1]: systemd-networkd.service: Deactivated successfully.
+[166192.759587] systemd[1]: Stopped systemd-networkd.service - Network Configuration.
+[166192.760281] systemd[1]: Stopping systemd-udevd.service - Rule-based Manager for Device Events and Files...
+[166192.764405] systemd[1]: systemd-timesyncd.service: Deactivated successfully.
+[166192.764541] systemd[1]: Stopped systemd-timesyncd.service - Network Time Synchronization.
+[166192.773431] systemd[1]: Starting systemd-timesyncd.service - Network Time Synchronization...
+[166192.773656] systemd[1]: systemd-resolved.service: Deactivated successfully.
+[166192.775184] systemd[1]: Stopped systemd-resolved.service - Network Name Resolution.
+[166192.775902] systemd[1]: systemd-udevd.service: Deactivated successfully.
+[166192.776017] systemd[1]: Stopped systemd-udevd.service - Rule-based Manager for Device Events and Files.
+[166192.776266] systemd[1]: polkit.service: Deactivated successfully.
+[166192.776350] systemd[1]: Stopped polkit.service - Authorization Manager.
+[166192.776366] systemd[1]: polkit.service: Consumed 1.090s CPU time, 1.8M memory peak, 0B memory swap peak.
+[166192.791322] systemd[1]: Starting polkit.service - Authorization Manager...
+[166192.795284] systemd[1]: Starting systemd-resolved.service - Network Name Resolution...
+[166192.799419] systemd[1]: Starting systemd-udevd.service - Rule-based Manager for Device Events and Files...
+[166192.799585] systemd[1]: Stopping udisks2.service - Disk Manager...
+[166192.799730] systemd[1]: Stopping upower.service - Daemon for power management...
+[166192.802235] kauditd_printk_skb: 89 callbacks suppressed
+[166192.802236] audit: type=1400 audit(1773470228.094:326): apparmor="STATUS" operation="profile_replace" info="same as current profile, skipping" profile="unconfined" name="rsyslogd" pid=46493 comm="apparmor_parser"
+[166192.808085] systemd[1]: upower.service: Deactivated successfully.
+[166192.808246] systemd[1]: Stopped upower.service - Daemon for power management.
+[166192.817712] systemd[1]: Starting upower.service - Daemon for power management...
+[166192.817906] systemd[1]: Started systemd-timesyncd.service - Network Time Synchronization.
+[166192.818330] systemd[1]: udisks2.service: Deactivated successfully.
+[166192.820078] systemd[1]: Stopped udisks2.service - Disk Manager.
+[166192.828366] systemd[1]: Starting udisks2.service - Disk Manager...
+[166192.866163] systemd[1]: Started upower.service - Daemon for power management.
+[166192.877111] systemd[1]: Started polkit.service - Authorization Manager.
+[166192.885315] systemd[1]: Starting ModemManager.service - Modem Manager...
+[166192.885498] systemd[1]: Started systemd-udevd.service - Rule-based Manager for Device Events and Files.
+[166192.886274] systemd[1]: Started systemd-resolved.service - Network Name Resolution.
+[166192.890015] systemd[1]: Starting systemd-networkd.service - Network Configuration...
+[166192.898467] systemd[1]: Started ModemManager.service - Modem Manager.
+[166192.906666] systemd[1]: Started systemd-networkd.service - Network Configuration.
+[166192.915133] systemd[1]: Starting systemd-networkd-wait-online.service - Wait for Network to be Configured...
+[166192.945170] systemd[1]: Starting systemd-hostnamed.service - Hostname Service...
+[166192.945381] systemd[1]: Finished systemd-networkd-wait-online.service - Wait for Network to be Configured.
+[166192.952600] systemd[1]: Started udisks2.service - Disk Manager.
+[166192.969557] systemd[1]: Started systemd-hostnamed.service - Hostname Service.
+[166193.130113] systemd[1]: Started rsyslog.service - System Logging Service.
+[166193.947830] systemd[1]: systemd-journald.service: Deactivated successfully.
+[166193.947960] systemd[1]: Stopped systemd-journald.service - Journal Service.
+[166193.953362] systemd[1]: Starting systemd-journald.service - Journal Service...
+[166193.959433] systemd-journald[46558]: Collecting audit messages is disabled.
+[166193.980366] systemd[1]: Started fwupd.service - Firmware update daemon.
+[166194.205735] systemd[1]: Started systemd-journald.service - Journal Service.
+[244925.601938] audit: type=1400 audit(1773548962.301:327): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/__init__.cpython-312.pyc.128860195436336" pid=49060 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[244925.608533] audit: type=1400 audit(1773548962.308:328): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/apt.cpython-312.pyc.128860195610096" pid=49060 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[244925.620162] audit: type=1400 audit(1773548962.319:329): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/__init__.cpython-312.pyc.123403268935088" pid=49061 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[244925.621487] audit: type=1400 audit(1773548962.321:330): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/log.cpython-312.pyc.123403270470016" pid=49061 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[244925.628196] audit: type=1400 audit(1773548962.328:331): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/defaults.cpython-312.pyc.123403267840048" pid=49061 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[244925.628534] audit: type=1400 audit(1773548962.328:332): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/secret_manager.cpython-312.pyc.123403267840048" pid=49061 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[244925.633680] audit: type=1400 audit(1773548962.333:333): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/system.cpython-312.pyc.123403267842096" pid=49061 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[244925.641730] audit: type=1400 audit(1773548962.341:334): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/event_logger.cpython-312.pyc.128860193822768" pid=49060 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[244925.641784] audit: type=1400 audit(1773548962.341:335): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/exceptions.cpython-312.pyc.123403268206128" pid=49061 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[244925.643049] audit: type=1400 audit(1773548962.342:336): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/yaml.cpython-312.pyc.128860182874288" pid=49060 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[320411.901631] kauditd_printk_skb: 89 callbacks suppressed
+[320411.901637] audit: type=1400 audit(1773624449.942:426): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/__init__.cpython-312.pyc.128637906106160" pid=60038 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[320411.908339] audit: type=1400 audit(1773624449.948:427): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/apt.cpython-312.pyc.128637906279920" pid=60038 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[320411.919593] audit: type=1400 audit(1773624449.960:428): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/__init__.cpython-312.pyc.123342094880176" pid=60039 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[320411.920950] audit: type=1400 audit(1773624449.961:429): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/log.cpython-312.pyc.123342096415104" pid=60039 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[320411.927832] audit: type=1400 audit(1773624449.968:430): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/defaults.cpython-312.pyc.123342093785136" pid=60039 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[320411.928137] audit: type=1400 audit(1773624449.968:431): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/secret_manager.cpython-312.pyc.123342093785136" pid=60039 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[320411.932927] audit: type=1400 audit(1773624449.973:432): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/system.cpython-312.pyc.123342093787184" pid=60039 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[320411.940585] audit: type=1400 audit(1773624449.981:433): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/exceptions.cpython-312.pyc.123342094151216" pid=60039 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[320411.940645] audit: type=1400 audit(1773624449.981:434): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/event_logger.cpython-312.pyc.128637904459824" pid=60038 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[320411.941920] audit: type=1400 audit(1773624449.982:435): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/yaml.cpython-312.pyc.128637894002864" pid=60038 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[462381.741406] kauditd_printk_skb: 89 callbacks suppressed
+[462381.741432] audit: type=1400 audit(1773766422.308:525): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/__init__.cpython-312.pyc.138928337385264" pid=64185 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[462381.746150] audit: type=1400 audit(1773766422.313:526): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/apt.cpython-312.pyc.138928337559024" pid=64185 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[462381.752391] audit: type=1400 audit(1773766422.318:527): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/__init__.cpython-312.pyc.129477146725808" pid=64187 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[462381.752395] audit: type=1400 audit(1773766422.319:528): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/log.cpython-312.pyc.129477151422848" pid=64187 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[462381.757235] audit: type=1400 audit(1773766422.324:529): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/defaults.cpython-312.pyc.129477145614384" pid=64187 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[462381.757549] audit: type=1400 audit(1773766422.325:530): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/secret_manager.cpython-312.pyc.129477145614384" pid=64187 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[462381.761010] audit: type=1400 audit(1773766422.328:531): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/system.cpython-312.pyc.129477145616432" pid=64187 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[462381.768527] audit: type=1400 audit(1773766422.336:532): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/exceptions.cpython-312.pyc.129477146046000" pid=64187 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[462381.773308] audit: type=1400 audit(1773766422.340:533): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/messages/__pycache__/__init__.cpython-312.pyc.129477144837424" pid=64187 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[462381.774104] audit: type=1400 audit(1773766422.341:534): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/messages/__pycache__/urls.cpython-312.pyc.129477144837424" pid=64187 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[542697.066973] kauditd_printk_skb: 89 callbacks suppressed
+[542697.066975] audit: type=1400 audit(1773846739.068:624): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/__init__.cpython-312.pyc.139668466087728" pid=67181 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[542697.072350] audit: type=1400 audit(1773846739.074:625): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_apt_news" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/apt.cpython-312.pyc.139668466261488" pid=67181 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[542697.078591] audit: type=1400 audit(1773846739.080:626): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/__init__.cpython-312.pyc.136497363832240" pid=67182 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[542697.079442] audit: type=1400 audit(1773846739.081:627): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/log.cpython-312.pyc.136497365367168" pid=67182 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[542697.084932] audit: type=1400 audit(1773846739.086:628): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/defaults.cpython-312.pyc.136497362737200" pid=67182 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[542697.085236] audit: type=1400 audit(1773846739.087:629): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/secret_manager.cpython-312.pyc.136497362737200" pid=67182 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[542697.088602] audit: type=1400 audit(1773846739.090:630): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/system.cpython-312.pyc.136497362739248" pid=67182 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[542697.095586] audit: type=1400 audit(1773846739.097:631): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/__pycache__/exceptions.cpython-312.pyc.136497363103280" pid=67182 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[542697.100224] audit: type=1400 audit(1773846739.102:632): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/messages/__pycache__/__init__.cpython-312.pyc.136497361976624" pid=67182 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
+[542697.100950] audit: type=1400 audit(1773846739.102:633): apparmor="DENIED" operation="mknod" class="file" profile="ubuntu_pro_esm_cache" name="/usr/lib/python3/dist-packages/uaclient/messages/__pycache__/urls.cpython-312.pyc.136497361976624" pid=67182 comm="python3" requested_mask="c" denied_mask="c" fsuid=0 ouid=0
 
 14)
 chage -M 10 user1
