@@ -4,6 +4,8 @@
 #include "names.h"
 #include "address.h"
 
+const unsigned int SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP = 10;
+
 typedef struct {
     names names;
     address address;
