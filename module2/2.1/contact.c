@@ -69,8 +69,14 @@ int add_social_media_link_to_contact(contact *c, char *new_link)
 
     if (!res)
     {
-        c->social_media_links[c->social_media_links_quan] = new_link;
-        c->social_media_links_quan++;
+        c->social_media_links[c->social_media_links_quan] = malloc(sizeof(char) * SOCIAL_MEDIA_LINK_SIZE);
+        if (c->social_media_links[c->social_media_links_quan]) {
+            strcpy(c->social_media_links[c->social_media_links_quan], new_link);
+            c->social_media_links_quan++;
+        }
+        else {
+            res = 1;
+        }
     }
 
     return res;
