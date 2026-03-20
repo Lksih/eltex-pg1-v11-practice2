@@ -71,7 +71,7 @@ int add_social_media_link_to_contact(contact *c, char *new_link)
     {
         c->social_media_links[c->social_media_links_quan] = malloc(sizeof(char) * SOCIAL_MEDIA_LINK_SIZE);
         if (c->social_media_links[c->social_media_links_quan]) {
-            strcpy(c->social_media_links[c->social_media_links_quan], new_link);
+            strncpy(c->social_media_links[c->social_media_links_quan], new_link, SOCIAL_MEDIA_LINK_SIZE);
             c->social_media_links_quan++;
         }
         else {
@@ -92,7 +92,7 @@ int delete_social_media_link_from_contact(contact *c, unsigned int ind)
     }
     else
     {
-        free(&(c->social_media_links[ind]));
+        free(c->social_media_links[ind]);
         for (unsigned int i = ind + 1; i < c->social_media_links_quan; i++)
         {
             c->social_media_links[i - 1] = c->social_media_links[i];
@@ -107,6 +107,134 @@ int delete_social_media_link_from_contact(contact *c, unsigned int ind)
         {
             c->social_media_links = new_links;
             c->social_media_links_capacity = c->social_media_links_quan + SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP;
+        }
+    }
+
+    return res;
+}
+
+int add_email_to_contact(contact *c, char *new_email)
+{
+    int res = 0;
+
+    if (c->emails_quan == c->emails_capacity)
+    {
+        char **new_emails = realloc(c->emails, sizeof(char *) * (c->emails_capacity + EMAILS_CAPACITY_INCREASE_STEP));
+        if (new_emails)
+        {
+            c->emails = new_emails;
+            c->emails_capacity += EMAILS_CAPACITY_INCREASE_STEP;
+        }
+        else
+        {
+            res = 1;
+        }
+    }
+
+    if (!res)
+    {
+        c->emails[c->emails_quan] = malloc(sizeof(char) * EMAIL_SIZE);
+        if (c->emails[c->emails_quan]) {
+            strncpy(c->emails[c->emails_quan], new_email, EMAIL_SIZE);
+            c->emails_quan++;
+        }
+        else {
+            res = 1;
+        }
+    }
+
+    return res;
+}
+
+int delete_email_from_contact(contact *c, unsigned int ind)
+{
+    int res = 0;
+
+    if (ind >= c->emails_quan)
+    {
+        res = 1;
+    }
+    else
+    {
+        free(c->emails[ind]);
+        for (unsigned int i = ind + 1; i < c->emails_quan; i++)
+        {
+            c->emails[i - 1] = c->emails[i];
+        }
+        c->emails_quan--;
+    }
+
+    if (c->emails_capacity > c->emails_quan + EMAILS_CAPACITY_INCREASE_STEP)
+    {
+        char **new_emails = realloc(c->emails, sizeof(char *) * (c->emails_quan + EMAILS_CAPACITY_INCREASE_STEP));
+        if (new_emails)
+        {
+            c->emails = new_emails;
+            c->emails_capacity = c->emails_quan + EMAILS_CAPACITY_INCREASE_STEP;
+        }
+    }
+
+    return res;
+}
+
+int add_phone_number_to_contact(contact *c, char *new_phone)
+{
+    int res = 0;
+
+    if (c->phone_numbers_quan == c->phone_numbers_capacity)
+    {
+        char **new_phones = realloc(c->phone_numbers, sizeof(char *) * (c->phone_numbers_capacity + PHONE_NUMBERS_CAPACITY_INCREASE_STEP));
+        if (new_phones)
+        {
+            c->phone_numbers = new_phones;
+            c->phone_numbers_capacity += PHONE_NUMBERS_CAPACITY_INCREASE_STEP;
+        }
+        else
+        {
+            res = 1;
+        }
+    }
+
+    if (!res)
+    {
+        c->phone_numbers[c->phone_numbers_quan] = malloc(sizeof(char) * PHONE_NUMBER_SIZE);
+        if (c->phone_numbers[c->phone_numbers_quan]) {
+            strncpy(c->phone_numbers[c->phone_numbers_quan], new_phone, PHONE_NUMBER_SIZE);
+            c->phone_numbers_quan++;
+        }
+        else {
+            res = 1;
+        }
+    }
+
+    return res;
+}
+
+int delete_phone_number_from_contact(contact *c, unsigned int ind)
+{
+    int res = 0;
+
+    if (ind >= c->phone_numbers_quan)
+    {
+        res = 1;
+    }
+    else
+    {
+        free(c->phone_numbers[ind]);
+        for (unsigned int i = ind + 1; i < c->phone_numbers_quan; i++)
+        {
+            c->phone_numbers[i - 1] = c->phone_numbers[i];
+        }
+        c->phone_numbers_quan--;
+    }
+
+    if (c->phone_numbers_capacity > c->phone_numbers_quan + PHONE_NUMBERS_CAPACITY_INCREASE_STEP)
+    {
+        char **new_phones = realloc(c->phone_numbers, sizeof(char *) * (c->phone_numbers_quan + PHONE_NUMBERS_CAPACITY_INCREASE_STEP));
+        if (new_phones)
+        {
+            c->phone_numbers = new_phones;
+            c->phone_numbers_capacity = c->phone_numbers_quan + PHONE_NUMBERS_CAPACITY_INCREASE_STEP;
         }
     }
 
