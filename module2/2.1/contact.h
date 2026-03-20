@@ -1,6 +1,7 @@
 #ifndef CONTACT_H
 #define CONTACT_H
 
+#include <string.h>
 #include "names.h"
 #include "address.h"
 
@@ -13,22 +14,22 @@ const unsigned int EMAIL_SIZE = 256;
 const unsigned int PHONE_NUMBER_SIZE = 11;
 
 typedef struct {
-    names names;
-    address address;
-    char workplace[101];
-    char position[51];
+    names names; // 1.1 1.2 1.3
+    address address; // 2.1 - 2.6
+    char workplace[101]; // 3
+    char position[51]; // 4
 
     unsigned char social_media_links_quan;
     unsigned char social_media_links_capacity;
-    char** social_media_links;
+    char** social_media_links; // 5.?
 
     unsigned char emails_quan;
     unsigned char emails_capacity;
-    char** emails;
+    char** emails; // 6.?
 
     unsigned char phone_numbers_quan;
     unsigned char phone_numbers_capacity;
-    char** phone_numbers;
+    char** phone_numbers; // 7.?
 } contact;
 
 #endif

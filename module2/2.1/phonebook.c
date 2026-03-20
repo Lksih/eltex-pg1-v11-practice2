@@ -25,7 +25,7 @@ void delete_phonebook(phonebook *pb)
         delete_contact(pb->contacts[i]);
     }
     free(pb->contacts);
-    pb->contacts = 0;
+    pb->contacts = NULL;
     pb->contacts_capacity = 0;
     pb->contacts_quan = 0;
 }

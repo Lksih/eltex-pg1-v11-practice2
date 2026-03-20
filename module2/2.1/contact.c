@@ -49,7 +49,7 @@ int init_contact(contact *c)
     return res;
 }
 
-int add_social_media_link_to_contact(contact *c, char *new_link)
+int add_social_media_link_to_contact(contact *c, const char *new_link)
 {
     int res = 0;
 
@@ -113,7 +113,7 @@ int delete_social_media_link_from_contact(contact *c, unsigned int ind)
     return res;
 }
 
-int add_email_to_contact(contact *c, char *new_email)
+int add_email_to_contact(contact *c, const char *new_email)
 {
     int res = 0;
 
@@ -177,7 +177,7 @@ int delete_email_from_contact(contact *c, unsigned int ind)
     return res;
 }
 
-int add_phone_number_to_contact(contact *c, char *new_phone)
+int add_phone_number_to_contact(contact *c, const char *new_phone)
 {
     int res = 0;
 
@@ -244,13 +244,13 @@ int delete_phone_number_from_contact(contact *c, unsigned int ind)
 void delete_contact(contact *c)
 {
     free_strings(c->social_media_links, c->social_media_links_quan);
-    c->social_media_links = 0;
+    c->social_media_links = NULL;
 
     free_strings(c->emails, c->emails_quan);
-    c->emails = 0;
+    c->emails = NULL;
 
     free_strings(c->phone_numbers, c->phone_numbers_quan);
-    c->phone_numbers = 0;
+    c->phone_numbers = NULL;
 
     c->social_media_links = 0;
     c->social_media_links_capacity = 0;
@@ -264,4 +264,15 @@ void free_strings(char **strings, unsigned int quan)
         free(strings[i]);
     }
     free(strings);
+}
+
+int edit_contact(const char* fields_to_change, ...){
+    const char *token = strtok(fields_to_change, ";");
+    while (token) {
+        if (!strcmp(token, "1.1")){
+            
+        }
+
+        token = strtok(NULL, ";");
+    }
 }
