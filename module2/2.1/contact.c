@@ -243,13 +243,13 @@ int delete_phone_number_from_contact(contact *c, unsigned int ind)
 
 void delete_contact(contact *c)
 {
-    free_strings(c->social_media_links, c->social_media_links_capacity);
+    free_strings(c->social_media_links, c->social_media_links_quan);
     c->social_media_links = 0;
 
-    free_strings(c->emails, c->emails_capacity);
+    free_strings(c->emails, c->emails_quan);
     c->emails = 0;
 
-    free_strings(c->phone_numbers, c->phone_numbers_capacity);
+    free_strings(c->phone_numbers, c->phone_numbers_quan);
     c->phone_numbers = 0;
 
     c->social_media_links = 0;

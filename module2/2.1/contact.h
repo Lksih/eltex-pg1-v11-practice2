@@ -17,7 +17,6 @@ typedef struct {
     address address;
     char workplace[101];
     char position[51];
-    char flat[20];
 
     unsigned char social_media_links_quan;
     unsigned char social_media_links_capacity;

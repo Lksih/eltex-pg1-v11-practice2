@@ -20,6 +20,10 @@ int init_phonebook(phonebook *pb)
 
 void delete_phonebook(phonebook *pb)
 {
+    for (unsigned int i = 0; i < pb->contacts_quan; i++)
+    {
+        delete_contact(pb->contacts[i]);
+    }
     free(pb->contacts);
     pb->contacts = 0;
     pb->contacts_capacity = 0;

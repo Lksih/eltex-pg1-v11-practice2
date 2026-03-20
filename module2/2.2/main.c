@@ -2,15 +2,7 @@
 #include <stdlib.h>
 #include "calc.h"
 
-void show_menu() {
-    printf("Выберите операцию:\n");
-    printf("1. Сложение (+)\n");
-    printf("2. Вычитание (-)\n");
-    printf("3. Умножение (*)\n");
-    printf("4. Деление (/)\n");
-    printf("0. Выход\n");
-    printf("Ваш выбор: ");
-}
+void show_menu();
 
 int main() {
     int choice;
@@ -64,4 +56,14 @@ int main() {
     }
     
     return 0;
+}
+
+void show_menu() {
+    printf("Выберите операцию:\n");
+    printf("1. Сложение (+)\n");
+    printf("2. Вычитание (-)\n");
+    printf("3. Умножение (*)\n");
+    printf("4. Деление (/)\n");
+    printf("0. Выход\n");
+    printf("Ваш выбор: ");
 }
