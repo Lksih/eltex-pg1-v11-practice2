@@ -49,17 +49,17 @@ int init_contact(contact *c)
     return res;
 }
 
-int add_social_media_link_to_contact(contact *c, contact new_link)
+int add_social_media_link_to_contact(contact *c, char *new_link)
 {
     int res = 0;
 
     if (c->social_media_links_quan == c->social_media_links_capacity)
     {
-        char **new_contacts = realloc(c->contacts, sizeof(contact) * (c->contacts_capacity + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP));
-        if (new_contacts)
+        char **new_links = realloc(c->social_media_links, sizeof(char **) * (c->social_media_links_capacity + SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP));
+        if (new_links)
         {
-            c->contacts = new_contacts;
-            c->contacts_capacity += PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP;
+            c->social_media_links = new_links;
+            c->social_media_links_capacity += SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP;
         }
         else
         {
@@ -69,8 +69,39 @@ int add_social_media_link_to_contact(contact *c, contact new_link)
 
     if (!res)
     {
-        c->contacts[c->contacts_quan] = new_link;
-        c->contacts_quan++;
+        c->social_media_links[c->social_media_links_quan] = new_link;
+        c->social_media_links_quan++;
+    }
+
+    return res;
+}
+
+int delete_social_media_link_from_contact(contact *c, unsigned int ind)
+{
+    int res = 0;
+
+    if (ind >= c->social_media_links_quan)
+    {
+        res = 1;
+    }
+    else
+    {
+        free(&(c->social_media_links[ind]));
+        for (unsigned int i = ind + 1; i < c->social_media_links_quan; i++)
+        {
+            c->social_media_links[i - 1] = c->social_media_links[i];
+        }
+        c->social_media_links_quan--;
+    }
+
+    if (c->social_media_links_capacity > c->social_media_links_quan + SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP)
+    {
+        char **new_links = realloc(c->social_media_links, sizeof(char *) * (c->social_media_links_quan + SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP));
+        if (new_links)
+        {
+            c->social_media_links = new_links;
+            c->social_media_links_capacity = c->social_media_links_quan + SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP;
+        }
     }
 
     return res;
@@ -92,8 +123,10 @@ void delete_contact(contact *c)
     c->social_media_links_quan = 0;
 }
 
-void free_strings(char **strings, unsigned int quan){
-    for (unsigned int i=0;i<quan;i++){
+void free_strings(char **strings, unsigned int quan)
+{
+    for (unsigned int i = 0; i < quan; i++)
+    {
         free(strings[i]);
     }
     free(strings);
