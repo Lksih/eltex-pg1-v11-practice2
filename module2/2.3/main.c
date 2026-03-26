@@ -35,8 +35,8 @@ int main() {
                 
                 double result = binary_operations[choice - 1].func(num1, num2);
                 
-                if (isnan(result) && choice == 4) {
-                    printf("Ошибка: деление на ноль\n");
+                if (isnan(result)) {
+                    printf("Ошибка: недопустимые аргументы для операции\n");
                 } else {
                     printf("Результат: %.2lf %s %.2lf = %.2lf\n", num1, binary_operations[choice - 1].symbol, num2, result);
                 }
