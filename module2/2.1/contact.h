@@ -33,4 +33,15 @@ typedef struct {
     char** phone_numbers; // 7.?
 } contact;
 
+int init_contact(contact *c);
+int add_social_media_link_to_contact(contact *c, const char *new_link);
+int delete_social_media_link_from_contact(contact *c, unsigned int ind);
+int add_email_to_contact(contact *c, const char *new_email);
+int delete_email_from_contact(contact *c, unsigned int ind);
+int add_phone_number_to_contact(contact *c, const char *new_phone);
+int delete_phone_number_from_contact(contact *c, unsigned int ind);
+void delete_contact(contact *c);
+void free_strings(char **strings, unsigned int quan);
+int edit_contact(contact *c, const char *fields_to_change, ...);
+
 #endif

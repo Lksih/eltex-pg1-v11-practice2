@@ -15,4 +15,6 @@ typedef struct {
     char flat[21];
 } address;
 
+void init_address(address *a);
+
 #endif

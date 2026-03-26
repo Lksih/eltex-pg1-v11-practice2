@@ -12,4 +12,8 @@ typedef struct {
     unsigned int contacts_capacity;
 } phonebook;
 
+int init_phonebook(phonebook *pb);
+int add_contact_to_phonebook(phonebook *pb, contact new_contact);
+int delete_contact_from_phonebook(phonebook *pb, unsigned int ind);
+
 #endif

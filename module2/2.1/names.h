@@ -13,4 +13,6 @@ typedef struct {
     char last_name[LAST_NAME_LENGTH + 1];
 } names;
 
+void init_names(names *n);
+
 #endif
