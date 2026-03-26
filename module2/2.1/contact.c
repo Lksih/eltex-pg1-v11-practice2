@@ -272,10 +272,9 @@ void free_strings(char **strings, unsigned int quan)
     free(strings);
 }
 
-int edit_contact(contact *c, const char *fields_to_change, ...)
+int edit_contact(contact *c, const char *fields_to_change, va_list args)
 {
-    va_list args;
-    va_start(args, fields_to_change);
+    int res = 0;
 
     const char *token = strtok((char *)fields_to_change, ";");
     while (token)
@@ -368,12 +367,11 @@ int edit_contact(contact *c, const char *fields_to_change, ...)
         }
         else
         {
-            return 1;
+            res = 1;
         }
 
         token = strtok(NULL, ";");
     }
 
-    va_end(args);
-    return 0;
+    return res;
 }

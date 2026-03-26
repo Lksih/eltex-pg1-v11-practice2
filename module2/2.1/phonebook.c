@@ -22,7 +22,7 @@ void delete_phonebook(phonebook *pb)
 {
     for (unsigned int i = 0; i < pb->contacts_quan; i++)
     {
-        delete_contact(pb->contacts[i]);
+        delete_contact(&(pb->contacts[i]));
     }
     free(pb->contacts);
     pb->contacts = NULL;
@@ -83,6 +83,25 @@ int delete_contact_from_phonebook(phonebook *pb, unsigned int ind)
             pb->contacts = new_contacts;
             pb->contacts_capacity = pb->contacts_quan + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP;
         }
+    }
+
+    return res;
+}
+
+int edit_contact_in_phonebook(phonebook *pb, unsigned int ind, const char *fields_to_change, ...)
+{
+    int res = 0;
+
+    if (ind >= pb->contacts_quan)
+    {
+        res = 1;
+    }
+    else
+    {
+        va_list args;
+        va_start(args, fields_to_change);
+        res = edit_contact(&(pb->contacts[ind]), fields_to_change, args);
+        va_end(args);
     }
 
     return res;

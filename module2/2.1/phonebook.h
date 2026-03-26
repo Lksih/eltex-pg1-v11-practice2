@@ -15,5 +15,6 @@ typedef struct {
 int init_phonebook(phonebook *pb);
 int add_contact_to_phonebook(phonebook *pb, contact new_contact);
 int delete_contact_from_phonebook(phonebook *pb, unsigned int ind);
+int edit_contact_in_phonebook(phonebook *pb, unsigned int ind, const char *fields_to_change, ...);
 
 #endif
