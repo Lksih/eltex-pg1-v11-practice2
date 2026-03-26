@@ -8,7 +8,7 @@ OBJS = main.o calc.o
 TARGET = calc.out
 
 $(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET)
+	$(CC) $(OBJS) -o $(TARGET) -lm
 
 main.o: main.c calc.h calc.h
 	$(CC) $(CFLAGS) -c main.c
