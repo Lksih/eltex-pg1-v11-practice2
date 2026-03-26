@@ -2,6 +2,7 @@
 #define CONTACT_H
 
 #include <string.h>
+#include <stdarg.h>
 #include "names.h"
 #include "address.h"
 

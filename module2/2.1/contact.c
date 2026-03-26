@@ -70,11 +70,13 @@ int add_social_media_link_to_contact(contact *c, const char *new_link)
     if (!res)
     {
         c->social_media_links[c->social_media_links_quan] = malloc(sizeof(char) * SOCIAL_MEDIA_LINK_SIZE);
-        if (c->social_media_links[c->social_media_links_quan]) {
+        if (c->social_media_links[c->social_media_links_quan])
+        {
             strncpy(c->social_media_links[c->social_media_links_quan], new_link, SOCIAL_MEDIA_LINK_SIZE);
             c->social_media_links_quan++;
         }
-        else {
+        else
+        {
             res = 1;
         }
     }
@@ -134,11 +136,13 @@ int add_email_to_contact(contact *c, const char *new_email)
     if (!res)
     {
         c->emails[c->emails_quan] = malloc(sizeof(char) * EMAIL_SIZE);
-        if (c->emails[c->emails_quan]) {
+        if (c->emails[c->emails_quan])
+        {
             strncpy(c->emails[c->emails_quan], new_email, EMAIL_SIZE);
             c->emails_quan++;
         }
-        else {
+        else
+        {
             res = 1;
         }
     }
@@ -198,11 +202,13 @@ int add_phone_number_to_contact(contact *c, const char *new_phone)
     if (!res)
     {
         c->phone_numbers[c->phone_numbers_quan] = malloc(sizeof(char) * PHONE_NUMBER_SIZE);
-        if (c->phone_numbers[c->phone_numbers_quan]) {
+        if (c->phone_numbers[c->phone_numbers_quan])
+        {
             strncpy(c->phone_numbers[c->phone_numbers_quan], new_phone, PHONE_NUMBER_SIZE);
             c->phone_numbers_quan++;
         }
-        else {
+        else
+        {
             res = 1;
         }
     }
@@ -266,13 +272,108 @@ void free_strings(char **strings, unsigned int quan)
     free(strings);
 }
 
-int edit_contact(const char* fields_to_change, ...){
-    const char *token = strtok(fields_to_change, ";");
-    while (token) {
-        if (!strcmp(token, "1.1")){
-            
+int edit_contact(contact *c, const char *fields_to_change, ...)
+{
+    va_list args;
+    va_start(args, fields_to_change);
+
+    const char *token = strtok((char *)fields_to_change, ";");
+    while (token)
+    {
+        if (!strcmp(token, "1.1"))
+        {
+            char *first_name = va_arg(args, char *);
+            strncpy(c->names.first_name, first_name, FIRST_NAME_LENGTH);
+        }
+        else if (!strcmp(token, "1.2"))
+        {
+            char *middle_name = va_arg(args, char *);
+            strncpy(c->names.middle_name, middle_name, MIDDLE_NAME_LENGTH);
+        }
+        else if (!strcmp(token, "1.3"))
+        {
+            char *last_name = va_arg(args, char *);
+            strncpy(c->names.last_name, last_name, LAST_NAME_LENGTH);
+        }
+        else if (!strcmp(token, "2.1"))
+        {
+            char *country = va_arg(args, char *);
+            strncpy(c->address.country, country, COUNTRY_LENGTH);
+        }
+        else if (!strcmp(token, "2.2"))
+        {
+            char *city = va_arg(args, char *);
+            strncpy(c->address.city, city, CITY_LENGTH);
+        }
+        else if (!strcmp(token, "2.3"))
+        {
+            char *street = va_arg(args, char *);
+            strncpy(c->address.street, street, STREET_LENGTH);
+        }
+        else if (!strcmp(token, "2.4"))
+        {
+            char *building = va_arg(args, char *);
+            strncpy(c->address.building, building, BUILDING_LENGTH);
+        }
+        else if (!strcmp(token, "2.5"))
+        {
+            char *flat = va_arg(args, char *);
+            strncpy(c->address.flat, flat, FLAT_LENGTH);
+        }
+        else if (!strcmp(token, "3"))
+        {
+            char *workplace = va_arg(args, char *);
+            strncpy(c->workplace, workplace, 100);
+        }
+        else if (!strcmp(token, "4"))
+        {
+            char *position = va_arg(args, char *);
+            strncpy(c->position, position, 50);
+        }
+        else if (!strncmp(token, "5.", 2))
+        {
+            if (strlen(token) >= 3)
+            {
+                unsigned char index = token[2];
+                char *link = va_arg(args, char *);
+                if (index < c->social_media_links_quan)
+                {
+                    strncpy(c->social_media_links[index], link, SOCIAL_MEDIA_LINK_SIZE);
+                }
+            }
+        }
+        else if (!strncmp(token, "6.", 2))
+        {
+            if (strlen(token) >= 3)
+            {
+                unsigned char index = token[2];
+                char *email = va_arg(args, char *);
+                if (index < c->emails_quan)
+                {
+                    strncpy(c->emails[index], email, EMAIL_SIZE);
+                }
+            }
+        }
+        else if (!strncmp(token, "7.", 2))
+        {
+            if (strlen(token) >= 3)
+            {
+                unsigned char index = token[2];
+                char *phone = va_arg(args, char *);
+                if (index < c->phone_numbers_quan)
+                {
+                    strncpy(c->phone_numbers[index], phone, PHONE_NUMBER_SIZE);
+                }
+            }
+        }
+        else
+        {
+            return 1;
         }
 
         token = strtok(NULL, ";");
     }
+
+    va_end(args);
+    return 0;
 }
