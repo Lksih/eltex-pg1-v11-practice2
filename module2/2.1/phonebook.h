@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "contact.h"
 
-const unsigned int PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP = 10;
+#define PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP 10
 
 typedef struct {
     contact* contacts;
@@ -13,6 +13,7 @@ typedef struct {
 } phonebook;
 
 int init_phonebook(phonebook *pb);
+void delete_phonebook(phonebook *pb);
 int add_contact_to_phonebook(phonebook *pb, contact new_contact);
 int delete_contact_from_phonebook(phonebook *pb, unsigned int ind);
 int edit_contact_in_phonebook(phonebook *pb, unsigned int ind, const char *fields_to_change, ...);

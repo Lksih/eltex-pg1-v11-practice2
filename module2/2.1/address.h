@@ -1,11 +1,11 @@
 #ifndef ADDRESS_H
 #define ADDRESS_H
 
-const unsigned int COUNTRY_LENGTH = 21;
-const unsigned int CITY_LENGTH = 21;
-const unsigned int STREET_LENGTH = 21;
-const unsigned int BUILDING_LENGTH = 21;
-const unsigned int FLAT_LENGTH = 21;
+#define COUNTRY_LENGTH 21
+#define CITY_LENGTH 21
+#define STREET_LENGTH 21
+#define BUILDING_LENGTH 21
+#define FLAT_LENGTH 21
 
 typedef struct {
     char country[21];

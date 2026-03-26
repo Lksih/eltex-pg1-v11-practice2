@@ -6,13 +6,13 @@
 #include "names.h"
 #include "address.h"
 
-const unsigned int SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP = 10;
-const unsigned int EMAILS_CAPACITY_INCREASE_STEP = 10;
-const unsigned int PHONE_NUMBERS_CAPACITY_INCREASE_STEP = 10;
+#define SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP 10
+#define EMAILS_CAPACITY_INCREASE_STEP 10
+#define PHONE_NUMBERS_CAPACITY_INCREASE_STEP 10
 
-const unsigned int SOCIAL_MEDIA_LINK_SIZE = 1001;
-const unsigned int EMAIL_SIZE = 256;
-const unsigned int PHONE_NUMBER_SIZE = 11;
+#define SOCIAL_MEDIA_LINK_SIZE 1001
+#define EMAIL_SIZE 256
+#define PHONE_NUMBER_SIZE 11
 
 typedef struct {
     names names; // 1.1 1.2 1.3
