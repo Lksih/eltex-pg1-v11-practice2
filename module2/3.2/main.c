@@ -47,8 +47,8 @@ uint32_t mask_to_uint(const char *mask_str) {
 }
 
 uint32_t generate_random_ip() {
-    uint32_t ip = rand() % UINT16_MAX + 1;
-    ip = (ip << 16) | (rand() % UINT16_MAX + 1);
+    uint32_t ip = rand() % (UINT16_MAX + 1);
+    ip = (ip << 16) | (rand() % (UINT16_MAX + 1));
     return ip;
 }
 
