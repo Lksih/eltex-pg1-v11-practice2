@@ -9,11 +9,11 @@ void print_letters(mode_t mode);
 void print_numeric(mode_t mode);
 mode_t letters_to_mode(const char *letters);
 mode_t modify_mode(mode_t mode, const char *command);
+void clear_stdin();
 
-void clear_stdin() {
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
-}
+void menu1(mode_t *current_mode, int *mode_set, char *input, int input_size);
+void menu2(mode_t *current_mode, int *mode_set, char *input, int input_size);
+void menu3(mode_t *current_mode, int *mode_set, char *input, int input_size);
 
 int main() {
     int choice = -1;
@@ -35,81 +35,18 @@ int main() {
         switch (choice)
         {
             case 0:
-            exit(EXIT_SUCCESS);
-            break;
+                exit(EXIT_SUCCESS);
+                break;
             case 1:
-            {
-                printf("Введите права доступа в числовом или буквенном виде:\n");
-                if (!fgets(input, sizeof(input), stdin)) {
-                    fprintf(stderr, "Ошибка ввода");
-                    break;
-                }
-                input[strcspn(input, "\n")] = 0;
-
-                if (input[0] >= '0' && input[0] <= '9') {
-                    if (sscanf(input, "%o", &current_mode) != 1) {
-                        fprintf(stderr, "Неверное числовое значение\n");
-                        break;
-                    }
-                }
-                else{
-                    current_mode = letters_to_mode(input);
-                    if(current_mode == (mode_t)-1) {
-                        break;
-                    }
-                }
-                mode_set = 1;
-                printf("Введённые права:\n");
-                print_numeric(current_mode);
-                print_letters(current_mode);
-                print_bits(current_mode);
-            }
-            break;
+                menu1(&current_mode, &mode_set, input, 256);
+                break;
             case 2:
-            {
-                printf("Введите путь к файлу:\n");
-                if (!fgets(input, sizeof(input), stdin)) {
-                    fprintf(stderr, "Ошибка ввода");
-                    break;
-                }
-                input[strcspn(input, "\n")] = 0;
-
-                struct stat sb;
-                if (stat(input, &sb) == 0) {
-                    current_mode = sb.st_mode;
-                    mode_set = 1;
-                    printf("Информация о файле: %s\n", input);
-                    print_numeric(current_mode);
-                    print_letters(current_mode);
-                    print_bits(current_mode);
-                } else {
-                    fprintf(stderr, "Не удалось получить информацию о файле\n");
-                }
-            }
+                menu2(&current_mode, &mode_set, input, 256);
+                break;
             break;
             case 3:
-            {
-                if (!mode_set) {
-                    printf("Сначала установите права доступа\n");
-                    break;
-                }
-
-                printf("Введите новые права:\n");
-                if (!fgets(input, sizeof(input), stdin)) {
-                    fprintf(stderr, "Ошибка ввода");
-                    break;
-                }
-                input[strcspn(input, "\n")] = 0;
-
-                mode_t new_mode = modify_mode(current_mode, input);
-                if (new_mode != (mode_t)-1) {
-                    current_mode = new_mode;
-                    printf("Права изменены:\n");
-                    print_numeric(current_mode);
-                    print_letters(current_mode);
-                    print_bits(current_mode);
-                }
-            }
+                menu3(&current_mode, &mode_set, input, 256);
+                break;
             break;
             default:
                 printf("Неверный выбор\n");
@@ -119,6 +56,82 @@ int main() {
         choice = -1;
     }
     return 0;
+}
+
+void menu1(mode_t *current_mode, int *mode_set, char *input, int input_size) {
+    printf("Введите права доступа в числовом или буквенном виде:\n");
+    if (!fgets(input, input_size, stdin)) {
+        fprintf(stderr, "Ошибка ввода");
+        return;
+    }
+    input[strcspn(input, "\n")] = 0;
+
+    if (input[0] >= '0' && input[0] <= '9') {
+        if (sscanf(input, "%o", current_mode) != 1) {
+            fprintf(stderr, "Неверное числовое значение\n");
+            return;
+        }
+    }
+    else {
+        *current_mode = letters_to_mode(input);
+        if(*current_mode == (mode_t)-1) {
+            return;
+        }
+    }
+    *mode_set = 1;
+    printf("Введённые права:\n");
+    print_numeric(*current_mode);
+    print_letters(*current_mode);
+    print_bits(*current_mode);
+}
+
+void menu2(mode_t *current_mode, int *mode_set, char *input, int input_size) {
+    printf("Введите путь к файлу:\n");
+    if (!fgets(input, input_size, stdin)) {
+        fprintf(stderr, "Ошибка ввода");
+        return;
+    }
+    input[strcspn(input, "\n")] = 0;
+
+    struct stat sb;
+    if (stat(input, &sb) == 0) {
+        *current_mode = sb.st_mode;
+        *mode_set = 1;
+        printf("Информация о файле: %s\n", input);
+        print_numeric(*current_mode);
+        print_letters(*current_mode);
+        print_bits(*current_mode);
+    } else {
+        fprintf(stderr, "Не удалось получить информацию о файле\n");
+    }
+}
+
+void menu3(mode_t *current_mode, int *mode_set, char *input, int input_size) {
+    if (!*mode_set) {
+        printf("Сначала установите права доступа\n");
+        return;
+    }
+
+    printf("Введите новые права:\n");
+    if (!fgets(input, input_size, stdin)) {
+        fprintf(stderr, "Ошибка ввода");
+        return;
+    }
+    input[strcspn(input, "\n")] = 0;
+
+    mode_t new_mode = modify_mode(*current_mode, input);
+    if (new_mode != (mode_t)-1) {
+        *current_mode = new_mode;
+        printf("Права изменены:\n");
+        print_numeric(*current_mode);
+        print_letters(*current_mode);
+        print_bits(*current_mode);
+    }
+}
+
+void clear_stdin() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
 }
 
 void print_bits(mode_t mode) {
