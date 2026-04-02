@@ -85,7 +85,7 @@ int delete_contact_from_phonebook(phonebook *pb, unsigned int ind)
     return res;
 }
 
-int edit_contact_in_phonebook(phonebook *pb, unsigned int ind, const char *fields_to_change, ...)
+int edit_contact_in_phonebook(phonebook *pb, unsigned int ind, char *fields_to_change, ...)
 {
     int res = 0;
 

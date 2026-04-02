@@ -263,27 +263,27 @@ void free_strings(char **strings, unsigned int quan)
     free(strings);
 }
 
-int edit_contact(contact *c, const char *fields_to_change, va_list args)
+int edit_contact(contact *c, char *fields_to_change, va_list args)
 {
     int res = 0;
 
-    const char *token = strtok((char *)fields_to_change, ";");
+    const char *token = strtok(fields_to_change, ";");
     while (token)
     {
         if (!strcmp(token, "1.1"))
         {
-            char *first_name = va_arg(args, char *);
-            strncpy(c->names.first_name, first_name, FIRST_NAME_LENGTH);
+            char *last_name = va_arg(args, char *);
+            strncpy(c->names.last_name, last_name, LAST_NAME_LENGTH);
         }
         else if (!strcmp(token, "1.2"))
         {
-            char *middle_name = va_arg(args, char *);
-            strncpy(c->names.middle_name, middle_name, MIDDLE_NAME_LENGTH);
+            char *first_name = va_arg(args, char *);
+            strncpy(c->names.first_name, first_name, FIRST_NAME_LENGTH);
         }
         else if (!strcmp(token, "1.3"))
         {
-            char *last_name = va_arg(args, char *);
-            strncpy(c->names.last_name, last_name, LAST_NAME_LENGTH);
+            char *middle_name = va_arg(args, char *);
+            strncpy(c->names.middle_name, middle_name, MIDDLE_NAME_LENGTH);
         }
         else if (!strcmp(token, "2.1"))
         {
