@@ -95,10 +95,7 @@ int delete_social_media_link_from_contact(contact *c, unsigned int ind)
     else
     {
         free(c->social_media_links[ind]);
-        for (unsigned int i = ind + 1; i < c->social_media_links_quan; i++)
-        {
-            c->social_media_links[i - 1] = c->social_media_links[i];
-        }
+        memmove(&(c->social_media_links[ind]), &(c->social_media_links[ind + 1]), sizeof(char *) * (c->social_media_links_quan - ind - 1));
         c->social_media_links_quan--;
     }
 
@@ -161,10 +158,7 @@ int delete_email_from_contact(contact *c, unsigned int ind)
     else
     {
         free(c->emails[ind]);
-        for (unsigned int i = ind + 1; i < c->emails_quan; i++)
-        {
-            c->emails[i - 1] = c->emails[i];
-        }
+        memmove(&(c->emails[ind]), &(c->emails[ind + 1]), sizeof(char *) * (c->emails_quan - ind - 1));
         c->emails_quan--;
     }
 
@@ -227,10 +221,7 @@ int delete_phone_number_from_contact(contact *c, unsigned int ind)
     else
     {
         free(c->phone_numbers[ind]);
-        for (unsigned int i = ind + 1; i < c->phone_numbers_quan; i++)
-        {
-            c->phone_numbers[i - 1] = c->phone_numbers[i];
-        }
+        memmove(&(c->phone_numbers[ind]), &(c->phone_numbers[ind + 1]), sizeof(char *) * (c->phone_numbers_quan - ind - 1));
         c->phone_numbers_quan--;
     }
 

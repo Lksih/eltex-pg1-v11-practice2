@@ -68,10 +68,7 @@ int delete_contact_from_phonebook(phonebook *pb, unsigned int ind)
     else
     {
         delete_contact(&(pb->contacts[ind]));
-        for (unsigned int i = ind + 1; i < pb->contacts_quan; i++)
-        {
-            pb->contacts[i - 1] = pb->contacts[i];
-        }
+        memmove(&(pb->contacts[ind]), &(pb->contacts[ind + 1]), sizeof(contact) * (pb->contacts_quan - ind - 1));
         pb->contacts_quan--;
     }
 
