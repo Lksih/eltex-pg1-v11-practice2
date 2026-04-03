@@ -97,7 +97,129 @@ int edit_contact_in_phonebook(phonebook *pb, unsigned int ind, char *fields_to_c
     {
         va_list args;
         va_start(args, fields_to_change);
-        res = edit_contact(&(pb->contacts[ind]), fields_to_change, args);
+
+        contact *c = &(pb->contacts[ind]);
+        const char *token = strtok(fields_to_change, ";");
+        while (token)
+        {
+            if (!strcmp(token, "1.1"))
+            {
+                char *last_name = va_arg(args, char *);
+                strncpy(c->names.last_name, last_name, LAST_NAME_LENGTH);
+            }
+            else if (!strcmp(token, "1.2"))
+            {
+                char *first_name = va_arg(args, char *);
+                strncpy(c->names.first_name, first_name, FIRST_NAME_LENGTH);
+            }
+            else if (!strcmp(token, "1.3"))
+            {
+                char *middle_name = va_arg(args, char *);
+                strncpy(c->names.middle_name, middle_name, MIDDLE_NAME_LENGTH);
+            }
+            else if (!strcmp(token, "2.1"))
+            {
+                char *country = va_arg(args, char *);
+                strncpy(c->address.country, country, COUNTRY_LENGTH);
+            }
+            else if (!strcmp(token, "2.2"))
+            {
+                char *city = va_arg(args, char *);
+                strncpy(c->address.city, city, CITY_LENGTH);
+            }
+            else if (!strcmp(token, "2.3"))
+            {
+                char *street = va_arg(args, char *);
+                strncpy(c->address.street, street, STREET_LENGTH);
+            }
+            else if (!strcmp(token, "2.4"))
+            {
+                char *building = va_arg(args, char *);
+                strncpy(c->address.building, building, BUILDING_LENGTH);
+            }
+            else if (!strcmp(token, "2.5"))
+            {
+                char *flat = va_arg(args, char *);
+                strncpy(c->address.flat, flat, FLAT_LENGTH);
+            }
+            else if (!strcmp(token, "3"))
+            {
+                char *workplace = va_arg(args, char *);
+                strncpy(c->workplace, workplace, 100);
+            }
+            else if (!strcmp(token, "4"))
+            {
+                char *position = va_arg(args, char *);
+                strncpy(c->position, position, 50);
+            }
+            else if (!strncmp(token, "5.", 2))
+            {
+                if (strlen(token) >= 3)
+                {
+                    unsigned char index = token[2] - '0' - 1;
+                    char *link = va_arg(args, char *);
+                    if (index < c->social_media_links_quan)
+                    {
+                        strncpy(c->social_media_links[index], link, SOCIAL_MEDIA_LINK_SIZE);
+                    }
+                    else
+                    {
+                        res = 1;
+                    }
+                }
+                else
+                {
+                    res = 1;
+                }
+            }
+            else if (!strncmp(token, "6.", 2))
+            {
+                if (strlen(token) >= 3)
+                {
+                    unsigned char index = token[2] - '0' - 1;
+                    char *email = va_arg(args, char *);
+                    if (index < c->emails_quan)
+                    {
+                        strncpy(c->emails[index], email, EMAIL_SIZE);
+                    }
+                    else
+                    {
+                        res = 1;
+                    }
+                }
+                else
+                {
+                    res = 1;
+                }
+            }
+            else if (!strncmp(token, "7.", 2))
+            {
+                if (strlen(token) >= 3)
+                {
+                    unsigned char index = token[2] - '0' - 1;
+                    char *phone = va_arg(args, char *);
+                    if (index < c->phone_numbers_quan)
+                    {
+                        strncpy(c->phone_numbers[index], phone, PHONE_NUMBER_SIZE);
+                    }
+                    else
+                    {
+                        res = 1;
+                    }
+                }
+                else
+                {
+                    res = 1;
+                }
+            }
+            else
+            {
+                res = 1;
+            }
+
+            token = strtok(NULL, ";");
+        }
+
         va_end(args);
     }
 

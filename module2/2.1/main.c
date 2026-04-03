@@ -118,6 +118,11 @@ int main()
             scanf("%255s", fields_to_change);
 
             contact edited_contact;
+            if (init_contact(&edited_contact) != 0)
+            {
+                printf("Ошибка редактирования контакта\n\n");
+                break;
+            }
 
             int res = input_contact(&edited_contact);
             if (res != 0) {
@@ -135,6 +140,8 @@ int main()
                 } else {
                     printf("Ошибка редактирования контакта\n\n");
                 }
+            
+            delete_contact(&edited_contact);
 
             break;
         }
