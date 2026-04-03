@@ -270,19 +270,44 @@ contact *find_by_id(phonebook *pb, unsigned long long id)
     return NULL;
 }
 
-contact *find_by_last_name(phonebook *pb, const char *last_name)
+contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *count)
 {
     unsigned int target_id = hash_djb2(last_name);
 
-    contact *existing = find_by_id(pb, target_id);
-    if (existing != NULL)
+    contact **result = malloc(sizeof(contact *) * FOUND_CONTACTS_CAPACITY_INCREASE_STEP);
+    *count = 0;
+    unsigned int capacity = FOUND_CONTACTS_CAPACITY_INCREASE_STEP;
+
+    if (result)
     {
-        while (existing != NULL && strcmp(existing->names.last_name, last_name) != 0)
+        contact *existing = find_by_id(pb, target_id);
+        if (existing != NULL)
         {
-            target_id++;
-            existing = find_by_id(pb, target_id);
+            while (existing != NULL)
+            {
+                if (!strcmp(existing->names.last_name, last_name))
+                {
+                    if (*count == capacity)
+                    {
+                        contact **new_result = realloc(result, sizeof(contact *) * (capacity + FOUND_CONTACTS_CAPACITY_INCREASE_STEP));
+                        if (new_result)
+                        {
+                            result = new_result;
+                            capacity += FOUND_CONTACTS_CAPACITY_INCREASE_STEP;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    result[*count] = existing;
+                    (*count)++;
+                }
+                target_id++;
+                existing = find_by_id(pb, target_id);
+            }
+            return result;
         }
-        return existing;
     }
 
     return NULL;

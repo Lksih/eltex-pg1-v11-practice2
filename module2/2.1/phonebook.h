@@ -5,6 +5,7 @@
 #include "contact.h"
 
 #define PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP 10
+#define FOUND_CONTACTS_CAPACITY_INCREASE_STEP 10
 
 typedef struct {
     contact* contacts;
@@ -19,7 +20,7 @@ int delete_contact_from_phonebook(phonebook *pb, unsigned long long id);
 int edit_contact_in_phonebook(phonebook *pb, unsigned long long id, char *fields_to_change, ...);
 unsigned long long hash_djb2(const char *str);
 contact* find_by_id(phonebook *pb, unsigned long long id);
-contact* find_by_last_name(phonebook *pb, const char *last_name);
+contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *count);
 unsigned long long generate_id(phonebook *pb, const char *last_name);
 
 #endif

@@ -397,6 +397,64 @@ int main()
             break;
         }
 
+        case 11:
+        {
+            if (pb.contacts_quan == 0)
+            {
+                printf("Телефонная книга пуста\n\n");
+                break;
+            }
+
+            printf("Введите id контакта для поиска: ");
+            unsigned long long id;
+            scanf("%llu", &id);
+
+            contact *c = find_by_id(&pb, id);
+
+            if (c == NULL)
+            {
+                printf("Контакт не найден\n\n");
+            }
+            else
+            {
+                printf("Найден контакт:\n");
+                print_contact(c);
+            }
+
+            break;
+        }
+        case 12:
+        {
+            if (pb.contacts_quan == 0)
+            {
+                printf("Телефонная книга пуста\n\n");
+                break;
+            }
+
+            printf("Введите фамилию контакта для поиска: ");
+            char last_name[LAST_NAME_LENGTH];
+            scanf("%s", last_name);
+
+            unsigned int count;
+            contact **cs = find_by_last_name(&pb, last_name, &count);
+
+            if (cs == NULL)
+            {
+                printf("Контакты не найдены\n\n");
+            }
+            else
+            {
+                printf("Найдены контакты:\n");
+                for (unsigned int i = 0; i < count; i++)
+                {
+                    print_contact(cs[i]);
+                }
+                free(cs);
+            }
+
+            break;
+        }
+
         case 0:
             break;
 
@@ -431,8 +489,10 @@ void print_menu()
     printf("8. Удалить ссылку на соцсеть\n");
     printf("9. Удалить почту\n");
     printf("10. Удалить телефон\n");
+    printf("11. Поиск по id\n");
+    printf("12. Поиск по фамилии\n");
     printf("0. Выход\n");
-    printf("\nВыберите действие (0-10): ");
+    printf("\nВыберите действие (0-12): ");
 }
 
 void print_names(const names *n)
