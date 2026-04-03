@@ -124,8 +124,11 @@ int main()
                 break;
             }
 
-            strcpy(fields_to_change, "1.1;1.2;3");
-            res = edit_contact_in_phonebook(&pb, index, fields_to_change, edited_contact.names.last_name, edited_contact.names.first_name, edited_contact.workplace);
+            //strcpy(fields_to_change, "1.1;1.2;3");
+            //res = edit_contact_in_phonebook(&pb, index, fields_to_change, edited_contact.names.last_name, edited_contact.names.first_name, edited_contact.workplace);
+
+            strcpy(fields_to_change, "1.1;1.2;1.3;2.1;2.2;2.3;2.4;2.5;3;4;5.1;6.1;7.1");
+            res = edit_contact_in_phonebook(&pb, index, fields_to_change, edited_contact.names.last_name, edited_contact.names.first_name, edited_contact.names.middle_name, edited_contact.address.country, edited_contact.address.city, edited_contact.address.street, edited_contact.address.building, edited_contact.address.flat, edited_contact.workplace, edited_contact.position, edited_contact.social_media_links[0], edited_contact.emails[0], edited_contact.phone_numbers[0]);
 
             if (res == 0) {
                     printf("Контакт успешно отредактирован\n\n");
@@ -223,6 +226,7 @@ void print_contact(const contact *c, int index)
     printf("Контакт #%d:\n", index);
 
     print_names(&c->names);
+    print_address(&c->address);
 
     if (c->workplace[0] != '\0')
     {
@@ -232,8 +236,6 @@ void print_contact(const contact *c, int index)
     {
         printf("Должность: %s\n", c->position);
     }
-
-    print_address(&c->address);
 
     if (c->phone_numbers_quan > 0)
     {

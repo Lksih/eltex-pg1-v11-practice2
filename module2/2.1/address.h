@@ -7,6 +7,8 @@
 #define BUILDING_LENGTH 21
 #define FLAT_LENGTH 21
 
+#include <string.h>
+
 typedef struct {
     char country[21];
     char city[21];

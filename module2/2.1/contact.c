@@ -324,36 +324,61 @@ int edit_contact(contact *c, char *fields_to_change, va_list args)
         {
             if (strlen(token) >= 3)
             {
-                unsigned char index = token[2];
+                unsigned char index = token[2] - '0' - 1;
                 char *link = va_arg(args, char *);
                 if (index < c->social_media_links_quan)
                 {
                     strncpy(c->social_media_links[index], link, SOCIAL_MEDIA_LINK_SIZE);
                 }
+                else
+                {
+                    res = 1;
+                }
+            }
+            else
+            {
+                res = 1;
             }
         }
         else if (!strncmp(token, "6.", 2))
         {
             if (strlen(token) >= 3)
             {
-                unsigned char index = token[2];
+                unsigned char index = token[2] - '0' - 1;
+                printf("index = %d\n", index);
                 char *email = va_arg(args, char *);
                 if (index < c->emails_quan)
                 {
                     strncpy(c->emails[index], email, EMAIL_SIZE);
                 }
+                else
+                {
+                    res = 1;
+                }
+            }
+            else
+            {
+                res = 1;
             }
         }
         else if (!strncmp(token, "7.", 2))
         {
             if (strlen(token) >= 3)
             {
-                unsigned char index = token[2];
+                unsigned char index = token[2] - '0' - 1;
                 char *phone = va_arg(args, char *);
                 if (index < c->phone_numbers_quan)
                 {
                     strncpy(c->phone_numbers[index], phone, PHONE_NUMBER_SIZE);
                 }
+                else
+                {
+                    res = 1;
+                }
+            }
+            else
+            {
+                res = 1;
             }
         }
         else
