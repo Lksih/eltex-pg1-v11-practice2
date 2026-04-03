@@ -309,7 +309,7 @@ contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *
             return result;
         }
     }
-
+    free(result);
     return NULL;
 }
 
