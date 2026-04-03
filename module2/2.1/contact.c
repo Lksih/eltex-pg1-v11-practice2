@@ -97,15 +97,15 @@ int delete_social_media_link_from_contact(contact *c, unsigned int ind)
         free(c->social_media_links[ind]);
         memmove(&(c->social_media_links[ind]), &(c->social_media_links[ind + 1]), sizeof(char *) * (c->social_media_links_quan - ind - 1));
         c->social_media_links_quan--;
-    }
 
-    if (c->social_media_links_capacity > c->social_media_links_quan + SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP)
-    {
-        char **new_links = realloc(c->social_media_links, sizeof(char *) * (c->social_media_links_quan + SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP));
-        if (new_links)
+        if (c->social_media_links_capacity > c->social_media_links_quan + SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP)
         {
-            c->social_media_links = new_links;
-            c->social_media_links_capacity = c->social_media_links_quan + SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP;
+            char **new_links = realloc(c->social_media_links, sizeof(char *) * (c->social_media_links_quan + SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP));
+            if (new_links)
+            {
+                c->social_media_links = new_links;
+                c->social_media_links_capacity = c->social_media_links_quan + SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP;
+            }
         }
     }
 
@@ -160,15 +160,15 @@ int delete_email_from_contact(contact *c, unsigned int ind)
         free(c->emails[ind]);
         memmove(&(c->emails[ind]), &(c->emails[ind + 1]), sizeof(char *) * (c->emails_quan - ind - 1));
         c->emails_quan--;
-    }
 
-    if (c->emails_capacity > c->emails_quan + EMAILS_CAPACITY_INCREASE_STEP)
-    {
-        char **new_emails = realloc(c->emails, sizeof(char *) * (c->emails_quan + EMAILS_CAPACITY_INCREASE_STEP));
-        if (new_emails)
+        if (c->emails_capacity > c->emails_quan + EMAILS_CAPACITY_INCREASE_STEP)
         {
-            c->emails = new_emails;
-            c->emails_capacity = c->emails_quan + EMAILS_CAPACITY_INCREASE_STEP;
+            char **new_emails = realloc(c->emails, sizeof(char *) * (c->emails_quan + EMAILS_CAPACITY_INCREASE_STEP));
+            if (new_emails)
+            {
+                c->emails = new_emails;
+                c->emails_capacity = c->emails_quan + EMAILS_CAPACITY_INCREASE_STEP;
+            }
         }
     }
 
@@ -223,15 +223,15 @@ int delete_phone_number_from_contact(contact *c, unsigned int ind)
         free(c->phone_numbers[ind]);
         memmove(&(c->phone_numbers[ind]), &(c->phone_numbers[ind + 1]), sizeof(char *) * (c->phone_numbers_quan - ind - 1));
         c->phone_numbers_quan--;
-    }
 
-    if (c->phone_numbers_capacity > c->phone_numbers_quan + PHONE_NUMBERS_CAPACITY_INCREASE_STEP)
-    {
-        char **new_phones = realloc(c->phone_numbers, sizeof(char *) * (c->phone_numbers_quan + PHONE_NUMBERS_CAPACITY_INCREASE_STEP));
-        if (new_phones)
+        if (c->phone_numbers_capacity > c->phone_numbers_quan + PHONE_NUMBERS_CAPACITY_INCREASE_STEP)
         {
-            c->phone_numbers = new_phones;
-            c->phone_numbers_capacity = c->phone_numbers_quan + PHONE_NUMBERS_CAPACITY_INCREASE_STEP;
+            char **new_phones = realloc(c->phone_numbers, sizeof(char *) * (c->phone_numbers_quan + PHONE_NUMBERS_CAPACITY_INCREASE_STEP));
+            if (new_phones)
+            {
+                c->phone_numbers = new_phones;
+                c->phone_numbers_capacity = c->phone_numbers_quan + PHONE_NUMBERS_CAPACITY_INCREASE_STEP;
+            }
         }
     }
 
