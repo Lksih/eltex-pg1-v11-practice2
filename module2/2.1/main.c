@@ -31,7 +31,7 @@ int main()
 
     if (init_phonebook(&pb) != 0)
     {
-        printf("Ошибка инициализации телефонной книги\n");
+        fprintf(stderr, "Ошибка инициализации телефонной книги\n");
         return 1;
     }
 
@@ -207,7 +207,7 @@ int input_contact(contact *c)
     fgets(c->names.last_name, sizeof(c->names.last_name), stdin);
     if (strcspn(c->names.last_name, "\n") == 0)
     {
-        printf("Ошибка: фамилия обязательна для заполнения\n\n");
+        fprintf(stderr, "Ошибка: фамилия обязательна для заполнения\n\n");
         return 1;
     }
     c->names.last_name[strcspn(c->names.last_name, "\n")] = '\0';
@@ -216,7 +216,7 @@ int input_contact(contact *c)
     fgets(c->names.first_name, sizeof(c->names.first_name), stdin);
     if (strcspn(c->names.first_name, "\n") == 0)
     {
-        printf("Ошибка: имя обязательно для заполнения\n\n");
+        fprintf(stderr, "Ошибка: имя обязательно для заполнения\n\n");
         return 1;
     }
     c->names.first_name[strcspn(c->names.first_name, "\n")] = '\0';
@@ -260,7 +260,7 @@ int input_contact(contact *c)
         social_link[strcspn(social_link, "\n")] = '\0';
         if (add_social_media_link_to_contact(c, social_link) != 0)
         {
-            printf("Ошибка добавления ссылки на соцсеть\n");
+            fprintf(stderr, "Ошибка добавления ссылки на соцсеть\n");
         }
         printf("Введите ссылку на соцсеть (или пустую строку для завершения): ");
     }
@@ -272,7 +272,7 @@ int input_contact(contact *c)
         email[strcspn(email, "\n")] = '\0';
         if (add_email_to_contact(c, email) != 0)
         {
-            printf("Ошибка добавления электронной почты\n");
+            fprintf(stderr, "Ошибка добавления электронной почты\n");
         }
         printf("Введите электронную почту (или пустую строку для завершения): ");
     }
@@ -284,7 +284,7 @@ int input_contact(contact *c)
         phone[strcspn(phone, "\n")] = '\0';
         if (add_phone_number_to_contact(c, phone) != 0)
         {
-            printf("Ошибка добавления номера телефона\n");
+            fprintf(stderr, "Ошибка добавления номера телефона\n");
         }
         printf("Введите номер телефона (или пустую строку для завершения): ");
     }
@@ -297,7 +297,7 @@ void menu1(phonebook *pb)
     contact new_contact;
     if (init_contact(&new_contact) != 0)
     {
-        printf("Ошибка инициализации контакта\n\n");
+        fprintf(stderr, "Ошибка инициализации контакта\n\n");
         return;
     }
 
@@ -313,7 +313,7 @@ void menu1(phonebook *pb)
     }
     else
     {
-        printf("Ошибка добавления контакта\n\n");
+        fprintf(stderr, "Ошибка добавления контакта\n\n");
     }
 }
 
@@ -335,7 +335,7 @@ void menu2(phonebook *pb)
     }
     else
     {
-        printf("Ошибка удаления контакта\n\n");
+        fprintf(stderr, "Ошибка удаления контакта\n\n");
     }
 }
 
@@ -366,7 +366,7 @@ void menu3(phonebook *pb)
     contact edited_contact;
     if (init_contact(&edited_contact) != 0)
     {
-        printf("Ошибка редактирования контакта\n\n");
+        fprintf(stderr, "Ошибка редактирования контакта\n\n");
         return;
     }
 
@@ -388,7 +388,7 @@ void menu3(phonebook *pb)
     }
     else
     {
-        printf("Ошибка редактирования контакта\n\n");
+        fprintf(stderr, "Ошибка редактирования контакта\n\n");
     }
 
     delete_contact(&edited_contact);
@@ -443,7 +443,7 @@ void menu5(phonebook *pb)
     }
     else
     {
-        printf("Ошибка добавления ссылки\n\n");
+        fprintf(stderr, "Ошибка добавления ссылки\n\n");
     }
 }
 
@@ -480,7 +480,7 @@ void menu6(phonebook *pb)
     }
     else
     {
-        printf("Ошибка добавления почты\n\n");
+        fprintf(stderr, "Ошибка добавления почты\n\n");
     }
 }
 
@@ -517,7 +517,7 @@ void menu7(phonebook *pb)
     }
     else
     {
-        printf("Ошибка добавления телефона\n\n");
+        fprintf(stderr, "Ошибка добавления телефона\n\n");
     }
 }
 
@@ -557,7 +557,7 @@ void menu8(phonebook *pb)
     }
     else
     {
-        printf("Ошибка удаления ссылки\n\n");
+        fprintf(stderr, "Ошибка удаления ссылки\n\n");
     }
 }
 
@@ -597,7 +597,7 @@ void menu9(phonebook *pb)
     }
     else
     {
-        printf("Ошибка удаления почты\n\n");
+        fprintf(stderr, "Ошибка удаления почты\n\n");
     }
 }
 
@@ -637,7 +637,7 @@ void menu10(phonebook *pb)
     }
     else
     {
-        printf("Ошибка удаления телефона\n\n");
+        fprintf(stderr, "Ошибка удаления телефона\n\n");
     }
 }
 
