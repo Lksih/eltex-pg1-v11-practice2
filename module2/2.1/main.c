@@ -69,7 +69,7 @@ int main()
                 break;
             }
 
-            printf("Введите id контакта для удаления");
+            printf("Введите id контакта для удаления: ");
             unsigned long long id;
             scanf("%llu", &id);
 
@@ -166,13 +166,15 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для добавления ссылки (0-%llu): ", pb.contacts_quan - 1);
-            unsigned int index;
-            scanf("%u", &index);
+            printf("Введите id контакта для добавления ссылки: ");
+            unsigned long long id;
+            scanf("%llu", &id);
 
-            if (index >= pb.contacts_quan)
+            contact *c = find_by_id(&pb, id);
+
+            if (c == NULL)
             {
-                printf("Неверный индекс\n\n");
+                printf("Контакт не найден\n\n");
                 break;
             }
 
@@ -184,7 +186,7 @@ int main()
             size_t end_ind = strcspn(link, "\n");
             link[end_ind] = '\0';
 
-            if (end_ind != 0 && add_social_media_link_to_contact(&pb.contacts[index], link) == 0)
+            if (end_ind != 0 && add_social_media_link_to_contact(c, link) == 0)
             {
                 printf("Ссылка успешно добавлена\n\n");
             }
@@ -203,13 +205,15 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для добавления почты (0-%llu): ", pb.contacts_quan - 1);
-            unsigned int index;
-            scanf("%u", &index);
+            printf("Введите id контакта для добавления почты: ");
+            unsigned long long id;
+            scanf("%llu", &id);
 
-            if (index >= pb.contacts_quan)
+            contact *c = find_by_id(&pb, id);
+
+            if (c == NULL)
             {
-                printf("Неверный индекс\n\n");
+                printf("Контакт не найден\n\n");
                 break;
             }
 
@@ -220,7 +224,7 @@ int main()
             size_t end_ind = strcspn(email, "\n");
             email[end_ind] = '\0';
 
-            if (end_ind != 0 && add_email_to_contact(&pb.contacts[index], email) == 0)
+            if (end_ind != 0 && add_email_to_contact(c, email) == 0)
             {
                 printf("Почта успешно добавлена\n\n");
             }
@@ -239,13 +243,15 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для добавления телефона (0-%llu): ", pb.contacts_quan - 1);
-            unsigned int index;
-            scanf("%u", &index);
+            printf("Введите id контакта для добавления телефона: ");
+            unsigned long long id;
+            scanf("%llu", &id);
 
-            if (index >= pb.contacts_quan)
+            contact *c = find_by_id(&pb, id);
+
+            if (c == NULL)
             {
-                printf("Неверный индекс\n\n");
+                printf("Контакт не найден\n\n");
                 break;
             }
 
@@ -256,7 +262,7 @@ int main()
             size_t end_ind = strcspn(phone, "\n");
             phone[end_ind] = '\0';
 
-            if (end_ind != 0 && add_phone_number_to_contact(&pb.contacts[index], phone) == 0)
+            if (end_ind != 0 && add_phone_number_to_contact(c, phone) == 0)
             {
                 printf("Телефон успешно добавлен\n\n");
             }
@@ -275,27 +281,29 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для удаления ссылки (0-%llu): ", pb.contacts_quan - 1);
-            unsigned int index;
-            scanf("%u", &index);
+            printf("Введите id контакта для удаления ссылки: ");
+            unsigned long long id;
+            scanf("%llu", &id);
 
-            if (index >= pb.contacts_quan)
+            contact *c = find_by_id(&pb, id);
+
+            if (c == NULL)
             {
-                printf("Неверный индекс\n\n");
+                printf("Контакт не найден\n\n");
                 break;
             }
 
-            if (pb.contacts[index].social_media_links_quan == 0)
+            if (c->social_media_links_quan == 0)
             {
                 printf("Нет ссылок для удаления\n\n");
                 break;
             }
 
-            printf("Введите индекс ссылки для удаления (0-%u): ", pb.contacts[index].social_media_links_quan - 1);
-            unsigned int link_index;
-            scanf("%u", &link_index);
+            printf("Введите индекс ссылки для удаления (0-%hhu): ", c->social_media_links_quan - 1);
+            unsigned char link_index;
+            scanf("%hhu", &link_index);
 
-            if (delete_social_media_link_from_contact(&pb.contacts[index], link_index) == 0)
+            if (delete_social_media_link_from_contact(c, link_index) == 0)
             {
                 printf("Ссылка успешно удалена\n\n");
             }
@@ -314,27 +322,29 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для удаления почты (0-%llu): ", pb.contacts_quan - 1);
-            unsigned int index;
-            scanf("%u", &index);
+            printf("Введите id контакта для удаления почты: ");
+            unsigned long long id;
+            scanf("%llu", &id);
 
-            if (index >= pb.contacts_quan)
+            contact *c = find_by_id(&pb, id);
+
+            if (c == NULL)
             {
-                printf("Неверный индекс\n\n");
+                printf("Контакт не найден\n\n");
                 break;
             }
 
-            if (pb.contacts[index].emails_quan == 0)
+            if (c->emails_quan == 0)
             {
                 printf("Нет почт для удаления\n\n");
                 break;
             }
 
-            printf("Введите индекс почты для удаления (0-%u): ", pb.contacts[index].emails_quan - 1);
-            unsigned int email_index;
-            scanf("%u", &email_index);
+            printf("Введите индекс почты для удаления (0-%hhu): ", c->emails_quan - 1);
+            unsigned char email_index;
+            scanf("%hhu", &email_index);
 
-            if (delete_email_from_contact(&pb.contacts[index], email_index) == 0)
+            if (delete_email_from_contact(c, email_index) == 0)
             {
                 printf("Почта успешно удалена\n\n");
             }
@@ -353,27 +363,29 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для удаления телефона (0-%llu): ", pb.contacts_quan - 1);
-            unsigned int index;
-            scanf("%u", &index);
+            printf("Введите id контакта для удаления телефона: ");
+            unsigned long long id;
+            scanf("%llu", &id);
 
-            if (index >= pb.contacts_quan)
+            contact *c = find_by_id(&pb, id);
+
+            if (c == NULL)
             {
-                printf("Неверный индекс\n\n");
+                printf("Контакт не найден\n\n");
                 break;
             }
 
-            if (pb.contacts[index].phone_numbers_quan == 0)
+            if (c->phone_numbers_quan == 0)
             {
                 printf("Нет телефонов для удаления\n\n");
                 break;
             }
 
-            printf("Введите индекс телефона для удаления (0-%u): ", pb.contacts[index].phone_numbers_quan - 1);
-            unsigned int phone_index;
-            scanf("%u", &phone_index);
+            printf("Введите индекс телефона для удаления (0-%hhu): ", c->phone_numbers_quan - 1);
+            unsigned char phone_index;
+            scanf("%hhu", &phone_index);
 
-            if (delete_phone_number_from_contact(&pb.contacts[index], phone_index) == 0)
+            if (delete_phone_number_from_contact(c, phone_index) == 0)
             {
                 printf("Телефон успешно удален\n\n");
             }
@@ -473,12 +485,12 @@ void print_contact(const contact *c)
         printf("Должность: %s\n", c->position);
     }
 
-    if (c->phone_numbers_quan > 0)
+    if (c->social_media_links_quan > 0)
     {
-        printf("Телефоны:\n");
-        for (int i = 0; i < c->phone_numbers_quan; i++)
+        printf("Соцсети:\n");
+        for (int i = 0; i < c->social_media_links_quan; i++)
         {
-            printf("  %s\n", c->phone_numbers[i]);
+            printf("  %s\n", c->social_media_links[i]);
         }
     }
 
@@ -491,12 +503,12 @@ void print_contact(const contact *c)
         }
     }
 
-    if (c->social_media_links_quan > 0)
+    if (c->phone_numbers_quan > 0)
     {
-        printf("Соцсети:\n");
-        for (int i = 0; i < c->social_media_links_quan; i++)
+        printf("Телефоны:\n");
+        for (int i = 0; i < c->phone_numbers_quan; i++)
         {
-            printf("  %s\n", c->social_media_links[i]);
+            printf("  %s\n", c->phone_numbers[i]);
         }
     }
     printf("\n");
