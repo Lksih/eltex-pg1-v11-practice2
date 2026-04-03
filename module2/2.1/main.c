@@ -15,7 +15,6 @@ int input_contact(contact *c);
 int main()
 {
     phonebook pb;
-    char choice;
 
     if (init_phonebook(&pb) != 0)
     {
@@ -23,14 +22,19 @@ int main()
         return 1;
     }
 
+    char choice = -1;
+
     do
     {
         print_menu();
-        scanf(" %c", &choice);
+
+        char choice_str[3];
+        scanf("%s", choice_str);
+        sscanf(choice_str, "%hhd", &choice);
 
         switch (choice)
         {
-        case '1':
+        case 1:
         {
             contact new_contact;
             if (init_contact(&new_contact) != 0)
@@ -57,7 +61,7 @@ int main()
             break;
         }
 
-        case '2':
+        case 2:
         {
             if (pb.contacts_quan == 0)
             {
@@ -87,7 +91,7 @@ int main()
             break;
         }
 
-        case '3':
+        case 3:
         {
             if (pb.contacts_quan == 0)
             {
@@ -125,28 +129,32 @@ int main()
             }
 
             int res = input_contact(&edited_contact);
-            if (res != 0) {
+            if (res != 0)
+            {
                 break;
             }
 
-            //strcpy(fields_to_change, "1.1;1.2;3");
-            //res = edit_contact_in_phonebook(&pb, index, fields_to_change, edited_contact.names.last_name, edited_contact.names.first_name, edited_contact.workplace);
+            // strcpy(fields_to_change, "1.1;1.2;3");
+            // res = edit_contact_in_phonebook(&pb, index, fields_to_change, edited_contact.names.last_name, edited_contact.names.first_name, edited_contact.workplace);
 
             strcpy(fields_to_change, "1.1;1.2;1.3;2.1;2.2;2.3;2.4;2.5;3;4;5.1;6.1;7.1");
             res = edit_contact_in_phonebook(&pb, index, fields_to_change, edited_contact.names.last_name, edited_contact.names.first_name, edited_contact.names.middle_name, edited_contact.address.country, edited_contact.address.city, edited_contact.address.street, edited_contact.address.building, edited_contact.address.flat, edited_contact.workplace, edited_contact.position, edited_contact.social_media_links[0], edited_contact.emails[0], edited_contact.phone_numbers[0]);
 
-            if (res == 0) {
-                    printf("Контакт успешно отредактирован\n\n");
-                } else {
-                    printf("Ошибка редактирования контакта\n\n");
-                }
-            
+            if (res == 0)
+            {
+                printf("Контакт успешно отредактирован\n\n");
+            }
+            else
+            {
+                printf("Ошибка редактирования контакта\n\n");
+            }
+
             delete_contact(&edited_contact);
 
             break;
         }
 
-        case '4':
+        case 4:
         {
             if (pb.contacts_quan == 0)
             {
@@ -162,7 +170,234 @@ int main()
             break;
         }
 
-        case '0':
+        case 5:
+        {
+            if (pb.contacts_quan == 0)
+            {
+                printf("Телефонная книга пуста\n\n");
+                break;
+            }
+
+            printf("Введите индекс контакта для добавления ссылки (0-%u): ", pb.contacts_quan - 1);
+            unsigned int index;
+            scanf("%u", &index);
+
+            if (index >= pb.contacts_quan)
+            {
+                printf("Неверный индекс\n\n");
+                break;
+            }
+
+            char link[SOCIAL_MEDIA_LINK_SIZE];
+            printf("Введите ссылку на соцсеть: ");
+            clear_stdin();
+            fgets(link, sizeof(link), stdin);
+            link[strcspn(link, "\n")] = '\0';
+            size_t end_ind = strcspn(link, "\n");
+            link[end_ind] = '\0';
+
+            if (end_ind != 0 && add_social_media_link_to_contact(&pb.contacts[index], link) == 0)
+            {
+                printf("Ссылка успешно добавлена\n\n");
+            }
+            else
+            {
+                printf("Ошибка добавления ссылки\n\n");
+            }
+
+            break;
+        }
+        case 6:
+        {
+            if (pb.contacts_quan == 0)
+            {
+                printf("Телефонная книга пуста\n\n");
+                break;
+            }
+
+            printf("Введите индекс контакта для добавления почты (0-%u): ", pb.contacts_quan - 1);
+            unsigned int index;
+            scanf("%u", &index);
+
+            if (index >= pb.contacts_quan)
+            {
+                printf("Неверный индекс\n\n");
+                break;
+            }
+
+            char email[EMAIL_SIZE];
+            printf("Введите электронную почту: ");
+            clear_stdin();
+            fgets(email, sizeof(email), stdin);
+            size_t end_ind = strcspn(email, "\n");
+            email[end_ind] = '\0';
+
+            if (end_ind != 0 && add_email_to_contact(&pb.contacts[index], email) == 0)
+            {
+                printf("Почта успешно добавлена\n\n");
+            }
+            else
+            {
+                printf("Ошибка добавления почты\n\n");
+            }
+
+            break;
+        }
+        case 7:
+        {
+            if (pb.contacts_quan == 0)
+            {
+                printf("Телефонная книга пуста\n\n");
+                break;
+            }
+
+            printf("Введите индекс контакта для добавления телефона (0-%u): ", pb.contacts_quan - 1);
+            unsigned int index;
+            scanf("%u", &index);
+
+            if (index >= pb.contacts_quan)
+            {
+                printf("Неверный индекс\n\n");
+                break;
+            }
+
+            char phone[PHONE_NUMBER_SIZE];
+            printf("Введите номер телефона: ");
+            clear_stdin();
+            fgets(phone, sizeof(phone), stdin);
+            size_t end_ind = strcspn(phone, "\n");
+            phone[end_ind] = '\0';
+
+            if (end_ind != 0 && add_phone_number_to_contact(&pb.contacts[index], phone) == 0)
+            {
+                printf("Телефон успешно добавлен\n\n");
+            }
+            else
+            {
+                printf("Ошибка добавления телефона\n\n");
+            }
+
+            break;
+        }
+        case 8:
+        {
+            if (pb.contacts_quan == 0)
+            {
+                printf("Телефонная книга пуста\n\n");
+                break;
+            }
+
+            printf("Введите индекс контакта для удаления ссылки (0-%u): ", pb.contacts_quan - 1);
+            unsigned int index;
+            scanf("%u", &index);
+
+            if (index >= pb.contacts_quan)
+            {
+                printf("Неверный индекс\n\n");
+                break;
+            }
+
+            if (pb.contacts[index].social_media_links_quan == 0)
+            {
+                printf("Нет ссылок для удаления\n\n");
+                break;
+            }
+
+            printf("Введите индекс ссылки для удаления (0-%u): ", pb.contacts[index].social_media_links_quan - 1);
+            unsigned int link_index;
+            scanf("%u", &link_index);
+
+            if (delete_social_media_link_from_contact(&pb.contacts[index], link_index) == 0)
+            {
+                printf("Ссылка успешно удалена\n\n");
+            }
+            else
+            {
+                printf("Ошибка удаления ссылки\n\n");
+            }
+
+            break;
+        }
+        case 9:
+        {
+            if (pb.contacts_quan == 0)
+            {
+                printf("Телефонная книга пуста\n\n");
+                break;
+            }
+
+            printf("Введите индекс контакта для удаления почты (0-%u): ", pb.contacts_quan - 1);
+            unsigned int index;
+            scanf("%u", &index);
+
+            if (index >= pb.contacts_quan)
+            {
+                printf("Неверный индекс\n\n");
+                break;
+            }
+
+            if (pb.contacts[index].emails_quan == 0)
+            {
+                printf("Нет почт для удаления\n\n");
+                break;
+            }
+
+            printf("Введите индекс почты для удаления (0-%u): ", pb.contacts[index].emails_quan - 1);
+            unsigned int email_index;
+            scanf("%u", &email_index);
+
+            if (delete_email_from_contact(&pb.contacts[index], email_index) == 0)
+            {
+                printf("Почта успешно удалена\n\n");
+            }
+            else
+            {
+                printf("Ошибка удаления почты\n\n");
+            }
+
+            break;
+        }
+        case 10:
+        {
+            if (pb.contacts_quan == 0)
+            {
+                printf("Телефонная книга пуста\n\n");
+                break;
+            }
+
+            printf("Введите индекс контакта для удаления телефона (0-%u): ", pb.contacts_quan - 1);
+            unsigned int index;
+            scanf("%u", &index);
+
+            if (index >= pb.contacts_quan)
+            {
+                printf("Неверный индекс\n\n");
+                break;
+            }
+
+            if (pb.contacts[index].phone_numbers_quan == 0)
+            {
+                printf("Нет телефонов для удаления\n\n");
+                break;
+            }
+
+            printf("Введите индекс телефона для удаления (0-%u): ", pb.contacts[index].phone_numbers_quan - 1);
+            unsigned int phone_index;
+            scanf("%u", &phone_index);
+
+            if (delete_phone_number_from_contact(&pb.contacts[index], phone_index) == 0)
+            {
+                printf("Телефон успешно удален\n\n");
+            }
+            else
+            {
+                printf("Ошибка удаления телефона\n\n");
+            }
+
+            break;
+        }
+
+        case 0:
             break;
 
         default:
@@ -170,7 +405,7 @@ int main()
             break;
         }
 
-    } while (choice != '0');
+    } while (choice != 0);
 
     delete_phonebook(&pb);
 
@@ -190,8 +425,14 @@ void print_menu()
     printf("2. Удалить контакт\n");
     printf("3. Редактировать контакт\n");
     printf("4. Вывести все контакты\n");
+    printf("5. Добавить ссылку на соцсеть\n");
+    printf("6. Добавить почту\n");
+    printf("7. Добавить телефон\n");
+    printf("8. Удалить ссылку на соцсеть\n");
+    printf("9. Удалить почту\n");
+    printf("10. Удалить телефон\n");
     printf("0. Выход\n");
-    printf("\nВыберите действие (0-4): ");
+    printf("\nВыберите действие (0-10): ");
 }
 
 void print_names(const names *n)
@@ -326,16 +567,16 @@ int input_contact(contact *c)
     fgets(c->position, sizeof(c->position), stdin);
     c->position[strcspn(c->position, "\n")] = '\0';
 
-    char phone[PHONE_NUMBER_SIZE];
-    printf("Введите номер телефона (или пустую строку для завершения): ");
-    while (fgets(phone, sizeof(phone), stdin) && strlen(phone) > 1)
+    char social_link[SOCIAL_MEDIA_LINK_SIZE];
+    printf("Введите ссылку на соцсеть (или пустую строку для завершения): ");
+    while (fgets(social_link, sizeof(social_link), stdin) && strlen(social_link) > 1)
     {
-        phone[strcspn(phone, "\n")] = '\0';
-        if (add_phone_number_to_contact(c, phone) != 0)
+        social_link[strcspn(social_link, "\n")] = '\0';
+        if (add_social_media_link_to_contact(c, social_link) != 0)
         {
-            printf("Ошибка добавления номера телефона\n");
+            printf("Ошибка добавления ссылки на соцсеть\n");
         }
-        printf("Введите номер телефона (или пустую строку для завершения): ");
+        printf("Введите ссылку на соцсеть (или пустую строку для завершения): ");
     }
 
     char email[EMAIL_SIZE];
@@ -350,16 +591,16 @@ int input_contact(contact *c)
         printf("Введите электронную почту (или пустую строку для завершения): ");
     }
 
-    char social_link[SOCIAL_MEDIA_LINK_SIZE];
-    printf("Введите ссылку на соцсеть (или пустую строку для завершения): ");
-    while (fgets(social_link, sizeof(social_link), stdin) && strlen(social_link) > 1)
+    char phone[PHONE_NUMBER_SIZE];
+    printf("Введите номер телефона (или пустую строку для завершения): ");
+    while (fgets(phone, sizeof(phone), stdin) && strlen(phone) > 1)
     {
-        social_link[strcspn(social_link, "\n")] = '\0';
-        if (add_social_media_link_to_contact(c, social_link) != 0)
+        phone[strcspn(phone, "\n")] = '\0';
+        if (add_phone_number_to_contact(c, phone) != 0)
         {
-            printf("Ошибка добавления ссылки на соцсеть\n");
+            printf("Ошибка добавления номера телефона\n");
         }
-        printf("Введите ссылку на соцсеть (или пустую строку для завершения): ");
+        printf("Введите номер телефона (или пустую строку для завершения): ");
     }
 
     return 0;
