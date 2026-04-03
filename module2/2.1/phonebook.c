@@ -34,19 +34,7 @@ int add_contact_to_phonebook(phonebook *pb, contact new_contact)
 {
     int res = 0;
 
-    unsigned long long new_id = hash_djb2(new_contact.names.last_name);
-
-    contact *existing = find_by_id(pb, new_id);
-    if (existing != NULL)
-    {
-        while (existing != NULL)
-        {
-            new_id++;
-            existing = find_by_id(pb, new_id);
-        }
-    }
-
-    new_contact.id = new_id;
+    new_contact.id = generate_id(pb, new_contact.names.last_name);
 
     if (pb->contacts_quan == pb->contacts_capacity)
     {
@@ -132,6 +120,10 @@ int edit_contact_in_phonebook(phonebook *pb, unsigned long long id, char *fields
             if (!strcmp(token, "1.1"))
             {
                 char *last_name = va_arg(args, char *);
+                if (strcmp(c->names.last_name, last_name))
+                {
+                    c->id = generate_id(pb, last_name);
+                }
                 strncpy(c->names.last_name, last_name, LAST_NAME_LENGTH);
             }
             else if (!strcmp(token, "1.2"))
@@ -294,4 +286,20 @@ contact *find_by_last_name(phonebook *pb, const char *last_name)
     }
 
     return NULL;
+}
+
+unsigned long long generate_id(phonebook *pb, const char *last_name)
+{
+    unsigned long long new_id = hash_djb2(last_name);
+
+    contact *existing = find_by_id(pb, new_id);
+    if (existing != NULL)
+    {
+        while (existing != NULL)
+        {
+            new_id++;
+            existing = find_by_id(pb, new_id);
+        }
+    }
+    return new_id;
 }
