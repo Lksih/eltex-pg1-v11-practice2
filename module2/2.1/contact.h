@@ -17,6 +17,7 @@
 #define PHONE_NUMBER_SIZE 11
 
 typedef struct {
+    unsigned long long id;
     names names; // 1.1 1.2 1.3
     address address; // 2.1 - 2.6
     char workplace[101]; // 3

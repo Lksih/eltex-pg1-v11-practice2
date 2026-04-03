@@ -34,6 +34,18 @@ int add_contact_to_phonebook(phonebook *pb, contact new_contact)
 {
     int res = 0;
 
+    unsigned long long new_id = hash_djb2(new_contact.names.last_name);
+    
+    contact *existing = find_by_id(pb, new_id);
+    if (existing != NULL) {
+        while (existing != NULL) {
+            new_id++;
+            existing = find_by_id(pb, new_id);
+        }
+    }
+
+    new_contact.id = new_id;
+
     if (pb->contacts_quan == pb->contacts_capacity)
     {
         contact *new_contacts = realloc(pb->contacts, sizeof(contact) * (pb->contacts_capacity + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP));
@@ -224,4 +236,39 @@ int edit_contact_in_phonebook(phonebook *pb, unsigned int ind, char *fields_to_c
     }
 
     return res;
+}
+
+unsigned long long hash_djb2(const char *str) {
+    unsigned long long hash = 5381;
+    char c;
+    
+    while ((c = *str++)) {
+        hash = ((hash << 5) + hash) + c;
+    }
+    
+    return hash;
+}
+
+contact* find_by_id(phonebook *pb, unsigned int id) {
+    for (unsigned long long i = 0; i < pb->contacts_quan; i++) {
+        if (pb->contacts[i].id == id) {
+            return &(pb->contacts[i]);
+        }
+    }
+    return NULL;
+}
+
+contact* find_by_last_name(phonebook *pb, const char *last_name) {
+    unsigned int target_id = hash_djb2(last_name);
+    
+    contact *existing = find_by_id(pb, target_id);
+    if (existing != NULL) {
+        while (existing != NULL && strcmp(existing->names.last_name, last_name) != 0) {
+            target_id++;
+            existing = find_by_id(pb, target_id);
+        }
+        return existing;
+    }
+
+    return NULL;
 }

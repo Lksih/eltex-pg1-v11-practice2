@@ -69,7 +69,7 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для удаления (0-%d): ", pb.contacts_quan - 1);
+            printf("Введите индекс контакта для удаления (0-%llu): ", pb.contacts_quan - 1);
             unsigned int index;
             scanf("%u", &index);
 
@@ -99,7 +99,7 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для редактирования (0-%u): ", pb.contacts_quan - 1);
+            printf("Введите индекс контакта для редактирования (0-%llu): ", pb.contacts_quan - 1);
             unsigned int index;
             scanf("%u", &index);
 
@@ -178,7 +178,7 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для добавления ссылки (0-%u): ", pb.contacts_quan - 1);
+            printf("Введите индекс контакта для добавления ссылки (0-%llu): ", pb.contacts_quan - 1);
             unsigned int index;
             scanf("%u", &index);
 
@@ -215,7 +215,7 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для добавления почты (0-%u): ", pb.contacts_quan - 1);
+            printf("Введите индекс контакта для добавления почты (0-%llu): ", pb.contacts_quan - 1);
             unsigned int index;
             scanf("%u", &index);
 
@@ -251,7 +251,7 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для добавления телефона (0-%u): ", pb.contacts_quan - 1);
+            printf("Введите индекс контакта для добавления телефона (0-%llu): ", pb.contacts_quan - 1);
             unsigned int index;
             scanf("%u", &index);
 
@@ -287,7 +287,7 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для удаления ссылки (0-%u): ", pb.contacts_quan - 1);
+            printf("Введите индекс контакта для удаления ссылки (0-%llu): ", pb.contacts_quan - 1);
             unsigned int index;
             scanf("%u", &index);
 
@@ -326,7 +326,7 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для удаления почты (0-%u): ", pb.contacts_quan - 1);
+            printf("Введите индекс контакта для удаления почты (0-%llu): ", pb.contacts_quan - 1);
             unsigned int index;
             scanf("%u", &index);
 
@@ -365,7 +365,7 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для удаления телефона (0-%u): ", pb.contacts_quan - 1);
+            printf("Введите индекс контакта для удаления телефона (0-%llu): ", pb.contacts_quan - 1);
             unsigned int index;
             scanf("%u", &index);
 
