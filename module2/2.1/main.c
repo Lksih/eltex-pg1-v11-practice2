@@ -9,7 +9,7 @@ void clear_stdin();
 void print_menu();
 void print_names(const names *n);
 void print_address(const address *a);
-void print_contact(const contact *c, int index);
+void print_contact(const contact *c);
 int input_contact(contact *c);
 
 int main()
@@ -69,17 +69,11 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для удаления (0-%llu): ", pb.contacts_quan - 1);
-            unsigned int index;
-            scanf("%u", &index);
+            printf("Введите id контакта для удаления");
+            unsigned long long id;
+            scanf("%llu", &id);
 
-            if (index >= pb.contacts_quan)
-            {
-                printf("Неверный индекс\n\n");
-                break;
-            }
-
-            if (delete_contact_from_phonebook(&pb, index) == 0)
+            if (delete_contact_from_phonebook(&pb, id) == 0)
             {
                 printf("Контакт успешно удален\n\n");
             }
@@ -99,15 +93,9 @@ int main()
                 break;
             }
 
-            printf("Введите индекс контакта для редактирования (0-%llu): ", pb.contacts_quan - 1);
-            unsigned int index;
-            scanf("%u", &index);
-
-            if (index >= pb.contacts_quan)
-            {
-                printf("Неверный индекс\n\n");
-                break;
-            }
+            printf("Введите id контакта для редактирования: ");
+            unsigned long long id;
+            scanf("%llu", &id);
 
             printf("Форматные строки для редактирования:\n");
             printf("1.1 - фамилия, 1.2 - имя, 1.3 - отчество\n");
@@ -138,7 +126,7 @@ int main()
             // res = edit_contact_in_phonebook(&pb, index, fields_to_change, edited_contact.names.last_name, edited_contact.names.first_name, edited_contact.workplace);
 
             strcpy(fields_to_change, "1.1;1.2;1.3;2.1;2.2;2.3;2.4;2.5;3;4;5.1;6.1;7.1");
-            res = edit_contact_in_phonebook(&pb, index, fields_to_change, edited_contact.names.last_name, edited_contact.names.first_name, edited_contact.names.middle_name, edited_contact.address.country, edited_contact.address.city, edited_contact.address.street, edited_contact.address.building, edited_contact.address.flat, edited_contact.workplace, edited_contact.position, edited_contact.social_media_links[0], edited_contact.emails[0], edited_contact.phone_numbers[0]);
+            res = edit_contact_in_phonebook(&pb, id, fields_to_change, edited_contact.names.last_name, edited_contact.names.first_name, edited_contact.names.middle_name, edited_contact.address.country, edited_contact.address.city, edited_contact.address.street, edited_contact.address.building, edited_contact.address.flat, edited_contact.workplace, edited_contact.position, edited_contact.social_media_links[0], edited_contact.emails[0], edited_contact.phone_numbers[0]);
 
             if (res == 0)
             {
@@ -164,7 +152,7 @@ int main()
             {
                 for (unsigned int i = 0; i < pb.contacts_quan; i++)
                 {
-                    print_contact(&pb.contacts[i], i);
+                    print_contact(&pb.contacts[i]);
                 }
             }
             break;
@@ -469,9 +457,9 @@ void print_address(const address *a)
     }
 }
 
-void print_contact(const contact *c, int index)
+void print_contact(const contact *c)
 {
-    printf("Контакт #%d:\n", index);
+    printf("Контакт #%llu:\n", c->id);
 
     print_names(&c->names);
     print_address(&c->address);

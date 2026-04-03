@@ -35,10 +35,12 @@ int add_contact_to_phonebook(phonebook *pb, contact new_contact)
     int res = 0;
 
     unsigned long long new_id = hash_djb2(new_contact.names.last_name);
-    
+
     contact *existing = find_by_id(pb, new_id);
-    if (existing != NULL) {
-        while (existing != NULL) {
+    if (existing != NULL)
+    {
+        while (existing != NULL)
+        {
             new_id++;
             existing = find_by_id(pb, new_id);
         }
@@ -69,11 +71,23 @@ int add_contact_to_phonebook(phonebook *pb, contact new_contact)
     return res;
 }
 
-int delete_contact_from_phonebook(phonebook *pb, unsigned int ind)
+int delete_contact_from_phonebook(phonebook *pb, unsigned long long id)
 {
     int res = 0;
 
-    if (ind >= pb->contacts_quan)
+    unsigned long long ind;
+    int found = 0;
+
+    for (unsigned long long i = 0; i < pb->contacts_quan; i++)
+    {
+        if (pb->contacts[i].id == id)
+        {
+            ind = i;
+            found = 1;
+        }
+    }
+
+    if (!found)
     {
         res = 1;
     }
@@ -82,26 +96,28 @@ int delete_contact_from_phonebook(phonebook *pb, unsigned int ind)
         delete_contact(&(pb->contacts[ind]));
         memmove(&(pb->contacts[ind]), &(pb->contacts[ind + 1]), sizeof(contact) * (pb->contacts_quan - ind - 1));
         pb->contacts_quan--;
-    }
 
-    if (pb->contacts_capacity > pb->contacts_quan + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP)
-    {
-        contact *new_contacts = realloc(pb->contacts, sizeof(contact) * (pb->contacts_quan + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP));
-        if (new_contacts)
+        if (pb->contacts_capacity > pb->contacts_quan + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP)
         {
-            pb->contacts = new_contacts;
-            pb->contacts_capacity = pb->contacts_quan + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP;
+            contact *new_contacts = realloc(pb->contacts, sizeof(contact) * (pb->contacts_quan + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP));
+            if (new_contacts)
+            {
+                pb->contacts = new_contacts;
+                pb->contacts_capacity = pb->contacts_quan + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP;
+            }
         }
     }
 
     return res;
 }
 
-int edit_contact_in_phonebook(phonebook *pb, unsigned int ind, char *fields_to_change, ...)
+int edit_contact_in_phonebook(phonebook *pb, unsigned long long id, char *fields_to_change, ...)
 {
     int res = 0;
 
-    if (ind >= pb->contacts_quan)
+    contact *c = find_by_id(pb, id);
+
+    if (c == NULL)
     {
         res = 1;
     }
@@ -110,7 +126,6 @@ int edit_contact_in_phonebook(phonebook *pb, unsigned int ind, char *fields_to_c
         va_list args;
         va_start(args, fields_to_change);
 
-        contact *c = &(pb->contacts[ind]);
         const char *token = strtok(fields_to_change, ";");
         while (token)
         {
@@ -238,32 +253,40 @@ int edit_contact_in_phonebook(phonebook *pb, unsigned int ind, char *fields_to_c
     return res;
 }
 
-unsigned long long hash_djb2(const char *str) {
+unsigned long long hash_djb2(const char *str)
+{
     unsigned long long hash = 5381;
     char c;
-    
-    while ((c = *str++)) {
+
+    while ((c = *str++))
+    {
         hash = ((hash << 5) + hash) + c;
     }
-    
+
     return hash;
 }
 
-contact* find_by_id(phonebook *pb, unsigned int id) {
-    for (unsigned long long i = 0; i < pb->contacts_quan; i++) {
-        if (pb->contacts[i].id == id) {
+contact *find_by_id(phonebook *pb, unsigned long long id)
+{
+    for (unsigned long long i = 0; i < pb->contacts_quan; i++)
+    {
+        if (pb->contacts[i].id == id)
+        {
             return &(pb->contacts[i]);
         }
     }
     return NULL;
 }
 
-contact* find_by_last_name(phonebook *pb, const char *last_name) {
+contact *find_by_last_name(phonebook *pb, const char *last_name)
+{
     unsigned int target_id = hash_djb2(last_name);
-    
+
     contact *existing = find_by_id(pb, target_id);
-    if (existing != NULL) {
-        while (existing != NULL && strcmp(existing->names.last_name, last_name) != 0) {
+    if (existing != NULL)
+    {
+        while (existing != NULL && strcmp(existing->names.last_name, last_name) != 0)
+        {
             target_id++;
             existing = find_by_id(pb, target_id);
         }
