@@ -268,7 +268,12 @@ int compare_contacts_by_last_name(const void *c1, const void *c2)
     return strcmp(((contact *)c1)->names.last_name, ((contact *)c2)->names.last_name);
 }
 
-int compare_contacts_by_id(const void *c1, const void *c2)
+int compare_contact_with_last_name(const void *c1, const void *c2)
 {
-    return ((contact *)c1)->id == (*((unsigned long long *)c2));
+    return strcmp(((contact *)c1)->names.last_name, (char *)c2);
+}
+
+int compare_contact_with_id(const void *c1, const void *c2)
+{
+    return !(((contact *)c1)->id == (*((unsigned long long *)c2)));
 }

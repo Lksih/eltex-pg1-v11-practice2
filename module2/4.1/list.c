@@ -83,7 +83,7 @@ int delete_value(list *list, void *value, int (*compare)(const void *c1, const v
             list_item *tmp = list->head;
             do
             {
-                if ((*compare)(tmp->value, value))
+                if ((*compare)(tmp->value, value) == 0)
                 {
                     if (tmp->next == NULL && tmp->prev == NULL)
                     {
@@ -133,6 +133,36 @@ void delete_list(list *list)
             list_item *item_for_remove = tmp;
             tmp = tmp->next;
             free(item_for_remove);
+        }
+    }
+}
+
+void *find_value(list *list, void *value, int (*compare)(const void *c1, const void *c2))
+{
+    if (list == NULL)
+    {
+        return NULL;
+    }
+    else
+    {
+        list_item *tmp = list->head;
+
+        while (tmp != NULL)
+        {
+            if ((*compare)(tmp->value, value) == 0)
+            {
+                break;
+            }
+            tmp = tmp->next;
+        }
+
+        if (tmp == NULL)
+        {
+            return NULL;
+        }
+        else
+        {
+            return tmp->value;
         }
     }
 }
