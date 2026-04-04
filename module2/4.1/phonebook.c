@@ -5,6 +5,7 @@ int init_phonebook(phonebook *pb)
     int res = 0;
 
     init_list(&(pb->contacts));
+    pb->contacts_quan = 0;
 
     return res;
 }
@@ -202,7 +203,7 @@ unsigned long long hash_djb2(const char *str)
 
 contact *find_by_id(phonebook *pb, unsigned long long id)
 {
-    return (contact *)find_value(&(pb->contacts), id, compare_contact_with_id);
+    return (contact *)find_value(&(pb->contacts), &id, compare_contact_with_id);
 }
 
 contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *count)

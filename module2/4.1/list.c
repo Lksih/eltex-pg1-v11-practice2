@@ -120,8 +120,14 @@ int delete_item(list *list, list_item *item)
         }
         else
         {
-            item->next->prev = item->prev;
-            item->prev->next = item->next;
+            if (item->next)
+            {
+                item->next->prev = item->prev;
+            }
+            if (item->prev)
+            {
+                item->prev->next = item->next;
+            }
 
             if (item == list->head)
             {

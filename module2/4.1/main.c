@@ -294,14 +294,14 @@ int input_contact(contact *c)
 
 void menu1(phonebook *pb)
 {
-    contact new_contact;
-    if (init_contact(&new_contact) != 0)
+    contact *new_contact = (contact *)malloc(sizeof(contact));
+    if (new_contact == NULL || init_contact(new_contact) != 0)
     {
         fprintf(stderr, "Ошибка инициализации контакта\n\n");
         return;
     }
 
-    int res = input_contact(&new_contact);
+    int res = input_contact(new_contact);
     if (res != 0)
     {
         return;
@@ -402,9 +402,12 @@ void menu4(phonebook *pb)
     }
     else
     {
-        for (unsigned int i = 0; i < pb->contacts_quan; i++)
+        list_item *tmp = pb->contacts.head;
+
+        while (tmp != NULL)
         {
-            print_contact(&(pb->contacts[i]));
+            print_contact(tmp->value);
+            tmp = tmp->next;
         }
     }
 }
