@@ -17,4 +17,7 @@ typedef struct
     list_item *head;
 } list;
 
+int insert_value(list *list, void *value, int (*compare)(const void *c1, const void *c2));
+int delete_value(list *list, void *value, int (*compare)(const void *c1, const void *c2));
+
 #endif

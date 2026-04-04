@@ -9,42 +9,108 @@ int insert_value(list *list, void *value, int (*compare)(const void *c1, const v
 {
     int res = 0;
 
-    list_item *new_item = (list_item *)malloc(sizeof(list_item));
-    new_item->value = value;
+    if (list)
+    {
+        list_item *new_item = (list_item *)malloc(sizeof(list_item));
+        if (new_item)
+        {
+            new_item->value = value;
+
+            if (list->head == NULL)
+            {
+                new_item->prev = NULL;
+                new_item->next = NULL;
+                list->head = new_item;
+            }
+            else
+            {
+                int added = 0;
+
+                list_item *tmp = list->head;
+                list_item *prev_tmp = list->head->prev;
+                do
+                {
+                    if ((*compare)(new_item->value, tmp->value) < 0)
+                    {
+                        new_item->next = tmp;
+                        new_item->prev = tmp->prev;
+                        tmp->prev->next = new_item;
+                        tmp->prev = new_item;
+                        if (tmp == list->head)
+                        {
+                            list->head = new_item;
+                        }
+                        added = 1;
+                        break;
+                    }
+                    prev_tmp = tmp;
+                    tmp = tmp->next;
+                } while (tmp != NULL);
+
+                if (!added)
+                {
+                    new_item->next = tmp;
+                    new_item->prev = prev_tmp;
+                    prev_tmp->next = new_item;
+                }
+            }
+        }
+        else
+        {
+            res = 1;
+        }
+    }
+    else
+    {
+        res = 1;
+    }
+
+    return res;
+}
+
+int delete_value(list *list, void *value, int (*compare)(const void *c1, const void *c2))
+{
+    int res = 0;
 
     if (list)
     {
         if (list->head == NULL)
         {
-            new_item->prev = NULL;
-            new_item->next = NULL;
-            list->head = new_item;
+            res = 1;
         }
         else
         {
             list_item *tmp = list->head;
-            list_item *prev_tmp = list->head->prev;
             do
             {
-                if ((*compare)(new_item->value, tmp->value) < 0)
+                if ((*compare)(tmp->value, value))
                 {
-                    new_item->next = tmp;
-                    new_item->prev = tmp->prev;
-                    tmp->prev->next = new_item;
-                    tmp->prev = new_item;
-                    if (tmp == list->head)
-                        list->head = new_item;
-                    break;
+                    if (tmp->next == NULL && tmp->prev == NULL)
+                    {
+                        list->head = NULL;
+                        free(tmp);
+                        break;
+                    }
+                    else
+                    {
+                        tmp->next->prev = tmp->prev;
+                        tmp->prev->next = tmp->next;
+
+                        if (tmp == list->head)
+                        {
+                            list->head = list->head->next;
+                        }
+
+                        free(tmp);
+                        break;
+                    }
                 }
-                prev_tmp = tmp;
                 tmp = tmp->next;
             } while (tmp != NULL);
 
             if (tmp == NULL)
             {
-                new_item->next = tmp;
-                new_item->prev = prev_tmp;
-                prev_tmp->next = new_item;
+                res = 1;
             }
         }
     }
