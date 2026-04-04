@@ -4,37 +4,22 @@ int init_phonebook(phonebook *pb)
 {
     int res = 0;
 
-    pb->contacts = malloc(sizeof(contact) * PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP);
-    if (pb->contacts)
-    {
-        pb->contacts_capacity = PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP;
-        pb->contacts_quan = 0;
-    }
-    else
-    {
-        res = 1;
-    }
+    init_list(&(pb->contacts));
 
     return res;
 }
 
 void delete_phonebook(phonebook *pb)
 {
-    for (unsigned int i = 0; i < pb->contacts_quan; i++)
-    {
-        delete_contact(&(pb->contacts[i]));
-    }
-    free(pb->contacts);
-    pb->contacts = NULL;
-    pb->contacts_capacity = 0;
+    delete_list(&(pb->contacts));
     pb->contacts_quan = 0;
 }
 
-int add_contact_to_phonebook(phonebook *pb, contact new_contact)
+int add_contact_to_phonebook(phonebook *pb, contact *new_contact)
 {
     int res = 0;
 
-    new_contact.id = generate_id(pb, new_contact.names.last_name);
+    new_contact->id = generate_id(pb, new_contact->names.last_name);
 
     if (pb->contacts_quan == pb->contacts_capacity)
     {
