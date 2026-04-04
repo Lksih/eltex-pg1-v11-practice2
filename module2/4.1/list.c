@@ -85,33 +85,50 @@ int delete_value(list *list, void *value, int (*compare)(const void *c1, const v
             {
                 if ((*compare)(tmp->value, value) == 0)
                 {
-                    if (tmp->next == NULL && tmp->prev == NULL)
-                    {
-                        list->head = NULL;
-                        free(tmp);
-                        break;
-                    }
-                    else
-                    {
-                        tmp->next->prev = tmp->prev;
-                        tmp->prev->next = tmp->next;
-
-                        if (tmp == list->head)
-                        {
-                            list->head = list->head->next;
-                        }
-
-                        free(tmp);
-                        break;
-                    }
+                    res = delete_item(list, tmp);
                 }
-                tmp = tmp->next;
+                else
+                {
+                    tmp = tmp->next;
+                }
             } while (tmp != NULL);
 
             if (tmp == NULL)
             {
                 res = 1;
             }
+        }
+    }
+    else
+    {
+        res = 1;
+    }
+
+    return res;
+}
+
+int delete_item(list *list, list_item *item)
+{
+    int res = 0;
+
+    if (list && item)
+    {
+        if (item->next == NULL && item->prev == NULL)
+        {
+            list->head = NULL;
+            free(item);
+        }
+        else
+        {
+            item->next->prev = item->prev;
+            item->prev->next = item->next;
+
+            if (item == list->head)
+            {
+                list->head = list->head->next;
+            }
+
+            free(item);
         }
     }
     else
@@ -139,6 +156,20 @@ void delete_list(list *list)
 
 void *find_value(list *list, void *value, int (*compare)(const void *c1, const void *c2))
 {
+    list_item *found = find_item(list, value, compare);
+
+    if (found == NULL)
+    {
+        return NULL;
+    }
+    else
+    {
+        return found->value;
+    }
+}
+
+list_item *find_item(list *list, void *value, int (*compare)(const void *c1, const void *c2))
+{
     if (list == NULL)
     {
         return NULL;
@@ -156,13 +187,6 @@ void *find_value(list *list, void *value, int (*compare)(const void *c1, const v
             tmp = tmp->next;
         }
 
-        if (tmp == NULL)
-        {
-            return NULL;
-        }
-        else
-        {
-            return tmp->value;
-        }
+        return tmp;
     }
 }

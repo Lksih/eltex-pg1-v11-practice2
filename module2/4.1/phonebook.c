@@ -17,27 +17,12 @@ void delete_phonebook(phonebook *pb)
 
 int add_contact_to_phonebook(phonebook *pb, contact *new_contact)
 {
-    int res = 0;
-
     new_contact->id = generate_id(pb, new_contact->names.last_name);
 
-    if (pb->contacts_quan == pb->contacts_capacity)
-    {
-        contact *new_contacts = realloc(pb->contacts, sizeof(contact) * (pb->contacts_capacity + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP));
-        if (new_contacts)
-        {
-            pb->contacts = new_contacts;
-            pb->contacts_capacity += PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP;
-        }
-        else
-        {
-            res = 1;
-        }
-    }
+    int res = insert_value(&(pb->contacts), new_contact, compare_contacts_by_id);
 
     if (!res)
     {
-        pb->contacts[pb->contacts_quan] = new_contact;
         pb->contacts_quan++;
     }
 
@@ -46,39 +31,11 @@ int add_contact_to_phonebook(phonebook *pb, contact *new_contact)
 
 int delete_contact_from_phonebook(phonebook *pb, unsigned long long id)
 {
-    int res = 0;
+    int res = delete_item(&(pb->contacts), find_item(&(pb->contacts), &id, compare_contact_with_id));
 
-    unsigned long long ind;
-    int found = 0;
-
-    for (unsigned long long i = 0; i < pb->contacts_quan; i++)
+    if (!res)
     {
-        if (pb->contacts[i].id == id)
-        {
-            ind = i;
-            found = 1;
-        }
-    }
-
-    if (!found)
-    {
-        res = 1;
-    }
-    else
-    {
-        delete_contact(&(pb->contacts[ind]));
-        memmove(&(pb->contacts[ind]), &(pb->contacts[ind + 1]), sizeof(contact) * (pb->contacts_quan - ind - 1));
         pb->contacts_quan--;
-
-        if (pb->contacts_capacity > pb->contacts_quan + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP)
-        {
-            contact *new_contacts = realloc(pb->contacts, sizeof(contact) * (pb->contacts_quan + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP));
-            if (new_contacts)
-            {
-                pb->contacts = new_contacts;
-                pb->contacts_capacity = pb->contacts_quan + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP;
-            }
-        }
     }
 
     return res;
@@ -245,14 +202,7 @@ unsigned long long hash_djb2(const char *str)
 
 contact *find_by_id(phonebook *pb, unsigned long long id)
 {
-    for (unsigned long long i = 0; i < pb->contacts_quan; i++)
-    {
-        if (pb->contacts[i].id == id)
-        {
-            return &(pb->contacts[i]);
-        }
-    }
-    return NULL;
+    return (contact *)find_value(&(pb->contacts), id, compare_contact_with_id);
 }
 
 contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *count)
