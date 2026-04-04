@@ -216,12 +216,13 @@ contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *
 
     if (result)
     {
-        contact *existing = find_by_id(pb, target_id);
+        list_item *existing = find_item(&(pb->contacts), &target_id, compare_contact_with_id);
         if (existing != NULL)
         {
             while (existing != NULL)
             {
-                if (!strcmp(existing->names.last_name, last_name))
+                contact *c = existing->value;
+                if (!strcmp(c->names.last_name, last_name))
                 {
                     if (*count == capacity)
                     {
@@ -236,11 +237,11 @@ contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *
                             break;
                         }
                     }
-                    result[*count] = existing;
+                    result[*count] = c;
                     (*count)++;
                 }
                 target_id++;
-                existing = find_by_id(pb, target_id);
+                existing = find_item(&(pb->contacts), &target_id, compare_contact_with_id);
             }
             return result;
         }
