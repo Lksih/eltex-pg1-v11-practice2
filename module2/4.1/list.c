@@ -14,9 +14,7 @@ int insert_value(list *list, void *value, int (*compare)(const void *c1, const v
         list_item *new_item = (list_item *)malloc(sizeof(list_item));
         if (new_item)
         {
-            printf("newitem\n");
             new_item->value = value;
-            printf("newitemval\n");
 
             if (list->head == NULL)
             {
@@ -30,14 +28,16 @@ int insert_value(list *list, void *value, int (*compare)(const void *c1, const v
 
                 list_item *tmp = list->head;
                 list_item *prev_tmp = list->head->prev;
-            printf("do\n");
                 do
                 {
                     if ((*compare)(new_item->value, tmp->value) < 0)
                     {
                         new_item->next = tmp;
                         new_item->prev = tmp->prev;
-                        tmp->prev->next = new_item;
+                        if (tmp->prev)
+                        {
+                            tmp->prev->next = new_item;
+                        }
                         tmp->prev = new_item;
                         if (tmp == list->head)
                         {
@@ -52,7 +52,7 @@ int insert_value(list *list, void *value, int (*compare)(const void *c1, const v
 
                 if (!added)
                 {
-                    new_item->next = tmp;
+                    new_item->next = NULL;
                     new_item->prev = prev_tmp;
                     prev_tmp->next = new_item;
                 }
