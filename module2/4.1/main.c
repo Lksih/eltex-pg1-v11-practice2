@@ -329,7 +329,7 @@ void menu2(phonebook *pb)
     unsigned long long id;
     scanf("%llu", &id);
 
-    if (delete_contact_from_phonebook(pb, id) == 0)
+    if (delete_contact_from_phonebook(pb, id, 1) == 0)
     {
         printf("Контакт успешно удален\n\n");
     }

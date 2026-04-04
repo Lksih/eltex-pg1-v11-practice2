@@ -30,9 +30,9 @@ int add_contact_to_phonebook(phonebook *pb, contact *new_contact)
     return res;
 }
 
-int delete_contact_from_phonebook(phonebook *pb, unsigned long long id)
+int delete_contact_from_phonebook(phonebook *pb, unsigned long long id, int should_be_freed)
 {
-    int res = delete_item(&(pb->contacts), find_item(&(pb->contacts), &id, compare_contact_with_id), delete_contact_void_adapter);
+    int res = delete_value(&(pb->contacts), &id, compare_contact_with_id, delete_contact_void_adapter, should_be_freed);
 
     if (!res)
     {
@@ -65,9 +65,13 @@ int edit_contact_in_phonebook(phonebook *pb, unsigned long long id, char *fields
                 char *last_name = va_arg(args, char *);
                 if (strcmp(c->names.last_name, last_name))
                 {
-                    c->id = generate_id(pb, last_name);
+                    res = delete_contact_from_phonebook(pb, id, 0);
+                    if (!res)
+                    {
+                        strncpy(c->names.last_name, last_name, LAST_NAME_LENGTH);
+                        res = add_contact_to_phonebook(pb, c);
+                    }
                 }
-                strncpy(c->names.last_name, last_name, LAST_NAME_LENGTH);
             }
             else if (!strcmp(token, "1.2"))
             {
