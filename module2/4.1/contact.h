@@ -45,8 +45,10 @@ int add_phone_number_to_contact(contact *c, const char *new_phone);
 int delete_phone_number_from_contact(contact *c, unsigned int ind);
 void delete_contact(contact *c);
 void free_strings(char **strings, unsigned char quan);
+
 int compare_contacts_by_id(const void *c1, const void *c2);
 int compare_contact_with_last_name(const void *c1, const void *c2);
 int compare_contact_with_id(const void *c1, const void *c2);
+void delete_contact_void_adapter(void *c);
 
 #endif

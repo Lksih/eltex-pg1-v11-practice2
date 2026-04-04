@@ -68,7 +68,7 @@ int insert_value(list *list, void *value, int (*compare)(const void *c1, const v
     return res;
 }
 
-int delete_value(list *list, void *value, int (*compare)(const void *c1, const void *c2))
+int delete_value(list *list, void *value, int (*compare)(const void *c1, const void *c2), void (*delete_value)(void *c))
 {
     int res = 0;
 
@@ -85,7 +85,7 @@ int delete_value(list *list, void *value, int (*compare)(const void *c1, const v
             {
                 if ((*compare)(tmp->value, value) == 0)
                 {
-                    res = delete_item(list, tmp);
+                    res = delete_item(list, tmp, delete_value);
                 }
                 else
                 {
@@ -107,7 +107,7 @@ int delete_value(list *list, void *value, int (*compare)(const void *c1, const v
     return res;
 }
 
-int delete_item(list *list, list_item *item)
+int delete_item(list *list, list_item *item, void (*delete_value)(void *c))
 {
     int res = 0;
 
@@ -116,7 +116,7 @@ int delete_item(list *list, list_item *item)
         if (item->next == NULL && item->prev == NULL)
         {
             list->head = NULL;
-            free(item);
+            free_item(item, delete_value);
         }
         else
         {
@@ -134,7 +134,7 @@ int delete_item(list *list, list_item *item)
                 list->head = list->head->next;
             }
 
-            free(item);
+            free_item(item, delete_value);
         }
     }
     else
@@ -145,7 +145,7 @@ int delete_item(list *list, list_item *item)
     return res;
 }
 
-void delete_list(list *list)
+void delete_list(list *list, void (*delete_value)(void *c))
 {
     if (list != NULL)
     {
@@ -155,7 +155,7 @@ void delete_list(list *list)
         {
             list_item *item_for_remove = tmp;
             tmp = tmp->next;
-            free(item_for_remove);
+            free_item(item_for_remove, delete_value);
         }
     }
 }
@@ -195,4 +195,11 @@ list_item *find_item(list *list, void *value, int (*compare)(const void *c1, con
 
         return tmp;
     }
+}
+
+void free_item(list_item *item, void (*delete_value)(void *c))
+{
+    (*delete_value)(item->value);
+    free(item->value);
+    free(item);
 }

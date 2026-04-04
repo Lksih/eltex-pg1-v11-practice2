@@ -277,3 +277,7 @@ int compare_contact_with_id(const void *c1, const void *c2)
 {
     return ((contact *)c1)->id - (*((unsigned long long *)c2));
 }
+
+void delete_contact_void_adapter(void *c){
+    delete_contact((contact *)c);
+}

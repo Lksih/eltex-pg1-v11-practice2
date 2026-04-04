@@ -12,7 +12,7 @@ int init_phonebook(phonebook *pb)
 
 void delete_phonebook(phonebook *pb)
 {
-    delete_list(&(pb->contacts));
+    delete_list(&(pb->contacts), delete_contact_void_adapter);
     pb->contacts_quan = 0;
 }
 
@@ -32,7 +32,7 @@ int add_contact_to_phonebook(phonebook *pb, contact *new_contact)
 
 int delete_contact_from_phonebook(phonebook *pb, unsigned long long id)
 {
-    int res = delete_item(&(pb->contacts), find_item(&(pb->contacts), &id, compare_contact_with_id));
+    int res = delete_item(&(pb->contacts), find_item(&(pb->contacts), &id, compare_contact_with_id), delete_contact_void_adapter);
 
     if (!res)
     {
