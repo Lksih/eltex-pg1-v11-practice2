@@ -121,3 +121,18 @@ int delete_value(list *list, void *value, int (*compare)(const void *c1, const v
 
     return res;
 }
+
+void delete_list(list *list)
+{
+    if (list != NULL)
+    {
+        list_item *tmp = list->head;
+
+        while (tmp != NULL)
+        {
+            list_item *item_for_remove = tmp;
+            tmp = tmp->next;
+            free(item_for_remove);
+        }
+    }
+}
