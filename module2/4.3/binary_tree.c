@@ -143,10 +143,7 @@ node *delete_node(node *root, void *value, int (*compare)(const void *c1, const 
             {
                 free_value(root, delete_value);
             }
-            else
-            {
-                free(root);
-            }
+            free(root);
 
             root = temp;
         }
@@ -158,10 +155,7 @@ node *delete_node(node *root, void *value, int (*compare)(const void *c1, const 
             {
                 free_value(root, delete_value);
             }
-            else
-            {
-                free(root);
-            }
+            free(root);
 
             root = temp;
         }
@@ -176,7 +170,7 @@ node *delete_node(node *root, void *value, int (*compare)(const void *c1, const 
 
             if (should_be_freed)
             {
-                (*delete_value)(root->value);
+                free_value(root, delete_value);
             }
             root->value = successor->value;
 
@@ -226,7 +220,6 @@ void free_value(node *node, void (*delete_value)(void *c))
 {
     (*delete_value)(node->value);
     free(node->value);
-    free(node);
 }
 
 void delete_tree(binary_tree *tree, void (*delete_value)(void *c))
@@ -245,6 +238,7 @@ void delete_node_inorder(node *current, void (*delete_value)(void *c))
     delete_node_inorder(current->right, delete_value);
 
     free_value(current, delete_value);
+    free(current);
 }
 
 node *find_node(binary_tree *tree, void *value, int (*compare)(const void *c1, const void *c2))
