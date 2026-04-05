@@ -120,10 +120,7 @@ int delete_item(list *list, list_item *item, void (*delete_value)(void *c), int 
         {
             free_value(item, delete_value);
         }
-        else
-        {
-            free(item);
-        }
+        free(item);
     }
     else
     {
@@ -144,6 +141,7 @@ void delete_list(list *list, void (*delete_value)(void *c))
             list_item *item_for_remove = tmp;
             tmp = tmp->next;
             free_value(item_for_remove, delete_value);
+            free(item_for_remove);
         }
     }
 }
@@ -189,5 +187,4 @@ void free_value(list_item *item, void (*delete_value)(void *c))
 {
     (*delete_value)(item->value);
     free(item->value);
-    free(item);
 }
