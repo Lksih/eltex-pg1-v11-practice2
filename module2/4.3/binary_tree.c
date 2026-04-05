@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define BALANCE_THRESHOLD 10
-
 void init_binary_tree(binary_tree *tree)
 {
     tree->root = NULL;
@@ -63,21 +61,26 @@ int get_balance(node *n)
     return get_height(n->left) - get_height(n->right);
 }
 
-node *insert_node(node *root, void *value, int (*compare)(const void *c1, const void *c2))
+node *insert_node(node *root, void *value, int (*compare)(const void *c1, const void *c2), int *inserted)
 {
     if (root == NULL)
     {
-        return new_node(value);
+        node *n = new_node(value);
+        if (n != NULL)
+        {
+            *inserted = 1;
+        }
+        return n;
     }
 
     int cmp = compare(value, root->value);
     if (cmp < 0)
     {
-        root->left = insert_node(root->left, value, compare);
+        root->left = insert_node(root->left, value, compare, inserted);
     }
     else if (cmp > 0)
     {
-        root->right = insert_node(root->right, value, compare);
+        root->right = insert_node(root->right, value, compare, inserted);
     }
     else
     {
@@ -113,11 +116,12 @@ node *insert_node(node *root, void *value, int (*compare)(const void *c1, const 
 
 int insert_into_tree(binary_tree *tree, void *value, int (*compare)(const void *c1, const void *c2))
 {
-    tree->root = insert_node(tree->root, value, compare);
-    return 0;
+    int inserted = 0;
+    tree->root = insert_node(tree->root, value, compare, &inserted);
+    return inserted ? 0 : 1;
 }
 
-node *delete_node(node *root, void *value, int (*compare)(const void *c1, const void *c2), void (*delete_value)(void *c), int should_be_freed)
+node *delete_node(node *root, void *value, int (*compare)(const void *c1, const void *c2), void (*delete_value)(void *c), int should_be_freed, int *deleted)
 {
     if (root == NULL)
     {
@@ -127,11 +131,11 @@ node *delete_node(node *root, void *value, int (*compare)(const void *c1, const 
     int cmp = compare(value, root->value);
     if (cmp < 0)
     {
-        root->left = delete_node(root->left, value, compare, delete_value, should_be_freed);
+        root->left = delete_node(root->left, value, compare, delete_value, should_be_freed, deleted);
     }
     else if (cmp > 0)
     {
-        root->right = delete_node(root->right, value, compare, delete_value, should_be_freed);
+        root->right = delete_node(root->right, value, compare, delete_value, should_be_freed, deleted);
     }
     else
     {
@@ -174,8 +178,9 @@ node *delete_node(node *root, void *value, int (*compare)(const void *c1, const 
             }
             root->value = successor->value;
 
-            root->right = delete_node(root->right, successor->value, compare, delete_value, 0);
+            root->right = delete_node(root->right, successor->value, compare, delete_value, 0, deleted);
         }
+        *deleted = 1;
     }
 
     if (root == NULL)
@@ -212,8 +217,9 @@ node *delete_node(node *root, void *value, int (*compare)(const void *c1, const 
 
 int delete_from_tree(binary_tree *tree, void *value, int (*compare)(const void *c1, const void *c2), void (*delete_value)(void *c), int should_be_freed)
 {
-    tree->root = delete_node(tree->root, value, compare, delete_value, should_be_freed);
-    return 0;
+    int deleted = 0;
+    tree->root = delete_node(tree->root, value, compare, delete_value, should_be_freed, &deleted);
+    return deleted ? 0 : 1;
 }
 
 void free_value(node *node, void (*delete_value)(void *c))
