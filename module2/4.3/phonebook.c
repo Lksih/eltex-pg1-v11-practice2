@@ -220,37 +220,44 @@ contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *
 
     if (result)
     {
-        contact *existing = find_by_id(pb, target_id);
-        if (existing != NULL)
-        {
-            while (existing != NULL)
-            {
-                if (!strcmp(existing->names.last_name, last_name))
-                {
-                    if (*count == capacity)
-                    {
-                        contact **new_result = realloc(result, sizeof(contact *) * (capacity + FOUND_CONTACTS_CAPACITY_INCREASE_STEP));
-                        if (new_result)
-                        {
-                            result = new_result;
-                            capacity += FOUND_CONTACTS_CAPACITY_INCREASE_STEP;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    result[*count] = existing;
-                    (*count)++;
-                }
-                target_id++;
-                existing = find_by_id(pb, target_id);
-            }
-            return result;
-        }
+        inorder_find(pb->contacts.root, last_name, count, &capacity, result, target_id);
+        return result;
     }
     free(result);
     return NULL;
+}
+
+void inorder_find(node *node, const char *last_name, unsigned int *count, unsigned int *capacity, contact **result, unsigned int target_id)
+{
+    if (node != NULL)
+    {
+        if (((contact *)node->value)->id > target_id)
+        {
+            inorder_find(node->left, last_name, count, capacity, result, target_id);
+        }
+
+        if (((contact *)node->value)->id >= target_id && !strcmp(((contact *)node->value)->names.last_name, last_name))
+        {
+            if (*count == *capacity)
+            {
+                contact **new_result = realloc(result, sizeof(contact *) * (*capacity + FOUND_CONTACTS_CAPACITY_INCREASE_STEP));
+                if (new_result)
+                {
+                    result = new_result;
+                    *capacity += FOUND_CONTACTS_CAPACITY_INCREASE_STEP;
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            result[*count] = (contact *)node->value;
+            (*count)++;
+        }
+
+        inorder_find(node->right, last_name, count, capacity, result, target_id);
+    }
 }
 
 unsigned long long generate_id(phonebook *pb, const char *last_name)
