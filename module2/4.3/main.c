@@ -12,6 +12,7 @@ void print_address(const address *a);
 void print_contact(const contact *c);
 int input_contact(contact *c);
 void inorder_print(node *current);
+void print_tree_recursive(node *node, char *prefix, int is_left, int is_root);
 
 void menu1(phonebook *pb);
 void menu2(phonebook *pb);
@@ -25,6 +26,7 @@ void menu9(phonebook *pb);
 void menu10(phonebook *pb);
 void menu11(phonebook *pb);
 void menu12(phonebook *pb);
+void menu13(phonebook *pb);
 
 int main()
 {
@@ -84,6 +86,9 @@ int main()
         case 12:
             menu12(&pb);
             break;
+        case 13:
+            menu13(&pb);
+            break;
         case 0:
             break;
         default:
@@ -118,8 +123,9 @@ void print_menu()
     printf("10. Удалить телефон\n");
     printf("11. Поиск по id\n");
     printf("12. Поиск по фамилии\n");
+    printf("13. Вывод дерева\n");
     printf("0. Выход\n");
-    printf("\nВыберите действие (0-12): ");
+    printf("\nВыберите действие (0-13): ");
 }
 
 void print_names(const names *n)
@@ -295,16 +301,67 @@ int input_contact(contact *c)
 
 void inorder_print(node *current)
 {
-    if (current == NULL){
+    if (current == NULL)
+    {
         return;
     }
-    
+
     inorder_print(current->left);
-    
-    contact *c = (contact*)current->value;
+
+    contact *c = (contact *)current->value;
     print_contact(c);
-    
+
     inorder_print(current->right);
+}
+
+void print_tree_recursive(node *node, char *prefix, int is_left, int is_root)
+{
+    if (node == NULL)
+    {
+        return;
+    }
+
+    if (is_root)
+    {
+        printf("%llu\n", ((contact *)node->value)->id);
+    }
+    else
+    {
+        printf("%s%s── %llu\n", prefix, is_left ? "├" : "└", ((contact *)node->value)->id);
+    }
+    char *new_prefix = malloc(strlen(prefix) + 7);
+
+    if (is_root)
+    {
+        sprintf(new_prefix, "%s", prefix);
+    }
+    else
+    {
+        sprintf(new_prefix, "%s%s   ", prefix, is_left ? "│" : " ");
+    }
+
+    if (node->left || node->right)
+    {
+        if (node->left)
+        {
+            print_tree_recursive(node->left, new_prefix, 1, 0);
+        }
+        else
+        {
+            printf("%s├── (null)\n", new_prefix);
+        }
+
+        if (node->right)
+        {
+            print_tree_recursive(node->right, new_prefix, 0, 0);
+        }
+        else
+        {
+            printf("%s├── (null)\n", new_prefix);
+        }
+    }
+
+    free(new_prefix);
 }
 
 void menu1(phonebook *pb)
@@ -706,4 +763,17 @@ void menu12(phonebook *pb)
         }
         free(cs);
     }
+}
+
+void menu13(phonebook *pb)
+{
+    if (pb->contacts_quan == 0)
+    {
+        printf("Телефонная книга пуста\n\n");
+        return;
+    }
+
+    printf("Дерево контактов:\n");
+    print_tree_recursive(pb->contacts.root, "", 0, 1);
+    printf("\n");
 }
