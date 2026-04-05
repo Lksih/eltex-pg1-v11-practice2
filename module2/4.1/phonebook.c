@@ -244,8 +244,7 @@ contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *
                     result[*count] = c;
                     (*count)++;
                 }
-                target_id++;
-                existing = find_item(&(pb->contacts), &target_id, compare_contact_with_id);
+                existing = existing->next;
             }
             return result;
         }
