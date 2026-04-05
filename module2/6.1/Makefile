@@ -5,10 +5,16 @@ CFLAGS = -Wall -Wextra
 
 OBJS = main.o contact.o address.o names.o phonebook.o list.o
 
+LIB_NAMES = list
+LIBS = $(addprefix -l, $(LIB_NAMES))
+LIB_FILES = $(addsuffix .a, $(addprefix lib, $(LIB_NAMES)))
+
+LDFLAGS = -L.
+
 TARGET = phonebook.out
 
-$(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET)
+$(TARGET): $(OBJS) $(LIB_FILES)
+	$(CC) $(OBJS) -o $(TARGET) $(LDFLAGS) $(LIBS)
 
 main.o: main.c phonebook.h contact.h
 	$(CC) $(CFLAGS) -c main.c
@@ -27,6 +33,9 @@ phonebook.o: phonebook.c phonebook.h contact.h list.h
 
 list.o: list.c list.h
 	$(CC) $(CFLAGS) -c list.c
+
+liblist.a: list.o
+	ar rc liblist.a list.o
 
 clean:
 	rm -f $(OBJS) $(TARGET)
