@@ -3,27 +3,29 @@
 
 #include <stdlib.h>
 
-struct list_item
-{
+struct node {
     void *value;
-    struct list_item *next;
-    struct list_item *prev;
+    struct node *left;
+    struct node *right;
 };
 
-typedef struct list_item list_item;
+typedef struct node node;
 
-typedef struct
-{
-    list_item *head;
-} list;
+typedef struct {
+    node *root;
+} binary_tree;
 
-void init_list(list *list);
-int insert_value(list *list, void *value, int (*compare)(const void *c1, const void *c2));
-int delete_value(list *list, void *value, int (*compare)(const void *c1, const void *c2), void (*delete_value)(void *c), int should_be_freed);
-int delete_item(list *list, list_item *item, void (*delete_value)(void *c), int should_be_freed);
-void delete_list(list *list, void (*delete_value)(void *c));
-void *find_value(list *list, void *value, int (*compare)(const void *c1, const void *c2));
-list_item *find_item(list *list, void *value, int (*compare)(const void *c1, const void *c2));
-void free_value(list_item *item, void (*delete_value)(void *c));
+void init_binary_tree(binary_tree *tree);
+node *rotate_left(node *x);
+node *rotate_right(node *y);
+unsigned int get_height(node *n);
+node *find_min_node(node *n);
+int insert_into_tree(binary_tree *tree, void *value, int (*compare)(const void *c1, const void *c2));
+int delete_from_tree(binary_tree *tree, void *value, int (*compare)(const void *c1, const void *c2), void (*delete_value)(void *c), int should_be_freed);
+void free_value(node *node, void (*delete_value)(void *c));
+void delete_tree(binary_tree *tree, void (*delete_value)(void *c));
+void delete_node_inorder(node *current, void (*delete_value)(void *c));
+node *find_node(binary_tree *tree, void *value, int (*compare)(const void *c1, const void *c2));
+void *find_value(binary_tree *tree, void *value, int (*compare)(const void *c1, const void *c2));
 
 #endif

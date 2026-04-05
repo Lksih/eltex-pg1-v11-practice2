@@ -1,193 +1,269 @@
 #include "binary_tree.h"
+#include <stdlib.h>
+#include <stdio.h>
 
-void init_list(list *list)
+#define BALANCE_THRESHOLD 10
+
+void init_binary_tree(binary_tree *tree)
 {
-    list->head = NULL;
+    tree->root = NULL;
 }
 
-int insert_value(list *list, void *value, int (*compare)(const void *c1, const void *c2))
+unsigned int get_height(node *n)
 {
-    int res = 0;
-
-    if (list)
+    if (n == NULL)
     {
-        list_item *new_item = (list_item *)malloc(sizeof(list_item));
-        if (new_item)
-        {
-            new_item->value = value;
+        return 0;
+    }
+    int left_height = get_height(n->left);
+    int right_height = get_height(n->right);
+    return 1 + (left_height > right_height ? left_height : right_height);
+}
 
-            if (list->head == NULL)
+node *new_node(void *value)
+{
+    node *n = (node *)malloc(sizeof(node));
+    if (n != NULL)
+    {
+        n->value = value;
+        n->left = NULL;
+        n->right = NULL;
+    }
+    return n;
+}
+
+node *rotate_right(node *y)
+{
+    node *x = y->left;
+    node *z = x->right;
+
+    x->right = y;
+    y->left = z;
+
+    return x;
+}
+
+node *rotate_left(node *x)
+{
+    node *y = x->right;
+    node *z = y->left;
+
+    y->left = x;
+    x->right = z;
+
+    return y;
+}
+
+int get_balance(node *n)
+{
+    if (n == NULL)
+    {
+        return 0;
+    }
+    return get_height(n->left) - get_height(n->right);
+}
+
+node *insert_node(node *root, void *value, int (*compare)(const void *c1, const void *c2))
+{
+    if (root == NULL)
+    {
+        return new_node(value);
+    }
+
+    int cmp = compare(value, root->value);
+    if (cmp < 0)
+    {
+        root->left = insert_node(root->left, value, compare);
+    }
+    else if (cmp > 0)
+    {
+        root->right = insert_node(root->right, value, compare);
+    }
+    else
+    {
+        return root;
+    }
+
+    int balance = get_balance(root);
+
+    if (balance > 1 && compare(value, root->left->value) < 0)
+    {
+        return rotate_right(root);
+    }
+
+    if (balance < -1 && compare(value, root->right->value) > 0)
+    {
+        return rotate_left(root);
+    }
+
+    if (balance > 1 && compare(value, root->left->value) > 0)
+    {
+        root->left = rotate_left(root->left);
+        return rotate_right(root);
+    }
+
+    if (balance < -1 && compare(value, root->right->value) < 0)
+    {
+        root->right = rotate_right(root->right);
+        return rotate_left(root);
+    }
+
+    return root;
+}
+
+int insert_into_tree(binary_tree *tree, void *value, int (*compare)(const void *c1, const void *c2))
+{
+    tree->root = insert_node(tree->root, value, compare);
+    return 0;
+}
+
+node *find_min_node(node *n)
+{
+    while (n && n->left != NULL)
+    {
+        n = n->left;
+    }
+    return n;
+}
+
+node *delete_node(node *root, void *value, int (*compare)(const void *c1, const void *c2), void (*delete_value)(void *c), int should_be_freed)
+{
+    if (root == NULL)
+    {
+        return root;
+    }
+
+    int cmp = compare(value, root->value);
+    if (cmp < 0)
+    {
+        root->left = delete_node(root->left, value, compare, delete_value, should_be_freed);
+    }
+    else if (cmp > 0)
+    {
+        root->right = delete_node(root->right, value, compare, delete_value, should_be_freed);
+    }
+    else
+    {
+        if (root->left == NULL || root->right == NULL)
+        {
+            node *temp = root->left ? root->left : root->right;
+            if (temp == NULL)
             {
-                new_item->prev = NULL;
-                new_item->next = NULL;
-                list->head = new_item;
+                temp = root;
+                root = NULL;
             }
             else
             {
-                int added = 0;
+                *root = *temp;
+            }
 
-                list_item *tmp = list->head;
-                list_item *prev_tmp = list->head->prev;
-                do
-                {
-                    if ((*compare)(new_item->value, tmp->value) < 0)
-                    {
-                        new_item->next = tmp;
-                        new_item->prev = tmp->prev;
-                        if (tmp->prev)
-                        {
-                            tmp->prev->next = new_item;
-                        }
-                        tmp->prev = new_item;
-                        if (tmp == list->head)
-                        {
-                            list->head = new_item;
-                        }
-                        added = 1;
-                        break;
-                    }
-                    prev_tmp = tmp;
-                    tmp = tmp->next;
-                } while (tmp != NULL);
-
-                if (!added)
-                {
-                    new_item->next = NULL;
-                    new_item->prev = prev_tmp;
-                    prev_tmp->next = new_item;
-                }
+            if (should_be_freed)
+            {
+                free_value(temp, delete_value);
+            }
+            else
+            {
+                free(temp);
             }
         }
         else
         {
-            res = 1;
+            node *temp = find_min_node(root->right);
+            root->value = temp->value;
+            root->right = delete_node(root->right, temp->value, compare, NULL, 0);
         }
     }
-    else
+
+    if (root == NULL)
     {
-        res = 1;
+        return root;
     }
 
-    return res;
+    int balance = get_balance(root);
+
+    if (balance > 1 && get_balance(root->left) >= 0)
+    {
+        return rotate_right(root);
+    }
+
+    if (balance < -1 && get_balance(root->right) <= 0)
+    {
+        return rotate_left(root);
+    }
+
+    if (balance > 1 && get_balance(root->left) < 0)
+    {
+        root->left = rotate_left(root->left);
+        return rotate_right(root);
+    }
+
+    if (balance < -1 && get_balance(root->right) > 0)
+    {
+        root->right = rotate_right(root->right);
+        return rotate_left(root);
+    }
+
+    return root;
 }
 
-int delete_value(list *list, void *value, int (*compare)(const void *c1, const void *c2), void (*delete_value)(void *c), int should_be_freed)
+int delete_from_tree(binary_tree *tree, void *value, int (*compare)(const void *c1, const void *c2), void (*delete_value)(void *c), int should_be_freed)
 {
-    int res = 0;
-
-    list_item *tmp = find_item(list, value, compare);
-
-    if (tmp != NULL)
-    {
-        res = delete_item(list, tmp, delete_value, should_be_freed);
-    }
-    else
-    {
-        res = 1;
-    }
-
-    return res;
+    tree->root = delete_node(tree->root, value, compare, delete_value, should_be_freed);
+    return 0;
 }
 
-int delete_item(list *list, list_item *item, void (*delete_value)(void *c), int should_be_freed)
+void free_value(node *node, void (*delete_value)(void *c))
 {
-    int res = 0;
+    (*delete_value)(node->value);
+    free(node->value);
+    free(node);
+}
 
-    if (list && item)
+void delete_tree(binary_tree *tree, void (*delete_value)(void *c))
+{
+    delete_node_inorder(tree->root, delete_value);
+}
+
+void delete_node_inorder(node *current, void (*delete_value)(void *c))
+{
+    if (current == NULL)
     {
-        if (item->next == NULL && item->prev == NULL)
+        return;
+    }
+
+    delete_node_inorder(current->left, delete_value);
+    delete_node_inorder(current->right, delete_value);
+
+    if (current->value != NULL)
+    {
+        free_value(current, delete_value);
+    }
+}
+
+node *find_node(binary_tree *tree, void *value, int (*compare)(const void *c1, const void *c2))
+{
+    node *current = tree->root;
+    while (current != NULL)
+    {
+        int cmp = compare(value, current->value);
+        if (cmp == 0)
         {
-            list->head = NULL;
+            return current;
+        }
+        else if (cmp < 0)
+        {
+            current = current->left;
         }
         else
         {
-            if (item->next)
-            {
-                item->next->prev = item->prev;
-            }
-            if (item->prev)
-            {
-                item->prev->next = item->next;
-            }
-
-            if (item == list->head)
-            {
-                list->head = list->head->next;
-            }
-        }
-
-        if (should_be_freed)
-        {
-            free_value(item, delete_value);
-        }
-        else
-        {
-            free(item);
+            current = current->right;
         }
     }
-    else
-    {
-        res = 1;
-    }
-
-    return res;
+    return NULL;
 }
 
-void delete_list(list *list, void (*delete_value)(void *c))
+void *find_value(binary_tree *tree, void *value, int (*compare)(const void *c1, const void *c2))
 {
-    if (list != NULL)
-    {
-        list_item *tmp = list->head;
-
-        while (tmp != NULL)
-        {
-            list_item *item_for_remove = tmp;
-            tmp = tmp->next;
-            free_value(item_for_remove, delete_value);
-        }
-    }
-}
-
-void *find_value(list *list, void *value, int (*compare)(const void *c1, const void *c2))
-{
-    list_item *found = find_item(list, value, compare);
-
-    if (found == NULL)
-    {
-        return NULL;
-    }
-    else
-    {
-        return found->value;
-    }
-}
-
-list_item *find_item(list *list, void *value, int (*compare)(const void *c1, const void *c2))
-{
-    if (list == NULL)
-    {
-        return NULL;
-    }
-    else
-    {
-        list_item *tmp = list->head;
-
-        while (tmp != NULL)
-        {
-            if ((*compare)(tmp->value, value) == 0)
-            {
-                break;
-            }
-            tmp = tmp->next;
-        }
-
-        return tmp;
-    }
-}
-
-void free_value(list_item *item, void (*delete_value)(void *c))
-{
-    (*delete_value)(item->value);
-    free(item->value);
-    free(item);
+    node *current = find_node(tree, value, compare);
+    return current ? current->value : NULL;
 }

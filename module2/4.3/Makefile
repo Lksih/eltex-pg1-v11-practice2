@@ -3,7 +3,7 @@ all: phonebook.out
 CC = gcc
 CFLAGS = -Wall -Wextra
 
-OBJS = main.o contact.o address.o names.o phonebook.o list.o
+OBJS = main.o contact.o address.o names.o phonebook.o binary_tree.o
 
 TARGET = phonebook.out
 
@@ -22,11 +22,11 @@ address.o: address.c address.h
 names.o: names.c names.h
 	$(CC) $(CFLAGS) -c names.c
 
-phonebook.o: phonebook.c phonebook.h contact.h list.h
+phonebook.o: phonebook.c phonebook.h contact.h binary_tree.h
 	$(CC) $(CFLAGS) -c phonebook.c
 
-list.o: list.c list.h
-	$(CC) $(CFLAGS) -c list.c
+binary_tree.o: binary_tree.c binary_tree.h
+	$(CC) $(CFLAGS) -c binary_tree.c
 
 clean:
 	rm -f $(OBJS) $(TARGET)

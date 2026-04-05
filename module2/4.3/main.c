@@ -11,6 +11,7 @@ void print_names(const names *n);
 void print_address(const address *a);
 void print_contact(const contact *c);
 int input_contact(contact *c);
+void inorder_print(node *current);
 
 void menu1(phonebook *pb);
 void menu2(phonebook *pb);
@@ -292,6 +293,20 @@ int input_contact(contact *c)
     return 0;
 }
 
+void inorder_print(node *current)
+{
+    if (current == NULL){
+        return;
+    }
+    
+    inorder_print(current->left);
+    
+    contact *c = (contact*)current->value;
+    print_contact(c);
+    
+    inorder_print(current->right);
+}
+
 void menu1(phonebook *pb)
 {
     contact *new_contact = (contact *)malloc(sizeof(contact));
@@ -402,13 +417,7 @@ void menu4(phonebook *pb)
     }
     else
     {
-        list_item *tmp = pb->contacts.head;
-
-        while (tmp != NULL)
-        {
-            print_contact(tmp->value);
-            tmp = tmp->next;
-        }
+        inorder_print(pb->contacts.root);
     }
 }
 

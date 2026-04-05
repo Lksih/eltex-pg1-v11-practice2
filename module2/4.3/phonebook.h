@@ -3,13 +3,13 @@
 
 #include <stdlib.h>
 #include "contact.h"
-#include "list.h"
+#include "binary_tree.h"
 
 #define FOUND_CONTACTS_CAPACITY_INCREASE_STEP 10
 
 typedef struct
 {
-    list contacts;
+    binary_tree contacts;
     unsigned long long contacts_quan;
 } phonebook;
 

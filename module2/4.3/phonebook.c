@@ -4,7 +4,7 @@ int init_phonebook(phonebook *pb)
 {
     int res = 0;
 
-    init_list(&(pb->contacts));
+    init_binary_tree(&(pb->contacts));
     pb->contacts_quan = 0;
 
     return res;
@@ -12,7 +12,7 @@ int init_phonebook(phonebook *pb)
 
 void delete_phonebook(phonebook *pb)
 {
-    delete_list(&(pb->contacts), delete_contact_void_adapter);
+    delete_tree(&(pb->contacts), delete_contact_void_adapter);
     pb->contacts_quan = 0;
 }
 
@@ -20,7 +20,7 @@ int add_contact_to_phonebook(phonebook *pb, contact *new_contact)
 {
     new_contact->id = generate_id(pb, new_contact->names.last_name);
 
-    int res = insert_value(&(pb->contacts), new_contact, compare_contacts_by_id);
+    int res = insert_into_tree(&(pb->contacts), new_contact, compare_contacts_by_id);
 
     if (!res)
     {
@@ -32,7 +32,7 @@ int add_contact_to_phonebook(phonebook *pb, contact *new_contact)
 
 int delete_contact_from_phonebook(phonebook *pb, unsigned long long id, int should_be_freed)
 {
-    int res = delete_value(&(pb->contacts), &id, compare_contact_with_id, delete_contact_void_adapter, should_be_freed);
+    int res = delete_from_tree(&(pb->contacts), &id, compare_contact_with_id, delete_contact_void_adapter, should_be_freed);
 
     if (!res)
     {
@@ -220,13 +220,12 @@ contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *
 
     if (result)
     {
-        list_item *existing = find_item(&(pb->contacts), &target_id, compare_contact_with_id);
+        contact *existing = find_by_id(pb, target_id);
         if (existing != NULL)
         {
             while (existing != NULL)
             {
-                contact *c = existing->value;
-                if (!strcmp(c->names.last_name, last_name))
+                if (!strcmp(existing->names.last_name, last_name))
                 {
                     if (*count == capacity)
                     {
@@ -241,11 +240,11 @@ contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *
                             break;
                         }
                     }
-                    result[*count] = c;
+                    result[*count] = existing;
                     (*count)++;
                 }
                 target_id++;
-                existing = find_item(&(pb->contacts), &target_id, compare_contact_with_id);
+                existing = find_by_id(pb, target_id);
             }
             return result;
         }
