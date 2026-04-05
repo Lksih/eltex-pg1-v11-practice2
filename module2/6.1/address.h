@@ -1,0 +1,22 @@
+#ifndef ADDRESS_H
+#define ADDRESS_H
+
+#define COUNTRY_LENGTH 21
+#define CITY_LENGTH 21
+#define STREET_LENGTH 21
+#define BUILDING_LENGTH 21
+#define FLAT_LENGTH 21
+
+#include <string.h>
+
+typedef struct {
+    char country[21];
+    char city[21];
+    char street[21];
+    char building[21];
+    char flat[21];
+} address;
+
+void init_address(address *a);
+
+#endif
