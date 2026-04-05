@@ -4,96 +4,39 @@ int init_phonebook(phonebook *pb)
 {
     int res = 0;
 
-    pb->contacts = malloc(sizeof(contact) * PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP);
-    if (pb->contacts)
-    {
-        pb->contacts_capacity = PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP;
-        pb->contacts_quan = 0;
-    }
-    else
-    {
-        res = 1;
-    }
+    init_list(&(pb->contacts));
+    pb->contacts_quan = 0;
 
     return res;
 }
 
 void delete_phonebook(phonebook *pb)
 {
-    for (unsigned int i = 0; i < pb->contacts_quan; i++)
-    {
-        delete_contact(&(pb->contacts[i]));
-    }
-    free(pb->contacts);
-    pb->contacts = NULL;
-    pb->contacts_capacity = 0;
+    delete_list(&(pb->contacts), delete_contact_void_adapter);
     pb->contacts_quan = 0;
 }
 
-int add_contact_to_phonebook(phonebook *pb, contact new_contact)
+int add_contact_to_phonebook(phonebook *pb, contact *new_contact)
 {
-    int res = 0;
+    new_contact->id = generate_id(pb, new_contact->names.last_name);
 
-    new_contact.id = generate_id(pb, new_contact.names.last_name);
-
-    if (pb->contacts_quan == pb->contacts_capacity)
-    {
-        contact *new_contacts = realloc(pb->contacts, sizeof(contact) * (pb->contacts_capacity + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP));
-        if (new_contacts)
-        {
-            pb->contacts = new_contacts;
-            pb->contacts_capacity += PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP;
-        }
-        else
-        {
-            res = 1;
-        }
-    }
+    int res = insert_value(&(pb->contacts), new_contact, compare_contacts_by_id);
 
     if (!res)
     {
-        pb->contacts[pb->contacts_quan] = new_contact;
         pb->contacts_quan++;
     }
 
     return res;
 }
 
-int delete_contact_from_phonebook(phonebook *pb, unsigned long long id)
+int delete_contact_from_phonebook(phonebook *pb, unsigned long long id, int should_be_freed)
 {
-    int res = 0;
+    int res = delete_value(&(pb->contacts), &id, compare_contact_with_id, delete_contact_void_adapter, should_be_freed);
 
-    unsigned long long ind;
-    int found = 0;
-
-    for (unsigned long long i = 0; i < pb->contacts_quan; i++)
+    if (!res)
     {
-        if (pb->contacts[i].id == id)
-        {
-            ind = i;
-            found = 1;
-        }
-    }
-
-    if (!found)
-    {
-        res = 1;
-    }
-    else
-    {
-        delete_contact(&(pb->contacts[ind]));
-        memmove(&(pb->contacts[ind]), &(pb->contacts[ind + 1]), sizeof(contact) * (pb->contacts_quan - ind - 1));
         pb->contacts_quan--;
-
-        if (pb->contacts_capacity > pb->contacts_quan + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP)
-        {
-            contact *new_contacts = realloc(pb->contacts, sizeof(contact) * (pb->contacts_quan + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP));
-            if (new_contacts)
-            {
-                pb->contacts = new_contacts;
-                pb->contacts_capacity = pb->contacts_quan + PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP;
-            }
-        }
     }
 
     return res;
@@ -122,9 +65,13 @@ int edit_contact_in_phonebook(phonebook *pb, unsigned long long id, char *fields
                 char *last_name = va_arg(args, char *);
                 if (strcmp(c->names.last_name, last_name))
                 {
-                    c->id = generate_id(pb, last_name);
+                    res = delete_contact_from_phonebook(pb, id, 0);
+                    if (!res)
+                    {
+                        strncpy(c->names.last_name, last_name, LAST_NAME_LENGTH);
+                        res = add_contact_to_phonebook(pb, c);
+                    }
                 }
-                strncpy(c->names.last_name, last_name, LAST_NAME_LENGTH);
             }
             else if (!strcmp(token, "1.2"))
             {
@@ -260,14 +207,7 @@ unsigned long long hash_djb2(const char *str)
 
 contact *find_by_id(phonebook *pb, unsigned long long id)
 {
-    for (unsigned long long i = 0; i < pb->contacts_quan; i++)
-    {
-        if (pb->contacts[i].id == id)
-        {
-            return &(pb->contacts[i]);
-        }
-    }
-    return NULL;
+    return (contact *)find_value(&(pb->contacts), &id, compare_contact_with_id);
 }
 
 contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *count)
@@ -280,12 +220,13 @@ contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *
 
     if (result)
     {
-        contact *existing = find_by_id(pb, target_id);
+        list_item *existing = find_item(&(pb->contacts), &target_id, compare_contact_with_id);
         if (existing != NULL)
         {
             while (existing != NULL)
             {
-                if (!strcmp(existing->names.last_name, last_name))
+                contact *c = existing->value;
+                if (!strcmp(c->names.last_name, last_name))
                 {
                     if (*count == capacity)
                     {
@@ -300,11 +241,11 @@ contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *
                             break;
                         }
                     }
-                    result[*count] = existing;
+                    result[*count] = c;
                     (*count)++;
                 }
                 target_id++;
-                existing = find_by_id(pb, target_id);
+                existing = find_item(&(pb->contacts), &target_id, compare_contact_with_id);
             }
             return result;
         }

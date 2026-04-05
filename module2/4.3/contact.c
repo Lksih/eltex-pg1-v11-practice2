@@ -262,3 +262,22 @@ void free_strings(char **strings, unsigned char quan)
     }
     free(strings);
 }
+
+int compare_contacts_by_id(const void *c1, const void *c2)
+{
+    return ((contact *)c1)->id - ((contact *)c2)->id;
+}
+
+int compare_contact_with_last_name(const void *c1, const void *c2)
+{
+    return strcmp(((contact *)c1)->names.last_name, (char *)c2);
+}
+
+int compare_contact_with_id(const void *c1, const void *c2)
+{
+    return ((contact *)c1)->id - (*((unsigned long long *)c2));
+}
+
+void delete_contact_void_adapter(void *c){
+    delete_contact((contact *)c);
+}
