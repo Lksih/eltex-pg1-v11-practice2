@@ -3,7 +3,7 @@ all: phonebook.out
 CC = gcc
 CFLAGS = -Wall -Wextra
 
-OBJS = main.o contact.o address.o names.o phonebook.o list.o
+OBJS = main.o contact.o address.o names.o phonebook.o
 
 LIB_NAMES = list
 LIBS = $(addprefix -l, $(LIB_NAMES))
