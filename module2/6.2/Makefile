@@ -3,11 +3,11 @@ all: phonebook.out
 CC = gcc
 CFLAGS = -Wall -Wextra
 
-OBJS = main.o contact.o address.o names.o phonebook.o list.o
+OBJS = main.o contact.o address.o names.o phonebook.o
 
 LIB_NAMES = list
 LIBS = $(addprefix -l, $(LIB_NAMES))
-LIB_FILES = $(addsuffix .a, $(addprefix lib, $(LIB_NAMES)))
+LIB_FILES = $(addsuffix .so, $(addprefix lib, $(LIB_NAMES)))
 
 LDFLAGS = -L.
 
@@ -32,10 +32,10 @@ phonebook.o: phonebook.c phonebook.h contact.h list.h
 	$(CC) $(CFLAGS) -c phonebook.c
 
 list.o: list.c list.h
-	$(CC) $(CFLAGS) -c list.c
+	$(CC) $(CFLAGS) -fPIC -c list.c
 
-liblist.a: list.o
-	ar rc liblist.a list.o
+liblist.so: list.o
+	$(CC) -shared list.o -o liblist.so
 
 clean:
 	rm -f $(OBJS) $(TARGET)
@@ -43,4 +43,4 @@ clean:
 rebuild: clean all
 
 run: all
-	./$(TARGET)
+	LD_LIBRARY_PATH=$$PWD:$$LD_LIBRARY_PATH ./$(TARGET)
