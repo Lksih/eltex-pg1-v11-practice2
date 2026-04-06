@@ -1,15 +1,15 @@
 #include "filework.h"
 
-int read_contacts(const char *filename, contact **contacts, uint32_t *quan)
+int read_contacts(const char *filename, contact **contacts, uint64_t *quan)
 {
-    int fd = open(filename, O_RDWR);
+    int fd = open(filename, O_RDWR | O_CREAT, 0644);
     if (fd == -1)
     {
         perror("Ошибка открытия файла");
         return -1;
     }
 
-    long contacts_quan = get_contacts_quan(fd);
+    off_t contacts_quan = get_contacts_quan(fd);
     if (contacts_quan == -1)
     {
         *quan = 0;
@@ -35,8 +35,8 @@ int read_contacts(const char *filename, contact **contacts, uint32_t *quan)
             return -1;
         }
 
-        int bytes_read = read(fd, *contacts, sizeof(contact) * contacts_quan);
-        if (bytes_read != contacts_quan * sizeof(contact))
+        ssize_t bytes_read = read(fd, *contacts, sizeof(contact) * contacts_quan);
+        if (bytes_read != (ssize_t)(contacts_quan * sizeof(contact)))
         {
             perror("Ошибка чтения файла");
             free(*contacts);
@@ -52,9 +52,9 @@ int read_contacts(const char *filename, contact **contacts, uint32_t *quan)
     return fd;
 }
 
-long get_contacts_quan(int fd)
+off_t get_contacts_quan(int fd)
 {
-    int file_size = lseek(fd, 0, SEEK_END);
+    off_t file_size = lseek(fd, 0, SEEK_END);
     if (file_size == -1)
     {
         perror("Ошибка вычисления количества контактов");
@@ -64,7 +64,7 @@ long get_contacts_quan(int fd)
     return file_size / sizeof(contact);
 }
 
-int write_contact_to_file(int fd, const contact *c, uint32_t ind)
+int write_contact_to_file(int fd, const contact *c, uint64_t ind)
 {
     int res = 0;
     if (lseek(fd, ind * sizeof(contact), SEEK_SET) == -1)
@@ -80,5 +80,5 @@ int write_contact_to_file(int fd, const contact *c, uint32_t ind)
             res = -1;
         }
     }
-    return 0;
+    return res;
 }

@@ -9,6 +9,7 @@ int init_phonebook(phonebook *pb)
     {
         res = 1;
     }
+    printf("%lu\n", pb->contacts_quan);
     pb->contacts_capacity = pb->contacts_quan;
 
     return res;
@@ -44,8 +45,15 @@ int add_contact_to_phonebook(phonebook *pb, contact new_contact)
 
     if (!res)
     {
-        pb->contacts[pb->contacts_quan] = new_contact;
-        pb->contacts_quan++;
+        if (write_contact_to_file(pb->fd, &new_contact, pb->contacts_quan) == -1)
+        {
+            res = 1;
+        }
+        else
+        {
+            pb->contacts[pb->contacts_quan] = new_contact;
+            pb->contacts_quan++;
+        }
     }
 
     return res;
@@ -94,7 +102,8 @@ int edit_contact_in_phonebook(phonebook *pb, unsigned long long id, char *fields
 {
     int res = 0;
 
-    contact *c = find_by_id(pb, id);
+    uint32_t ind = find_ind_by_id(pb, id);
+    contact *c = &(pb->contacts[ind]);
 
     if (c == NULL)
     {
@@ -186,6 +195,11 @@ int edit_contact_in_phonebook(phonebook *pb, unsigned long long id, char *fields
         }
 
         va_end(args);
+
+        if (write_contact_to_file(pb->fd, &c, ind) == -1)
+        {
+            res = 1;
+        }
     }
 
     return res;
@@ -204,16 +218,29 @@ unsigned long long hash_djb2(const char *str)
     return hash;
 }
 
-contact *find_by_id(phonebook *pb, unsigned long long id)
+uint32_t find_ind_by_id(phonebook *pb, unsigned long long id)
 {
     for (unsigned long long i = 0; i < pb->contacts_quan; i++)
     {
         if (pb->contacts[i].id == id)
         {
-            return &(pb->contacts[i]);
+            return i;
         }
     }
-    return NULL;
+    return pb->contacts_quan;
+}
+
+contact *find_by_id(phonebook *pb, unsigned long long id)
+{
+    uint32_t ind = find_ind_by_id(pb, id);
+    if (ind != pb->contacts_quan)
+    {
+        return &(pb->contacts[ind]);
+    }
+    else
+    {
+        return NULL;
+    }
 }
 
 contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *count)
