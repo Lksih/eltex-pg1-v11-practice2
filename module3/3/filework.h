@@ -10,5 +10,6 @@
 int read_contacts(const char *filename, contact **contacts, uint64_t *quan);
 off_t get_contacts_quan(int fd);
 int write_contact_to_file(int fd, const contact *c, uint64_t ind);
+int delete_contact_from_file(int fd, uint64_t ind, uint64_t quan);
 
 #endif

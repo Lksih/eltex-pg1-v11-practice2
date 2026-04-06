@@ -82,3 +82,73 @@ int write_contact_to_file(int fd, const contact *c, uint64_t ind)
     }
     return res;
 }
+
+int delete_contact_from_file(int fd, uint64_t ind, uint64_t quan)
+{
+    if (ind >= quan)
+    {
+        return -1;
+    }
+
+    if (ind == quan - 1)
+    {
+        if (ftruncate(fd, (quan - 1) * sizeof(contact)) == -1)
+        {
+            perror("Ошибка усечения файла");
+            return -1;
+        }
+    }
+    else
+    {
+        uint64_t delete_offset = ind * sizeof(contact);
+        uint64_t next_offset = (ind + 1) * sizeof(contact);
+        uint64_t bytes_to_move = quan * sizeof(contact) - next_offset;
+
+        char *buffer = (char *)malloc(bytes_to_move);
+        if (buffer == NULL)
+        {
+            perror("Ошибка выделения памяти");
+            return -1;
+        }
+
+        if (lseek(fd, next_offset, SEEK_SET) == -1)
+        {
+            perror("Ошибка позиционирования в файле");
+            free(buffer);
+            return -1;
+        }
+
+        ssize_t bytes_read = read(fd, buffer, bytes_to_move);
+        if (bytes_read != (ssize_t)bytes_to_move)
+        {
+            perror("Ошибка чтения данных");
+            free(buffer);
+            return -1;
+        }
+
+        if (lseek(fd, delete_offset, SEEK_SET) == -1)
+        {
+            perror("Ошибка позиционирования в файле");
+            free(buffer);
+            return -1;
+        }
+
+        ssize_t bytes_written = write(fd, buffer, bytes_to_move);
+
+        free(buffer);
+
+        if (bytes_written != (ssize_t)bytes_to_move)
+        {
+            perror("Ошибка записи данных");
+            return -1;
+        }
+
+        if (ftruncate(fd, (quan - 1) * sizeof(contact)) == -1)
+        {
+            perror("Ошибка усечения файла");
+            return -1;
+        }
+    }
+
+    return 0;
+}
