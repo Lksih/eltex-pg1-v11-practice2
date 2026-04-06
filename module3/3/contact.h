@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include "names.h"
 #include "address.h"
 
@@ -15,7 +16,7 @@
 #define POSITION_SIZE 50
 
 typedef struct {
-    unsigned long long id;
+    uint64_t id;
     names names; // 1.1 1.2 1.3
     address address; // 2.1 - 2.6
     char workplace[101]; // 3

@@ -127,7 +127,7 @@ void print_address(const address *a)
 
 void print_contact(const contact *c)
 {
-    printf("Контакт #%llu:\n", c->id);
+    printf("Контакт #%lu:\n", c->id);
 
     print_names(&c->names);
     print_address(&c->address);
@@ -253,8 +253,8 @@ void menu2(phonebook *pb)
     }
 
     printf("Введите id контакта для удаления: ");
-    unsigned long long id;
-    scanf("%llu", &id);
+    uint64_t id;
+    scanf("%lu", &id);
 
     if (delete_contact_from_phonebook(pb, id) == 0)
     {
@@ -275,8 +275,8 @@ void menu3(phonebook *pb)
     }
 
     printf("Введите id контакта для редактирования: ");
-    unsigned long long id;
-    scanf("%llu", &id);
+    uint64_t id;
+    scanf("%lu", &id);
 
     printf("Форматные строки для редактирования:\n");
     printf("1.1 - фамилия, 1.2 - имя, 1.3 - отчество\n");
@@ -323,7 +323,7 @@ void menu4(phonebook *pb)
     }
     else
     {
-        for (unsigned int i = 0; i < pb->contacts_quan; i++)
+        for (uint64_t i = 0; i < pb->contacts_quan; i++)
         {
             print_contact(&(pb->contacts[i]));
         }
@@ -339,8 +339,8 @@ void menu5(phonebook *pb)
     }
 
     printf("Введите id контакта для поиска: ");
-    unsigned long long id;
-    scanf("%llu", &id);
+    uint64_t id;
+    scanf("%lu", &id);
 
     contact *c = find_by_id(pb, id);
 
@@ -367,7 +367,7 @@ void menu6(phonebook *pb)
     char last_name[LAST_NAME_LENGTH];
     scanf("%s", last_name);
 
-    unsigned int count;
+    uint64_t count;
     contact **cs = find_by_last_name(pb, last_name, &count);
 
     if (cs == NULL)
@@ -377,7 +377,7 @@ void menu6(phonebook *pb)
     else
     {
         printf("Найдены контакты:\n");
-        for (unsigned int i = 0; i < count; i++)
+        for (uint64_t i = 0; i < count; i++)
         {
             print_contact(cs[i]);
         }

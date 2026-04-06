@@ -25,7 +25,7 @@ names.o: names.c names.h
 filework.o: filework.c filework.h
 	$(CC) $(CFLAGS) -c filework.c
 
-phonebook.o: phonebook.c phonebook.h contact.h
+phonebook.o: phonebook.c phonebook.h contact.h filework.h
 	$(CC) $(CFLAGS) -c phonebook.c
 
 clean:
