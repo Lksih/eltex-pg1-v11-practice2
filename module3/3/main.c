@@ -18,6 +18,7 @@ void menu3(phonebook *pb);
 void menu4(phonebook *pb);
 void menu5(phonebook *pb);
 void menu6(phonebook *pb);
+void menu7(phonebook *pb);
 
 int main()
 {
@@ -59,6 +60,9 @@ int main()
         case 6:
             menu6(&pb);
             break;
+        case 7:
+            menu7(&pb);
+            break;
         case 0:
             break;
         default:
@@ -87,6 +91,7 @@ void print_menu()
     printf("4. Вывести все контакты\n");
     printf("5. Поиск по id\n");
     printf("6. Поиск по фамилии\n");
+    printf("7. Удаление всей телефонной книги\n");
     printf("0. Выход\n");
     printf("\nВыберите действие (0-6): ");
 }
@@ -381,4 +386,19 @@ void menu6(phonebook *pb)
         }
         free(cs);
     }
+}
+
+void menu7(phonebook *pb)
+{
+    if (delete_phonebook_file() == 0)
+    {
+        printf("Телефонная книга успешно удалена\n\n");
+    }
+    else
+    {
+        printf("Ошибка удаления телефонной книги\n\n");
+    }
+
+    delete_phonebook(pb);
+    exit(EXIT_SUCCESS);
 }

@@ -304,3 +304,15 @@ uint64_t generate_id(phonebook *pb, const char *last_name)
     }
     return new_id;
 }
+
+int delete_phonebook_file()
+{
+    int res = 0;
+
+    if (delete_file(FILE_NAME) != 0)
+    {
+        res = 1;
+    }
+
+    return res;
+}

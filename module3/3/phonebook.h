@@ -28,5 +28,6 @@ uint32_t find_ind_by_id(phonebook *pb, uint64_t id);
 contact* find_by_id(phonebook *pb, uint64_t id);
 contact **find_by_last_name(phonebook *pb, const char *last_name, uint64_t *count);
 uint64_t generate_id(phonebook *pb, const char *last_name);
+int delete_phonebook_file();
 
 #endif

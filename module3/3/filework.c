@@ -152,3 +152,13 @@ int delete_contact_from_file(int fd, uint64_t ind, uint64_t quan)
 
     return 0;
 }
+
+int delete_file(const char *filename)
+{
+    if (unlink(filename) == -1)
+    {
+        perror("Ошибка удаления файла");
+        return -1;
+    }
+    return 0;
+}
