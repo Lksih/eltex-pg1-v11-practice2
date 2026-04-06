@@ -14,26 +14,24 @@ int main()
     {
         printf("Введите команду: ");
         fgets(command, MAX_COMMAND_LENGTH, stdin);
+        command[strcspn(command, "\n")] = '\0';
 
         if (!strcmp(command, "exit"))
         {
             break;
         }
 
-        command[strcspn(command, "\n")] = '\0';
-
         pid_t pid = fork();
         switch (pid)
         {
         case -1:
             perror("Создание дочернего процесса для команды завершилось с ошибкой");
-            exit(EXIT_FAILURE);
             break;
         case 0: /* Потомок */
             char *args[MAX_ARGUMENTS];
 
             char *token = strtok(command, " ");
-            unsigned int i = 1, lim = MAX_ARGUMENTS - 1;
+            unsigned int i = 0, lim = MAX_ARGUMENTS - 1;
 
             while (token != NULL && i < lim)
             {
@@ -64,7 +62,6 @@ int main()
                 fprintf(stderr, "Команда убита сигналом %d: %s\n", signal, strsignal(signal));
             }
 
-            exit(EXIT_SUCCESS);
             break;
         }
     }
