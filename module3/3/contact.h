@@ -8,10 +8,6 @@
 #include "names.h"
 #include "address.h"
 
-#define SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP 10
-#define EMAILS_CAPACITY_INCREASE_STEP 10
-#define PHONE_NUMBERS_CAPACITY_INCREASE_STEP 10
-
 #define SOCIAL_MEDIA_LINK_SIZE 1000
 #define EMAIL_SIZE 255
 #define PHONE_NUMBER_SIZE 11
@@ -24,28 +20,11 @@ typedef struct {
     address address; // 2.1 - 2.6
     char workplace[101]; // 3
     char position[51]; // 4
-
-    unsigned char social_media_links_quan;
-    unsigned char social_media_links_capacity;
-    char** social_media_links; // 5.?
-
-    unsigned char emails_quan;
-    unsigned char emails_capacity;
-    char** emails; // 6.?
-
-    unsigned char phone_numbers_quan;
-    unsigned char phone_numbers_capacity;
-    char** phone_numbers; // 7.?
+    char social_media_link[1001]; // 5
+    char email[256]; // 6
+    char phone_number[12]; // 7
 } contact;
 
-int init_contact(contact *c);
-int add_social_media_link_to_contact(contact *c, const char *new_link);
-int delete_social_media_link_from_contact(contact *c, unsigned int ind);
-int add_email_to_contact(contact *c, const char *new_email);
-int delete_email_from_contact(contact *c, unsigned int ind);
-int add_phone_number_to_contact(contact *c, const char *new_phone);
-int delete_phone_number_from_contact(contact *c, unsigned int ind);
-void delete_contact(contact *c);
-void free_strings(char **strings, unsigned char quan);
+void init_contact(contact *c);
 
 #endif

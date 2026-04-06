@@ -20,10 +20,6 @@ int init_phonebook(phonebook *pb)
 
 void delete_phonebook(phonebook *pb)
 {
-    for (unsigned int i = 0; i < pb->contacts_quan; i++)
-    {
-        delete_contact(&(pb->contacts[i]));
-    }
     free(pb->contacts);
     pb->contacts = NULL;
     pb->contacts_capacity = 0;
@@ -81,7 +77,6 @@ int delete_contact_from_phonebook(phonebook *pb, unsigned long long id)
     }
     else
     {
-        delete_contact(&(pb->contacts[ind]));
         memmove(&(pb->contacts[ind]), &(pb->contacts[ind + 1]), sizeof(contact) * (pb->contacts_quan - ind - 1));
         pb->contacts_quan--;
 
@@ -164,72 +159,27 @@ int edit_contact_in_phonebook(phonebook *pb, unsigned long long id, char *fields
             else if (!strcmp(token, "3"))
             {
                 char *workplace = va_arg(args, char *);
-                strncpy(c->workplace, workplace, 100);
+                strncpy(c->workplace, workplace, WORKPLACE_SIZE);
             }
             else if (!strcmp(token, "4"))
             {
                 char *position = va_arg(args, char *);
-                strncpy(c->position, position, 50);
+                strncpy(c->position, position, POSITION_SIZE);
             }
-            else if (!strncmp(token, "5.", 2))
+            else if (!strcmp(token, "5"))
             {
-                if (strlen(token) >= 3)
-                {
-                    unsigned char index = token[2] - '0' - 1;
-                    char *link = va_arg(args, char *);
-                    if (index < c->social_media_links_quan)
-                    {
-                        strncpy(c->social_media_links[index], link, SOCIAL_MEDIA_LINK_SIZE);
-                    }
-                    else
-                    {
-                        res = 1;
-                    }
-                }
-                else
-                {
-                    res = 1;
-                }
+                char *social_media_link = va_arg(args, char *);
+                strncpy(c->social_media_link, social_media_link, SOCIAL_MEDIA_LINK_SIZE);
             }
-            else if (!strncmp(token, "6.", 2))
+            else if (!strcmp(token, "6"))
             {
-                if (strlen(token) >= 3)
-                {
-                    unsigned char index = token[2] - '0' - 1;
-                    char *email = va_arg(args, char *);
-                    if (index < c->emails_quan)
-                    {
-                        strncpy(c->emails[index], email, EMAIL_SIZE);
-                    }
-                    else
-                    {
-                        res = 1;
-                    }
-                }
-                else
-                {
-                    res = 1;
-                }
+                char *email = va_arg(args, char *);
+                strncpy(c->email, email, EMAIL_SIZE);
             }
-            else if (!strncmp(token, "7.", 2))
+            else if (!strcmp(token, "7"))
             {
-                if (strlen(token) >= 3)
-                {
-                    unsigned char index = token[2] - '0' - 1;
-                    char *phone = va_arg(args, char *);
-                    if (index < c->phone_numbers_quan)
-                    {
-                        strncpy(c->phone_numbers[index], phone, PHONE_NUMBER_SIZE);
-                    }
-                    else
-                    {
-                        res = 1;
-                    }
-                }
-                else
-                {
-                    res = 1;
-                }
+                char *phone_number = va_arg(args, char *);
+                strncpy(c->phone_number, phone_number, PHONE_NUMBER_SIZE);
             }
             else
             {
