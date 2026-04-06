@@ -40,6 +40,13 @@ int main()
                 token = strtok(NULL, " ");
             }
 
+            char full_path[MAX_COMMAND_LENGTH + 2];
+            if (access(args[0], X_OK) == 0)
+            {
+                sprintf(full_path, "./%s", args[0]);
+                args[0] = full_path;
+            }
+
             execvp(args[0], args);
 
             _exit(EXIT_FAILURE);
