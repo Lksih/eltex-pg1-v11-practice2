@@ -3,7 +3,7 @@ all: phonebook.out
 CC = gcc
 CFLAGS = -Wall -Wextra
 
-OBJS = main.o contact.o address.o names.o phonebook.o
+OBJS = main.o contact.o address.o names.o phonebook.o filework.o
 
 TARGET = phonebook.out
 
@@ -21,6 +21,9 @@ address.o: address.c address.h
 
 names.o: names.c names.h
 	$(CC) $(CFLAGS) -c names.c
+
+filework.o: filework.c filework.h
+	$(CC) $(CFLAGS) -c filework.c
 
 phonebook.o: phonebook.c phonebook.h contact.h
 	$(CC) $(CFLAGS) -c phonebook.c
