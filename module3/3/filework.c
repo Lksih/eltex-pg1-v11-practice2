@@ -20,6 +20,13 @@ int read_contacts(const char *filename, contact **contacts, uint32_t *quan)
 
     if (contacts_quan != 0)
     {
+        if (lseek(fd, 0, SEEK_SET) == -1)
+        {
+            perror("Ошибка позиционирования в файле");
+            close(fd);
+            return -1;
+        }
+
         *contacts = (contact *)malloc(sizeof(contact) * contacts_quan);
         if (*contacts == NULL)
         {
@@ -27,7 +34,6 @@ int read_contacts(const char *filename, contact **contacts, uint32_t *quan)
             return -1;
         }
 
-        lseek(fd, 0, SEEK_SET);
         int bytes_read = read(fd, *contacts, sizeof(contact) * contacts_quan);
         if (bytes_read != contacts_quan * sizeof(contact))
         {
@@ -60,7 +66,7 @@ long get_contacts_quan(int fd)
 int write_contact_to_file(int fd, const contact *c, uint32_t ind)
 {
     int res = 0;
-    if (lseek(fd, ind * sizeof(contact), SEEK_END) == -1)
+    if (lseek(fd, ind * sizeof(contact), SEEK_SET) == -1)
     {
         perror("Ошибка вычисления места для записи контакта");
         res = -1;
