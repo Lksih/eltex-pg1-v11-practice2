@@ -12,6 +12,7 @@ int read_contacts(const char *filename, contact **contacts, uint32_t *quan)
     long contacts_quan = get_contacts_quan(fd);
     if (contacts_quan == -1)
     {
+        *quan = 0;
         close(fd);
         return -1;
     }

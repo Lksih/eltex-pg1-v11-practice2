@@ -4,16 +4,12 @@ int init_phonebook(phonebook *pb)
 {
     int res = 0;
 
-    pb->contacts = malloc(sizeof(contact) * PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP);
-    if (pb->contacts)
-    {
-        pb->contacts_capacity = PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP;
-        pb->contacts_quan = 0;
-    }
-    else
+    pb->fd = read_contacts(FILE_NAME, &(pb->contacts), &(pb->contacts_quan));
+    if (pb->fd == -1)
     {
         res = 1;
     }
+    pb->contacts_capacity = pb->contacts_quan;
 
     return res;
 }

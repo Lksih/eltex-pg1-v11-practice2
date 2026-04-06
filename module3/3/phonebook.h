@@ -3,11 +3,16 @@
 
 #include <stdlib.h>
 #include "contact.h"
+#include "filework.h"
 
 #define PHONEBOOK_CONTACTS_CAPACITY_INCREASE_STEP 10
 #define FOUND_CONTACTS_CAPACITY_INCREASE_STEP 10
 
+#define FILE_NAME "phonebook.txt"
+
 typedef struct {
+    int fd;
+
     contact* contacts;
     unsigned long long contacts_quan;
     unsigned long long contacts_capacity;
