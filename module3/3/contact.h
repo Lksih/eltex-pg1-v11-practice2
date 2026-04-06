@@ -26,6 +26,4 @@ typedef struct {
     char phone_number[12]; // 7
 } contact;
 
-void init_contact(contact *c);
-
 #endif

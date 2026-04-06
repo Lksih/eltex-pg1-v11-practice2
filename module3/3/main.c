@@ -225,8 +225,7 @@ int input_contact(contact *c)
 
 void menu1(phonebook *pb)
 {
-    contact new_contact;
-    init_contact(&new_contact);
+    contact new_contact = {0};
 
     int res = input_contact(&new_contact);
     if (res != 0)
@@ -290,8 +289,7 @@ void menu3(phonebook *pb)
     printf("Введите форматную строку: ");
     scanf("%255s", fields_to_change);
 
-    contact edited_contact;
-    init_contact(&edited_contact);
+    contact edited_contact = {0};
 
     int res = input_contact(&edited_contact);
     if (res != 0)

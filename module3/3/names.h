@@ -13,6 +13,4 @@ typedef struct {
     char middle_name[11];
 } names;
 
-void init_names(names *n);
-
 #endif
