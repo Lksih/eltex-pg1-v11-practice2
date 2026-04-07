@@ -95,6 +95,14 @@ int main()
                     close(fd);
                 }
 
+                if (access(commands[0].args[0], X_OK) == 0)
+                {
+                    char *full_path = (char *)malloc(strlen(commands[0].args[0]) + 3);
+                    sprintf(full_path, "./%s", commands[0].args[0]);
+                    free(commands[0].args[0]);
+                    commands[0].args[0] = full_path;
+                }
+
                 execvp(commands[0].args[0], commands[0].args);
 
                 _exit(EXIT_FAILURE);
@@ -340,6 +348,14 @@ void execute_pipeline(command_t *commands, int num_commands)
             {
                 close(pipes[j][0]);
                 close(pipes[j][1]);
+            }
+
+            if (access(commands[i].args[0], X_OK) == 0)
+            {
+                char *full_path = (char *)malloc(strlen(commands[i].args[0]) + 3);
+                sprintf(full_path, "./%s", commands[i].args[0]);
+                free(commands[i].args[0]);
+                commands[i].args[0] = full_path;
             }
 
             execvp(commands[i].args[0], commands[i].args);
