@@ -219,12 +219,9 @@ void execute_pipeline(command_t *commands, int num_commands)
                 dup2(fd, STDIN_FILENO);
                 close(fd);
             }
-            else
+            else if (i != 0)
             {
-                if (i != 0)
-                {
-                    dup2(pipes[i - 1][0], STDIN_FILENO);
-                }
+                dup2(pipes[i - 1][0], STDIN_FILENO);
             }
 
             if (commands[i].output_file != NULL)
@@ -233,17 +230,14 @@ void execute_pipeline(command_t *commands, int num_commands)
                 if (fd == -1)
                 {
                     perror("Ошибка открытия выходного потока");
-                    exit(1);
+                    _exit(EXIT_FAILURE);
                 }
                 dup2(fd, STDOUT_FILENO);
                 close(fd);
             }
-            else
+            else if (i != num_commands - 1 && commands[i + 1].input_file == NULL)
             {
-                if (i != num_commands - 1)
-                {
-                    dup2(pipes[i][1], STDOUT_FILENO);
-                }
+                dup2(pipes[i][1], STDOUT_FILENO);
             }
 
             for (int j = 0; j < num_commands - 1; j++)
