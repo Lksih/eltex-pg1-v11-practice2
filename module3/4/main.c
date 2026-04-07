@@ -14,7 +14,9 @@ typedef struct
     char *args[MAX_ARGUMENTS];
     char *input_file;
     char *output_file;
+    char *err_file;
     int is_append;
+    int is_append_err;
 } command_t;
 
 int parse_command(char *command, command_t *commands, int *num_commands);
@@ -75,9 +77,21 @@ int main()
                     if (fd == -1)
                     {
                         perror("Ошибка открытия выходного потока");
-                        exit(1);
+                        _exit(EXIT_FAILURE);
                     }
                     dup2(fd, STDOUT_FILENO);
+                    close(fd);
+                }
+
+                if (commands[0].err_file != NULL)
+                {
+                    int fd = open(commands[0].err_file, O_WRONLY | (commands[0].is_append_err ? O_APPEND : O_TRUNC) | O_CREAT, 0644);
+                    if (fd == -1)
+                    {
+                        perror("Ошибка открытия потока ошибок");
+                        _exit(EXIT_FAILURE);
+                    }
+                    dup2(fd, STDERR_FILENO);
                     close(fd);
                 }
 
@@ -112,9 +126,17 @@ int main()
         for (int i = 0; i < num_commands; i++)
         {
             if (commands[i].input_file)
+            {
                 free(commands[i].input_file);
+            }
             if (commands[i].output_file)
+            {
                 free(commands[i].output_file);
+            }
+            if (commands[i].err_file)
+            {
+                free(commands[i].err_file);
+            }
             for (int j = 0; commands[i].args[j] != NULL; j++)
             {
                 free(commands[i].args[j]);
@@ -134,6 +156,7 @@ int parse_command(char *command, command_t *commands, int *num_commands)
 
     commands[cmd_ind].input_file = NULL;
     commands[cmd_ind].output_file = NULL;
+    commands[cmd_ind].err_file = NULL;
 
     token = strtok_r(command, " ", &strtok_buff);
     while (token != NULL)
@@ -149,6 +172,7 @@ int parse_command(char *command, command_t *commands, int *num_commands)
             arg_ind = 0;
             commands[cmd_ind].input_file = NULL;
             commands[cmd_ind].output_file = NULL;
+            commands[cmd_ind].err_file = NULL;
         }
         else if (strcmp(token, "<") == 0)
         {
@@ -178,6 +202,26 @@ int parse_command(char *command, command_t *commands, int *num_commands)
             }
             commands[cmd_ind].output_file = strdup(token);
             commands[cmd_ind].is_append = 1;
+        }
+        else if (strcmp(token, "2>") == 0)
+        {
+            token = strtok_r(NULL, " ", &strtok_buff);
+            if (token == NULL)
+            {
+                return -1;
+            }
+            commands[cmd_ind].err_file = strdup(token);
+            commands[cmd_ind].is_append_err = 0;
+        }
+        else if (strcmp(token, "2>>") == 0)
+        {
+            token = strtok_r(NULL, " ", &strtok_buff);
+            if (token == NULL)
+            {
+                return -1;
+            }
+            commands[cmd_ind].err_file = strdup(token);
+            commands[cmd_ind].is_append_err = 1;
         }
         else
         {
@@ -278,6 +322,18 @@ void execute_pipeline(command_t *commands, int num_commands)
                     dup2(fd, STDOUT_FILENO);
                     close(fd);
                 }
+            }
+
+            if (commands[i].err_file != NULL)
+            {
+                int fd = open(commands[i].err_file, O_WRONLY | (commands[i].is_append_err ? O_APPEND : O_TRUNC) | O_CREAT, 0644);
+                if (fd == -1)
+                {
+                    perror("Ошибка открытия потока ошибок");
+                    _exit(EXIT_FAILURE);
+                }
+                dup2(fd, STDERR_FILENO);
+                close(fd);
             }
 
             for (int j = 0; j < num_commands - 1; j++)
