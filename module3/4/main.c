@@ -14,6 +14,7 @@ typedef struct
     char *args[MAX_ARGUMENTS];
     char *input_file;
     char *output_file;
+    int is_append;
 } command_t;
 
 int parse_command(char *command, command_t *commands, int *num_commands);
@@ -70,7 +71,7 @@ int main()
 
                 if (commands[0].output_file != NULL)
                 {
-                    int fd = open(commands[0].output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    int fd = open(commands[0].output_file, O_WRONLY | (commands[0].is_append ? O_APPEND : O_TRUNC) | O_CREAT, 0644);
                     if (fd == -1)
                     {
                         perror("Ошибка открытия выходного потока");
@@ -166,6 +167,17 @@ int parse_command(char *command, command_t *commands, int *num_commands)
                 return -1;
             }
             commands[cmd_ind].output_file = strdup(token);
+            commands[cmd_ind].is_append = 0;
+        }
+        else if (strcmp(token, ">>") == 0)
+        {
+            token = strtok_r(NULL, " ", &strtok_buff);
+            if (token == NULL)
+            {
+                return -1;
+            }
+            commands[cmd_ind].output_file = strdup(token);
+            commands[cmd_ind].is_append = 1;
         }
         else
         {
@@ -240,7 +252,7 @@ void execute_pipeline(command_t *commands, int num_commands)
 
             if (commands[i].output_file != NULL)
             {
-                int fd = open(commands[i].output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                int fd = open(commands[i].output_file, O_WRONLY | (commands[i].is_append ? O_APPEND : O_TRUNC) | O_CREAT, 0644);
                 if (fd == -1)
                 {
                     perror("Ошибка открытия выходного потока");
