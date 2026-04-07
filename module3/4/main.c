@@ -221,7 +221,21 @@ void execute_pipeline(command_t *commands, int num_commands)
             }
             else if (i != 0)
             {
-                dup2(pipes[i - 1][0], STDIN_FILENO);
+                if (commands[i - 1].output_file == NULL)
+                {
+                    dup2(pipes[i - 1][0], STDIN_FILENO);
+                }
+                else
+                {
+                    int fd = open("/dev/null", O_RDONLY);
+                    if (fd == -1)
+                    {
+                        perror("Ошибка открытия входного потока");
+                        _exit(EXIT_FAILURE);
+                    }
+                    dup2(fd, STDIN_FILENO);
+                    close(fd);
+                }
             }
 
             if (commands[i].output_file != NULL)
@@ -235,9 +249,23 @@ void execute_pipeline(command_t *commands, int num_commands)
                 dup2(fd, STDOUT_FILENO);
                 close(fd);
             }
-            else if (i != num_commands - 1 && commands[i + 1].input_file == NULL)
+            else if (i != num_commands - 1)
             {
-                dup2(pipes[i][1], STDOUT_FILENO);
+                if (commands[i + 1].input_file == NULL)
+                {
+                    dup2(pipes[i][1], STDOUT_FILENO);
+                }
+                else
+                {
+                    int fd = open("/dev/null", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                    if (fd == -1)
+                    {
+                        perror("Ошибка открытия выходного потока");
+                        _exit(EXIT_FAILURE);
+                    }
+                    dup2(fd, STDOUT_FILENO);
+                    close(fd);
+                }
             }
 
             for (int j = 0; j < num_commands - 1; j++)
