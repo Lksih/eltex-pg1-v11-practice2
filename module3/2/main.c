@@ -16,6 +16,11 @@ int main()
         fgets(command, MAX_COMMAND_LENGTH, stdin);
         command[strcspn(command, "\n")] = '\0';
 
+        if (strlen(command) == 0)
+        {
+            continue;
+        }
+
         if (!strcmp(command, "exit"))
         {
             break;
@@ -39,6 +44,7 @@ int main()
                 i++;
                 token = strtok(NULL, " ");
             }
+            args[i] = NULL;
 
             char full_path[MAX_COMMAND_LENGTH + 2];
             if (access(args[0], X_OK) == 0)
