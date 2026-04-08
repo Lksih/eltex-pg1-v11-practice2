@@ -7,6 +7,9 @@ int init_contact(contact *c)
     init_names(&(c->names));
     init_address(&(c->address));
 
+    memset(&(c->workplace), 0, WORKPLACE_SIZE + 1);
+    memset(&(c->position), 0, POSITION_SIZE + 1);
+
     c->social_media_links = malloc(sizeof(char *) * SOCIAL_MEDIA_LINKS_CAPACITY_INCREASE_STEP);
     if (c->social_media_links)
     {
@@ -69,7 +72,7 @@ int add_social_media_link_to_contact(contact *c, const char *new_link)
 
     if (!res)
     {
-        c->social_media_links[c->social_media_links_quan] = malloc(sizeof(char) * SOCIAL_MEDIA_LINK_SIZE);
+        c->social_media_links[c->social_media_links_quan] = malloc(sizeof(char) * SOCIAL_MEDIA_LINK_SIZE + 1);
         if (c->social_media_links[c->social_media_links_quan])
         {
             strncpy(c->social_media_links[c->social_media_links_quan], new_link, SOCIAL_MEDIA_LINK_SIZE);
@@ -132,7 +135,7 @@ int add_email_to_contact(contact *c, const char *new_email)
 
     if (!res)
     {
-        c->emails[c->emails_quan] = malloc(sizeof(char) * EMAIL_SIZE);
+        c->emails[c->emails_quan] = malloc(sizeof(char) * EMAIL_SIZE + 1);
         if (c->emails[c->emails_quan])
         {
             strncpy(c->emails[c->emails_quan], new_email, EMAIL_SIZE);
@@ -195,7 +198,7 @@ int add_phone_number_to_contact(contact *c, const char *new_phone)
 
     if (!res)
     {
-        c->phone_numbers[c->phone_numbers_quan] = malloc(sizeof(char) * PHONE_NUMBER_SIZE);
+        c->phone_numbers[c->phone_numbers_quan] = malloc(sizeof(char) * PHONE_NUMBER_SIZE + 1);
         if (c->phone_numbers[c->phone_numbers_quan])
         {
             strncpy(c->phone_numbers[c->phone_numbers_quan], new_phone, PHONE_NUMBER_SIZE);
