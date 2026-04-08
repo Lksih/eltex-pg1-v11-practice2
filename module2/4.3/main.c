@@ -260,7 +260,7 @@ int input_contact(contact *c)
     fgets(c->position, sizeof(c->position), stdin);
     c->position[strcspn(c->position, "\n")] = '\0';
 
-    char social_link[SOCIAL_MEDIA_LINK_SIZE];
+    char social_link[1001];
     printf("Введите ссылку на соцсеть (или пустую строку для завершения): ");
     while (fgets(social_link, sizeof(social_link), stdin) && strlen(social_link) > 1)
     {
@@ -272,7 +272,7 @@ int input_contact(contact *c)
         printf("Введите ссылку на соцсеть (или пустую строку для завершения): ");
     }
 
-    char email[EMAIL_SIZE];
+    char email[256];
     printf("Введите электронную почту (или пустую строку для завершения): ");
     while (fgets(email, sizeof(email), stdin) && strlen(email) > 1)
     {
@@ -284,7 +284,7 @@ int input_contact(contact *c)
         printf("Введите электронную почту (или пустую строку для завершения): ");
     }
 
-    char phone[PHONE_NUMBER_SIZE];
+    char phone[12];
     printf("Введите номер телефона (или пустую строку для завершения): ");
     while (fgets(phone, sizeof(phone), stdin) && strlen(phone) > 1)
     {
@@ -498,7 +498,7 @@ void menu5(phonebook *pb)
         return;
     }
 
-    char link[SOCIAL_MEDIA_LINK_SIZE];
+    char link[1001];
     printf("Введите ссылку на соцсеть: ");
     clear_stdin();
     fgets(link, sizeof(link), stdin);
@@ -536,7 +536,7 @@ void menu6(phonebook *pb)
         return;
     }
 
-    char email[EMAIL_SIZE];
+    char email[256];
     printf("Введите электронную почту: ");
     clear_stdin();
     fgets(email, sizeof(email), stdin);
@@ -573,7 +573,7 @@ void menu7(phonebook *pb)
         return;
     }
 
-    char phone[PHONE_NUMBER_SIZE];
+    char phone[12];
     printf("Введите номер телефона: ");
     clear_stdin();
     fgets(phone, sizeof(phone), stdin);
