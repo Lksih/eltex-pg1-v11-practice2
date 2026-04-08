@@ -24,6 +24,7 @@ int delete_item(list *list, list_item *item, void (*delete_value)(void *c), int 
 void delete_list(list *list, void (*delete_value)(void *c));
 void *find_value(list *list, void *value, int (*compare)(const void *c1, const void *c2));
 list_item *find_item(list *list, void *value, int (*compare)(const void *c1, const void *c2));
+list_item *find_item_equal_or_more(list *list, void *value, int (*compare)(const void *c1, const void *c2));
 void free_value(list_item *item, void (*delete_value)(void *c));
 
 #endif
