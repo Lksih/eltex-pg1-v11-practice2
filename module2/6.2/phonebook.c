@@ -220,7 +220,7 @@ contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *
 
     if (result)
     {
-        list_item *existing = find_item(&(pb->contacts), &target_id, compare_contact_with_id);
+        list_item *existing = find_item_equal_or_more(&(pb->contacts), &target_id, compare_contact_with_id);
         if (existing != NULL)
         {
             while (existing != NULL)

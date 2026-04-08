@@ -183,6 +183,29 @@ list_item *find_item(list *list, void *value, int (*compare)(const void *c1, con
     }
 }
 
+list_item *find_item_equal_or_more(list *list, void *value, int (*compare)(const void *c1, const void *c2))
+{
+    if (list == NULL)
+    {
+        return NULL;
+    }
+    else
+    {
+        list_item *tmp = list->head;
+
+        while (tmp != NULL)
+        {
+            if ((*compare)(tmp->value, value) >= 0)
+            {
+                break;
+            }
+            tmp = tmp->next;
+        }
+
+        return tmp;
+    }
+}
+
 void free_value(list_item *item, void (*delete_value)(void *c))
 {
     (*delete_value)(item->value);
