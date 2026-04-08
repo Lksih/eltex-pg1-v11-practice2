@@ -253,7 +253,7 @@ int input_contact(contact *c)
     fgets(c->position, sizeof(c->position), stdin);
     c->position[strcspn(c->position, "\n")] = '\0';
 
-    char social_link[1000];
+    char social_link[1001];
     printf("Введите ссылку на соцсеть (или пустую строку для завершения): ");
     while (fgets(social_link, sizeof(social_link), stdin) && strlen(social_link) > 1)
     {
@@ -429,7 +429,7 @@ void menu5(phonebook *pb)
         return;
     }
 
-    char link[1000];
+    char link[1001];
     printf("Введите ссылку на соцсеть: ");
     clear_stdin();
     fgets(link, sizeof(link), stdin);
