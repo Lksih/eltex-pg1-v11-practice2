@@ -20,7 +20,7 @@ int init_phonebook(phonebook *pb)
 
 void delete_phonebook(phonebook *pb)
 {
-    for (unsigned int i = 0; i < pb->contacts_quan; i++)
+    for (uint64_t i = 0; i < pb->contacts_quan; i++)
     {
         delete_contact(&(pb->contacts[i]));
     }
@@ -59,14 +59,14 @@ int add_contact_to_phonebook(phonebook *pb, contact new_contact)
     return res;
 }
 
-int delete_contact_from_phonebook(phonebook *pb, unsigned long long id)
+int delete_contact_from_phonebook(phonebook *pb, uint64_t id)
 {
     int res = 0;
 
-    unsigned long long ind;
+    uint64_t ind;
     int found = 0;
 
-    for (unsigned long long i = 0; i < pb->contacts_quan; i++)
+    for (uint64_t i = 0; i < pb->contacts_quan; i++)
     {
         if (pb->contacts[i].id == id)
         {
@@ -99,7 +99,7 @@ int delete_contact_from_phonebook(phonebook *pb, unsigned long long id)
     return res;
 }
 
-int edit_contact_in_phonebook(phonebook *pb, unsigned long long id, char *fields_to_change, ...)
+int edit_contact_in_phonebook(phonebook *pb, uint64_t id, char *fields_to_change, ...)
 {
     int res = 0;
 
@@ -245,9 +245,9 @@ int edit_contact_in_phonebook(phonebook *pb, unsigned long long id, char *fields
     return res;
 }
 
-unsigned long long hash_djb2(const char *str)
+uint64_t hash_djb2(const char *str)
 {
-    unsigned long long hash = 5381;
+    uint64_t hash = 5381;
     char c;
 
     while ((c = *str++))
@@ -258,9 +258,9 @@ unsigned long long hash_djb2(const char *str)
     return hash;
 }
 
-contact *find_by_id(phonebook *pb, unsigned long long id)
+contact *find_by_id(phonebook *pb, uint64_t id)
 {
-    for (unsigned long long i = 0; i < pb->contacts_quan; i++)
+    for (uint64_t i = 0; i < pb->contacts_quan; i++)
     {
         if (pb->contacts[i].id == id)
         {
@@ -270,13 +270,13 @@ contact *find_by_id(phonebook *pb, unsigned long long id)
     return NULL;
 }
 
-contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *count)
+contact **find_by_last_name(phonebook *pb, const char *last_name, uint64_t *count)
 {
-    unsigned int target_id = hash_djb2(last_name);
+    uint64_t target_id = hash_djb2(last_name);
 
     contact **result = malloc(sizeof(contact *) * FOUND_CONTACTS_CAPACITY_INCREASE_STEP);
     *count = 0;
-    unsigned int capacity = FOUND_CONTACTS_CAPACITY_INCREASE_STEP;
+    uint64_t capacity = FOUND_CONTACTS_CAPACITY_INCREASE_STEP;
 
     if (result)
     {
@@ -313,7 +313,7 @@ contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *
     return NULL;
 }
 
-unsigned long long generate_id(phonebook *pb, const char *last_name)
+uint64_t generate_id(phonebook *pb, const char *last_name)
 {
     unsigned long long new_id = hash_djb2(last_name);
 

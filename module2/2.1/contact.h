@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include "names.h"
 #include "address.h"
 
@@ -19,7 +20,7 @@
 #define POSITION_SIZE 50
 
 typedef struct {
-    unsigned long long id;
+    uint64_t id;
     names names; // 1.1 1.2 1.3
     address address; // 2.1 - 2.6
     char workplace[101]; // 3
@@ -40,11 +41,11 @@ typedef struct {
 
 int init_contact(contact *c);
 int add_social_media_link_to_contact(contact *c, const char *new_link);
-int delete_social_media_link_from_contact(contact *c, unsigned int ind);
+int delete_social_media_link_from_contact(contact *c, uint64_t ind);
 int add_email_to_contact(contact *c, const char *new_email);
-int delete_email_from_contact(contact *c, unsigned int ind);
+int delete_email_from_contact(contact *c, uint64_t ind);
 int add_phone_number_to_contact(contact *c, const char *new_phone);
-int delete_phone_number_from_contact(contact *c, unsigned int ind);
+int delete_phone_number_from_contact(contact *c, uint64_t ind);
 void delete_contact(contact *c);
 void free_strings(char **strings, unsigned char quan);
 
