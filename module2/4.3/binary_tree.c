@@ -7,7 +7,7 @@ void init_binary_tree(binary_tree *tree)
     tree->root = NULL;
 }
 
-unsigned int get_height(node *n)
+uint64_t get_height(node *n)
 {
     if (n == NULL)
     {

@@ -2,6 +2,7 @@
 #define BINARY_TREE_H
 
 #include <stdlib.h>
+#include <stdint.h>
 
 struct node
 {
@@ -18,7 +19,7 @@ typedef struct
 } binary_tree;
 
 void init_binary_tree(binary_tree *tree);
-unsigned int get_height(node *n);
+uint64_t get_height(node *n);
 node *new_node(void *value);
 node *rotate_right(node *y);
 node *rotate_left(node *x);
