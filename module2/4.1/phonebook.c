@@ -30,7 +30,7 @@ int add_contact_to_phonebook(phonebook *pb, contact *new_contact)
     return res;
 }
 
-int delete_contact_from_phonebook(phonebook *pb, unsigned long long id, int should_be_freed)
+int delete_contact_from_phonebook(phonebook *pb, uint64_t id, int should_be_freed)
 {
     int res = delete_value(&(pb->contacts), &id, compare_contact_with_id, delete_contact_void_adapter, should_be_freed);
 
@@ -42,7 +42,7 @@ int delete_contact_from_phonebook(phonebook *pb, unsigned long long id, int shou
     return res;
 }
 
-int edit_contact_in_phonebook(phonebook *pb, unsigned long long id, char *fields_to_change, ...)
+int edit_contact_in_phonebook(phonebook *pb, uint64_t id, char *fields_to_change, ...)
 {
     int res = 0;
 
@@ -192,9 +192,9 @@ int edit_contact_in_phonebook(phonebook *pb, unsigned long long id, char *fields
     return res;
 }
 
-unsigned long long hash_djb2(const char *str)
+uint64_t hash_djb2(const char *str)
 {
-    unsigned long long hash = 5381;
+    uint64_t hash = 5381;
     char c;
 
     while ((c = *str++))
@@ -205,18 +205,18 @@ unsigned long long hash_djb2(const char *str)
     return hash;
 }
 
-contact *find_by_id(phonebook *pb, unsigned long long id)
+contact *find_by_id(phonebook *pb, uint64_t id)
 {
     return (contact *)find_value(&(pb->contacts), &id, compare_contact_with_id);
 }
 
-contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *count)
+contact **find_by_last_name(phonebook *pb, const char *last_name, uint64_t *count)
 {
-    unsigned int target_id = hash_djb2(last_name);
+    uint64_t target_id = hash_djb2(last_name);
 
     contact **result = malloc(sizeof(contact *) * FOUND_CONTACTS_CAPACITY_INCREASE_STEP);
     *count = 0;
-    unsigned int capacity = FOUND_CONTACTS_CAPACITY_INCREASE_STEP;
+    uint64_t capacity = FOUND_CONTACTS_CAPACITY_INCREASE_STEP;
 
     if (result)
     {
@@ -246,16 +246,27 @@ contact **find_by_last_name(phonebook *pb, const char *last_name, unsigned int *
                 }
                 existing = existing->next;
             }
+        }
+
+        if (*count != 0)
+        {
             return result;
         }
+        else
+        {
+            free(result);
+            return NULL;
+        }
     }
-    free(result);
-    return NULL;
+    else
+    {
+        return NULL;
+    }
 }
 
-unsigned long long generate_id(phonebook *pb, const char *last_name)
+uint64_t generate_id(phonebook *pb, const char *last_name)
 {
-    unsigned long long new_id = hash_djb2(last_name);
+    uint64_t new_id = hash_djb2(last_name);
 
     contact *existing = find_by_id(pb, new_id);
     if (existing != NULL)
