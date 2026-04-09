@@ -87,7 +87,7 @@ int add_social_media_link_to_contact(contact *c, const char *new_link)
     return res;
 }
 
-int delete_social_media_link_from_contact(contact *c, unsigned int ind)
+int delete_social_media_link_from_contact(contact *c, uint64_t ind)
 {
     int res = 0;
 
@@ -150,7 +150,7 @@ int add_email_to_contact(contact *c, const char *new_email)
     return res;
 }
 
-int delete_email_from_contact(contact *c, unsigned int ind)
+int delete_email_from_contact(contact *c, uint64_t ind)
 {
     int res = 0;
 
@@ -213,7 +213,7 @@ int add_phone_number_to_contact(contact *c, const char *new_phone)
     return res;
 }
 
-int delete_phone_number_from_contact(contact *c, unsigned int ind)
+int delete_phone_number_from_contact(contact *c, uint64_t ind)
 {
     int res = 0;
 
@@ -278,7 +278,7 @@ int compare_contact_with_last_name(const void *c1, const void *c2)
 
 int compare_contact_with_id(const void *c1, const void *c2)
 {
-    return ((contact *)c1)->id - (*((unsigned long long *)c2));
+    return ((contact *)c1)->id - (*((uint64_t *)c2));
 }
 
 void delete_contact_void_adapter(void *c){
