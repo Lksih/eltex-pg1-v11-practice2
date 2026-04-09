@@ -248,45 +248,50 @@ contact *find_by_id(phonebook *pb, uint64_t id)
 
 contact **find_by_last_name(phonebook *pb, const char *last_name, uint64_t *count)
 {
-    uint64_t target_id = hash_djb2(last_name);
-
     contact **result = malloc(sizeof(contact *) * FOUND_CONTACTS_CAPACITY_INCREASE_STEP);
     *count = 0;
     uint64_t capacity = FOUND_CONTACTS_CAPACITY_INCREASE_STEP;
 
     if (result)
     {
-        contact *existing = find_by_id(pb, target_id);
-        if (existing != NULL)
+        for (uint64_t i = 0; i < pb->contacts_quan; i++)
         {
-            while (existing != NULL)
+            contact *existing = &(pb->contacts[i]);
+
+            if (!strcmp(existing->names.last_name, last_name))
             {
-                if (!strcmp(existing->names.last_name, last_name))
+                if (*count == capacity)
                 {
-                    if (*count == capacity)
+                    contact **new_result = realloc(result, sizeof(contact *) * (capacity + FOUND_CONTACTS_CAPACITY_INCREASE_STEP));
+                    if (new_result)
                     {
-                        contact **new_result = realloc(result, sizeof(contact *) * (capacity + FOUND_CONTACTS_CAPACITY_INCREASE_STEP));
-                        if (new_result)
-                        {
-                            result = new_result;
-                            capacity += FOUND_CONTACTS_CAPACITY_INCREASE_STEP;
-                        }
-                        else
-                        {
-                            break;
-                        }
+                        result = new_result;
+                        capacity += FOUND_CONTACTS_CAPACITY_INCREASE_STEP;
                     }
-                    result[*count] = existing;
-                    (*count)++;
+                    else
+                    {
+                        break;
+                    }
                 }
-                target_id++;
-                existing = find_by_id(pb, target_id);
+                result[*count] = existing;
+                (*count)++;
             }
+        }
+
+        if (*count != 0)
+        {
             return result;
         }
+        else
+        {
+            free(result);
+            return NULL;
+        }
     }
-    free(result);
-    return NULL;
+    else
+    {
+        return NULL;
+    }
 }
 
 uint64_t generate_id(phonebook *pb, const char *last_name)
