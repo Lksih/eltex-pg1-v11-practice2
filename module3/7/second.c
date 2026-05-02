@@ -20,21 +20,21 @@ int main()
     attr.mq_maxmsg = MAX_MSG;
     attr.mq_msgsize = MSG_SIZE;
 
-    send_q = mq_open(Q_A2B, O_WRONLY | O_CREAT, 0666, &attr);
+    send_q = mq_open(Q_B2A, O_WRONLY | O_CREAT, 0666, &attr);
     if (send_q == (mqd_t)-1)
     {
         perror("mq_open");
         exit(EXIT_FAILURE);
     }
 
-    recv_q = mq_open(Q_B2A, O_RDONLY | O_CREAT, 0666, &attr);
+    recv_q = mq_open(Q_A2B, O_RDONLY | O_CREAT, 0666, &attr);
     if (recv_q == (mqd_t)-1)
     {
         perror("mq_open");
         exit(EXIT_FAILURE);
     }
 
-    printf("Чат A запущен. Введите 'exit' для выхода.\n");
+    printf("Чат B запущен. Введите 'exit' для выхода.\n");
 
     while (1)
     {
@@ -42,7 +42,22 @@ int main()
         char input[MSG_SIZE];
         unsigned int priority;
 
-        printf("A: ");
+        ssize_t bytes = mq_receive(recv_q, recieved, MSG_SIZE, &priority);
+        if (bytes == -1)
+        {
+            perror("mq_receive");
+            break;
+        }
+        recieved[bytes] = '\0';
+
+        if (priority == TERM_PRIO)
+        {
+            printf("A завершил чат. Выход.\n");
+            break;
+        }
+        printf("A: %s\n", recieved);
+
+        printf("B: ");
         fflush(stdout);
         if (fgets(input, MSG_SIZE, stdin) == NULL)
         {
@@ -70,21 +85,6 @@ int main()
             perror("mq_send");
             break;
         }
-
-        ssize_t bytes = mq_receive(recv_q, recieved, MSG_SIZE, &priority);
-        if (bytes == -1)
-        {
-            perror("mq_receive");
-            break;
-        }
-        recieved[bytes] = '\0';
-
-        if (priority == TERM_PRIO)
-        {
-            printf("B завершил чат. Выход.\n");
-            break;
-        }
-        printf("B: %s\n", recieved);
     }
 
     mq_close(send_q);
