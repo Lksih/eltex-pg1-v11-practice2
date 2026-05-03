@@ -2,5 +2,4 @@
 *.o
 *.so
 *.a
-module3/3/phonebook.txt
-module3/5/output.txt
+*.txt
