@@ -14,6 +14,7 @@
 #define METADATA_SIZE sizeof(uint64_t)
 #define PROJ_ID 1
 #define STR_SIZE 256
+#define DELAY_MS 500
 
 union semun
 {
@@ -34,7 +35,6 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     const char *filename = argv[1];
-    int delay_ms = 500;
 
     srand(time(NULL));
 
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
         sem_signal(semid, 1);
 
         printf("Добавлено: %s\n", line);
-        usleep(delay_ms * 1000);
+        usleep(DELAY_MS * 1000);
     }
 
     close(fd);
