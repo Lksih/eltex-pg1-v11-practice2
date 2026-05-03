@@ -65,7 +65,7 @@ int main()
             {
                 perror("mq_send (exit)");
             }
-            printf("Ошибка чтения.\n");
+            fprintf(stderr, "Ошибка чтения.\n");
             break;
         }
         input[strcspn(input, "\n")] = '\0';
