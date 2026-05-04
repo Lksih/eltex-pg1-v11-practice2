@@ -2,13 +2,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
-#include <sys/shm.h>
 #include <sys/wait.h>
 #include <time.h>
 #include <errno.h>
 #include <string.h>
+#include <fcntl.h>
+#include <sys/mman.h>
 
 #define MAX_NUMBERS 20
+#define SHM_NAME "/shm_parent_child"
 
 struct shared_data
 {
@@ -29,23 +31,33 @@ void parent_sigusr2_handler(int sig);
 
 int main()
 {
-    int shmid;
     struct shared_data *shared;
     pid_t child_pid;
+    int shm_fd;
 
     srand(time(NULL) ^ getpid());
 
-    shmid = shmget(IPC_PRIVATE, sizeof(struct shared_data), IPC_CREAT | 0666);
-    if (shmid < 0)
+    shm_fd = shm_open(SHM_NAME, O_CREAT | O_RDWR, 0600);
+    if (shm_fd == -1)
     {
-        perror("shmget");
+        perror("shm_open");
         exit(EXIT_FAILURE);
     }
 
-    shared = (struct shared_data *)shmat(shmid, NULL, 0);
-    if (shared == (void *)-1)
+    if (ftruncate(shm_fd, sizeof(struct shared_data)) == -1)
     {
-        perror("shmat");
+        perror("ftruncate");
+        shm_unlink(SHM_NAME);
+        exit(EXIT_FAILURE);
+    }
+
+    shared = (struct shared_data *)mmap(NULL, sizeof(struct shared_data),
+                                        PROT_READ | PROT_WRITE, MAP_SHARED,
+                                        shm_fd, 0);
+    if (shared == MAP_FAILED)
+    {
+        perror("mmap");
+        shm_unlink(SHM_NAME);
         exit(EXIT_FAILURE);
     }
 
@@ -62,6 +74,8 @@ int main()
     if (child_pid < 0)
     {
         perror("fork");
+        munmap(shared, sizeof(struct shared_data));
+        shm_unlink(SHM_NAME);
         exit(EXIT_FAILURE);
     }
 
@@ -77,9 +91,6 @@ int main()
         kill(getppid(), SIGUSR2);
 
         int sig;
-        sigset_t wait_mask;
-        sigemptyset(&wait_mask);
-
         while (1)
         {
             sigwait(&mask_sigusr1, &sig);
@@ -120,7 +131,7 @@ int main()
             kill(getppid(), SIGUSR2);
         }
 
-        shmdt(shared);
+        munmap(shared, sizeof(struct shared_data));
         _exit(EXIT_SUCCESS);
     }
     else
@@ -182,7 +193,7 @@ int main()
 
             int min = shared->min;
             int max = shared->max;
-
+            
             printf("min=%d, max=%d\n", min, max);
 
             processed_sets++;
@@ -193,8 +204,9 @@ int main()
 
         waitpid(child_pid, NULL, 0);
 
-        shmdt(shared);
-        shmctl(shmid, IPC_RMID, NULL);
+        munmap(shared, sizeof(struct shared_data));
+        close(shm_fd);
+        shm_unlink(SHM_NAME);
 
         printf("\nВсего обработано наборов данных: %d\n", processed_sets);
     }
