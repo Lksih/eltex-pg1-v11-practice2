@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     running = 0;
     pthread_cancel(tid);
     pthread_join(tid, NULL);
-    printf("Клиент %d отключён.\n", client_type);
+    printf("\nКлиент %d отключён.\n", client_type);
     return 0;
 }
 

@@ -77,7 +77,11 @@ void add_client(int type)
     {
         clients[client_count] = type;
         client_count++;
-        printf("Клиент %d подключился.\n", type);
+
+        char con_msg[MSG_SIZE];
+        snprintf(con_msg, MSG_SIZE, "Клиент %d подключился.", type);
+        printf("%s\n", con_msg);
+        broadcast(type, con_msg);
     }
 }
 
@@ -92,7 +96,11 @@ void remove_client(int type)
                 clients[j] = clients[j + 1];
             }
             client_count--;
-            printf("Клиент %d отключён.\n", type);
+
+            char discon_msg[MSG_SIZE];
+            snprintf(discon_msg, MSG_SIZE, "Клиент %d отключён.", type);
+            printf("%s\n", discon_msg);
+            broadcast(type, discon_msg);
             return;
         }
     }
@@ -102,7 +110,7 @@ void broadcast(int sender_type, const char *msg_text)
 {
     message out_msg;
     char full_msg[MSG_SIZE];
-    snprintf(full_msg, MSG_SIZE, "Клиент %d: %s", sender_type, msg_text);
+    snprintf(full_msg, MSG_SIZE, "\nКлиент %d: %s", sender_type, msg_text);
     out_msg.mtype = 0;
     for (int i = 0; i < client_count; i++)
     {
