@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     if (semid == -1)
     {
         perror("semget – возможно, производитель ещё не запущен");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     printf("Потребитель (PID=%d) начал работу с файлом \"%s\"\n", getpid(), filename);

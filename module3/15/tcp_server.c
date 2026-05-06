@@ -8,14 +8,18 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <sys/select.h>
 
 #define STR_SIZE 1024
 #define NAME_SIZE 256
 #define FILE_SIZE 4096
+#define MAX_CLIENTS FD_SETSIZE
 
 // прототип функции, обслуживающей
 // подключившихся пользователей
-void dostuff(int);
+void dostuff(int cli_idx, const char *line);
+void process_buffer(int cli_idx);
+ssize_t send_all(int sock, const void *buf, size_t len);
 
 // Функция обработки ошибок
 void error(const char *msg)
@@ -23,6 +27,16 @@ void error(const char *msg)
     perror(msg);
     exit(EXIT_FAILURE);
 }
+
+typedef struct
+{
+    int fd;
+    char rbuf[STR_SIZE * 4];
+    size_t rlen;
+    int closing;
+} client_t;
+
+static client_t clients[MAX_CLIENTS];
 
 // глобальная переменная – количество
 // активных пользователей
@@ -42,9 +56,6 @@ void printusers()
     }
 }
 
-ssize_t read_line(int sock, char *buf, size_t maxlen);
-ssize_t send_all(int sock, const void *buf, size_t len);
-
 int main(int argc, char *argv[])
 {
     printf("TCP SERVER DEMO\n");
@@ -61,6 +72,12 @@ int main(int argc, char *argv[])
         fprintf(stderr, "ERROR, no port provided\n");
         exit(EXIT_FAILURE);
     }
+
+    for (int i = 0; i < MAX_CLIENTS; i++)
+    {
+        clients[i].fd = -1;
+    }
+
     // Шаг 1 - создание сокета
     // AF_INET     - сокет Интернета
     // SOCK_STREAM  - потоковый сокет (с
@@ -82,169 +99,241 @@ int main(int argc, char *argv[])
         error("ERROR on binding");
     // Шаг 3 - ожидание подключений, размер очереди - 5
     listen(sockfd, 5);
-    clilen = sizeof(cli_addr);
 
     // Шаг 4 - извлекаем сообщение из очереди
     // цикл извлечения запросов на подключение из очереди
+    fd_set readfds;
+    int maxfd;
     while (1)
     {
-        newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
-        if (newsockfd < 0)
-        {
-            perror("ERROR on accept");
-            continue;
-        }
-        nclients++; // увеличиваем счетчик
-                    // подключившихся клиентов
-                    /*
-                    // вывод сведений о клиенте
-                    struct hostent *hst;
-                    hst = gethostbyaddr((char *)&cli_addr.sin_addr, 4, AF_INET);
-                    printf("+%s [%s] new connect!\n",
-                    (hst) ? hst->h_name : "Unknown host",
-                    (char*)inet_ntoa(cli_addr.sin_addr));*/
-        printusers();
+        FD_ZERO(&readfds);
+        FD_SET(sockfd, &readfds);
+        maxfd = sockfd;
 
-        pid = fork();
-        if (pid < 0)
-            error("ERROR on fork");
-        if (pid == 0)
+        for (int i = 0; i < MAX_CLIENTS; i++)
         {
-            close(sockfd);
-            dostuff(newsockfd);
-            exit(0);
+            if (clients[i].fd != -1)
+            {
+                FD_SET(clients[i].fd, &readfds);
+                if (clients[i].fd > maxfd)
+                {
+                    maxfd = clients[i].fd;
+                }
+            }
         }
-        else
-            close(newsockfd);
-    } /* end of while */
+
+        if (select(maxfd + 1, &readfds, NULL, NULL, NULL) < 0)
+        {
+            if (errno == EINTR)
+            {
+                continue;
+            }
+            error("ERROR on select");
+        }
+
+        if (FD_ISSET(sockfd, &readfds))
+        {
+            struct sockaddr_in cli_addr;
+            socklen_t clilen = sizeof(cli_addr);
+            int newfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
+            if (newfd >= 0)
+            {
+                int i;
+                for (i = 0; i < MAX_CLIENTS; i++)
+                {
+                    if (clients[i].fd == -1)
+                    {
+                        break;
+                    }
+                }
+                if (i < MAX_CLIENTS)
+                {
+                    clients[i].fd = newfd;
+                    clients[i].rlen = 0;
+                    clients[i].closing = 0;
+                    nclients++;
+                    printusers();
+                    const char *welcome = "Commands: MATH +|-|*|/ num1 num2, GET filename, quit\n";
+                    send_all(newfd, welcome, strlen(welcome));
+                }
+                else
+                {
+                    printf("Too many clients\n");
+                    close(newfd);
+                }
+            }
+        }
+
+        for (int i = 0; i < MAX_CLIENTS; i++)
+        {
+            int fd = clients[i].fd;
+            if (fd == -1 || !FD_ISSET(fd, &readfds))
+            {
+                continue;
+            }
+
+            char tmp[FILE_SIZE];
+            ssize_t n = recv(fd, tmp, sizeof(tmp), 0);
+            if (n <= 0)
+            {
+                if (n < 0)
+                {
+                    perror("recv");
+                }
+                close(fd);
+                clients[i].fd = -1;
+                nclients--;
+                printf("-disconnect\n");
+                printusers();
+                continue;
+            }
+
+            size_t room = sizeof(clients[i].rbuf) - clients[i].rlen;
+            if ((size_t)n > room)
+            {
+                n = room;
+            }
+            memcpy(clients[i].rbuf + clients[i].rlen, tmp, n);
+            clients[i].rlen += n;
+
+            process_buffer(i);
+
+            if (clients[i].fd != -1 && clients[i].closing)
+            {
+                close(clients[i].fd);
+                clients[i].fd = -1;
+                nclients--;
+                printf("-disconnect (quit)\n");
+                printusers();
+            }
+        }
+    }
+
     close(sockfd);
-    return 0; /* we never get here */
+    return 0;
 }
 
-void dostuff(int sock)
+void dostuff(int cli_idx, const char *line)
 {
-    char line[STR_SIZE];
+    int sock = clients[cli_idx].fd;
     char response[STR_SIZE];
     char operation;
     double a, b, result;
 
-    const char *welcome = "Commands: MATH +|-|*|/ num1 num2, GET filename, quit\n";
-    send_all(sock, welcome, strlen(welcome));
-
-    while (1)
+    if (strncmp(line, "quit", 4) == 0)
     {
-        ssize_t len = read_line(sock, line, sizeof(line));
-        if (len <= 0)
-        {
-            break;
-        }
-
-        if (strncmp(line, "quit", 4) == 0)
-        {
-            break;
-        }
-        else if (strncmp(line, "MATH ", 5) == 0)
-        {
-            if (sscanf(line, "MATH %c %lf %lf", &operation, &a, &b) != 3)
-            {
-                send_all(sock, "ERROR Invalid MATH format\n", 26);
-                continue;
-            }
-            switch (operation)
-            {
-            case '+':
-                result = a + b;
-                break;
-            case '-':
-                result = a - b;
-                break;
-            case '*':
-                result = a * b;
-                break;
-            case '/':
-                if (b == 0.0)
-                {
-                    send_all(sock, "ERROR Division by zero\n", 23);
-                    continue;
-                }
-                result = a / b;
-                break;
-            default:
-                send_all(sock, "ERROR Unknown operation\n", 24);
-                continue;
-            }
-            snprintf(response, sizeof(response), "Result: %.6g\n", result);
-            send_all(sock, response, strlen(response));
-        }
-        else if (strncmp(line, "GET ", 4) == 0)
-        {
-            char filename[NAME_SIZE];
-            if (sscanf(line, "GET %255s", filename) != 1)
-            {
-                send_all(sock, "ERROR No filename\n", 18);
-                continue;
-            }
-            int fd = open(filename, O_RDONLY);
-            if (fd < 0)
-            {
-                snprintf(response, sizeof(response), "ERROR %s\n", strerror(errno));
-                send_all(sock, response, strlen(response));
-                continue;
-            }
-            off_t size = lseek(fd, 0, SEEK_END);
-            lseek(fd, 0, SEEK_SET);
-            snprintf(response, sizeof(response), "OK %ld\n", (long)size);
-            send_all(sock, response, strlen(response));
-
-            char buf[FILE_SIZE];
-            ssize_t n;
-            off_t remaining = size;
-            while (remaining > 0)
-            {
-                n = read(fd, buf, sizeof(buf) < remaining ? sizeof(buf) : remaining);
-                if (n <= 0)
-                {
-                    break;
-                }
-                if (send_all(sock, buf, n) < 0)
-                {
-                    break;
-                }
-                remaining -= n;
-            }
-            close(fd);
-        }
-        else
-        {
-            send_all(sock, "UNKNOWN COMMAND\n", 16);
-        }
+        clients[cli_idx].closing = 1;
+        return;
     }
+    if (strncmp(line, "MATH ", 5) == 0)
+    {
+        if (sscanf(line, "MATH %c %lf %lf", &operation, &a, &b) != 3)
+        {
+            send_all(sock, "ERROR Invalid MATH format\n", 26);
+            return;
+        }
+        switch (operation)
+        {
+        case '+':
+            result = a + b;
+            break;
+        case '-':
+            result = a - b;
+            break;
+        case '*':
+            result = a * b;
+            break;
+        case '/':
+            if (b == 0.0)
+            {
+                send_all(sock, "ERROR Division by zero\n", 23);
+                return;
+            }
+            result = a / b;
+            break;
+        default:
+            send_all(sock, "ERROR Unknown operation\n", 24);
+            return;
+        }
+        snprintf(response, sizeof(response), "Result: %.6g\n", result);
+        send_all(sock, response, strlen(response));
+    }
+    else if (strncmp(line, "GET ", 4) == 0)
+    {
+        char filename[NAME_SIZE];
+        if (sscanf(line, "GET %255s", filename) != 1)
+        {
+            send_all(sock, "ERROR No filename\n", 18);
+            return;
+        }
+        int fd = open(filename, O_RDONLY);
+        if (fd < 0)
+        {
+            snprintf(response, sizeof(response), "ERROR %s\n", strerror(errno));
+            send_all(sock, response, strlen(response));
+            return;
+        }
+        off_t size = lseek(fd, 0, SEEK_END);
+        lseek(fd, 0, SEEK_SET);
+        snprintf(response, sizeof(response), "OK %ld\n", (long)size);
+        send_all(sock, response, strlen(response));
 
-    nclients--;
-    printf("-disconnect\n");
-    printusers();
+        char buf[FILE_SIZE];
+        ssize_t n;
+        off_t remaining = size;
+        while (remaining > 0)
+        {
+            n = read(fd, buf, sizeof(buf) < remaining ? sizeof(buf) : remaining);
+            if (n <= 0)
+            {
+                break;
+            }
+            if (send_all(sock, buf, n) < 0)
+            {
+                break;
+            }
+            remaining -= n;
+        }
+        close(fd);
+    }
+    else
+    {
+        send_all(sock, "UNKNOWN COMMAND\n", 16);
+    }
 }
 
-ssize_t read_line(int sock, char *buf, size_t maxlen)
+void process_buffer(int cli_idx)
 {
-    size_t i = 0;
-    ssize_t n;
-    char c;
-    while (i < maxlen - 1)
+    client_t *cli = &clients[cli_idx];
+    char *start = cli->rbuf;
+    size_t len = cli->rlen;
+
+    while (len > 0 && !cli->closing)
     {
-        n = recv(sock, &c, 1, 0);
-        if (n <= 0)
-        {
-            return n;
-        }
-        if (c == '\n')
+        char *nl = memchr(start, '\n', len);
+        if (!nl)
         {
             break;
         }
-        buf[i++] = c;
+
+        *nl = '\0';
+        dostuff(cli_idx, start);
+
+        if (cli->closing)
+        {
+            break;
+        }
+
+        size_t line_len = nl - start + 1;
+        start += line_len;
+        len -= line_len;
     }
-    buf[i] = '\0';
-    return i;
+
+    if (start != cli->rbuf && len > 0)
+    {
+        memmove(cli->rbuf, start, len);
+    }
+    cli->rlen = len;
 }
 
 ssize_t send_all(int sock, const void *buf, size_t len)

@@ -112,13 +112,13 @@ int main(int argc, char *argv[])
         {
             close(sockfd);
             dostuff(newsockfd);
-            exit(0);
+            exit(EXIT_SUCCESS);
         }
         else
             close(newsockfd);
     } /* end of while */
     close(sockfd);
-    return 0; /* we never get here */
+    return 0;
 }
 
 void dostuff(int sock)
