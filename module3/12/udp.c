@@ -106,7 +106,9 @@ int main(int argc, char *argv[])
         if (FD_ISSET(STDIN_FILENO, &fds))
         {
             if (fgets(input, sizeof(input), stdin) == NULL)
+            {
                 break;
+            }
 
             size_t len = strlen(input);
             if (len > 0 && input[len - 1] == '\n')
