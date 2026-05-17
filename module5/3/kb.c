@@ -28,6 +28,10 @@ static int _kbledstatus = 0;
 #define ALL_LEDS_ON   0x07
 #define RESTORE_LEDS  0xFF
 
+#define KB_DIR "kb"
+#define PATH_PREFIX "/sys/kernel/"
+#define RIGHTS 0660
+
 static void my_timer_func(struct timer_list *ptr)
 {
         //int *pstatus = (int *)ptr;
@@ -92,7 +96,7 @@ static ssize_t foo_store(struct kobject *kobj, struct kobj_attribute *attr,
 }
  
  
-static struct kobj_attribute foo_attribute =__ATTR(kb_mode, 0660, foo_show,
+static struct kobj_attribute foo_attribute =__ATTR(kb_mode, RIGHTS, foo_show,
                                                    foo_store);
  
 static int __init sys_init (void)
@@ -101,14 +105,14 @@ static int __init sys_init (void)
  
         pr_debug("Module initialized successfully\n");
  
-        example_kobject = kobject_create_and_add("kb",
+        example_kobject = kobject_create_and_add(KB_DIR,
                                                  kernel_kobj);
         if(!example_kobject)
                 return -ENOMEM;
  
         error = sysfs_create_file(example_kobject, &foo_attribute.attr);
         if (error) {
-                pr_debug("failed to create the foo file in /sys/kernel/kb\n");
+                pr_debug("failed to create the foo file in %s%s\n", PATH_PREFIX, KB_DIR);
         }
  
         error = kbleds_init();
